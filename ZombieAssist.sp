@@ -6,6 +6,8 @@
 #include "zombie/check"
 #include "zombie/mysql"
 #include "zombie/client"
+#include "zombie/map"
+#include "zombie/model"
 
 public void OnPluginStart()
 {
@@ -14,6 +16,19 @@ public void OnPluginStart()
 public void OnPluginEnd()
 {
 	MySQL_Close();
+}
+public void OnMapStart()
+{
+	Map_Init();
+	if (MySQL == INVALID_HANDLE)
+	{
+		return;
+	}
+	Map_Load();
+}
+public void OnMapEnd()
+{
+	Map_Clean();
 }
 public void OnClientConnected(int Client)
 {
