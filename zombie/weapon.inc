@@ -38,12 +38,19 @@ Action Weapon_Command(int Client, int Args)
 		}
 		char ItemName[32];
 		GetCmdArgString(ItemName, sizeof(ItemName));
+		bool ItemFound = false;
 		for (int Num = 0; Num < Weapon_Max; Num++)
 		{
 			if (StrEqual(ItemName, Weapon_Name[Num], false))
 			{
 				Weapon_Buy(Client, Item);
+				ItemFound = true;
+				return;
 			}
+		}
+		if (!ItemFound)
+		{
+			PrintToChat(Client, "[ZA]武器名称不存在");
 		}
 	}
 	return Plugin_Handled;
