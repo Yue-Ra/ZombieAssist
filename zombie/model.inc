@@ -33,11 +33,10 @@ void Model_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 }
 Action Model_Command(int Client, int Args)
 {
-	if (!CheckGame(Client))
+	if (CheckGame(Client))
 	{
-		return Plugin_Handled;
+		Model_Menu(Client);
 	}
-	Model_Menu(Client);
 	return Plugin_Handled;
 }
 Action Model_Reload_Command(int Client, int Args)

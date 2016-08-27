@@ -28,8 +28,8 @@ void MySQL_Connect(Handle Owner, Handle Child, const char[] Error, any Data)
 	SQL_SetCharset(Child, "utf8");
 	MySQL = Child;
 	LogMessage("MySQL Connect Success");
-	Map_Load();
 	Model_Load();
+	Weapon_Load();
 }
 void MySQL_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 {

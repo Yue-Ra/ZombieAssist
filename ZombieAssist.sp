@@ -8,6 +8,7 @@
 #include "zombie/client"
 #include "zombie/map"
 #include "zombie/model"
+#include "zombie/weapon"
 
 public void OnPluginStart()
 {
@@ -15,6 +16,9 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_skin", Model_Command);
 	RegConsoleCmd("sm_model", Model_Command);
 	RegAdminCmd("sm_model_reload", Model_Reload_Command, ADMFLAG_GENERIC);
+	RegConsoleCmd("sm_zbuy", Weapon_Command);
+	RegConsoleCmd("sm_weapon", Weapon_Command);
+	RegAdminCmd("sm_weapon_reload", Weapon_Reload_Command, ADMFLAG_GENERIC);
 }
 public void OnPluginEnd()
 {
