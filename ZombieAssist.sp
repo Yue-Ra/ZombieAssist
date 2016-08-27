@@ -12,6 +12,9 @@
 public void OnPluginStart()
 {
 	MySQL_Start();
+	RegConsoleCmd("sm_skin", Model_Command);
+	RegConsoleCmd("sm_model", Model_Command);
+	RegAdminCmd("sm_model_reload", Model_Reload_Command, ADMFLAG_GENERIC);
 }
 public void OnPluginEnd()
 {
@@ -20,10 +23,6 @@ public void OnPluginEnd()
 public void OnMapStart()
 {
 	Map_Init();
-	if (MySQL == INVALID_HANDLE)
-	{
-		return;
-	}
 	Map_Load();
 }
 public void OnMapEnd()

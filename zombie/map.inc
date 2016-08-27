@@ -8,6 +8,10 @@ void Map_Init()
 }
 void Map_Load()
 {
+	if (MySQL == INVALID_HANDLE)
+	{
+		return;
+	}
 	char Query[192];
 	Format(Query, sizeof(Query), "SELECT * FROM map WHERE name='%s'", Map_Name);
 	SQL_TQuery(MySQL, Map_Load_Query, Query);
@@ -54,4 +58,20 @@ void Map_SetSpawnTime(float Value)
 {
 	SetConVarFloat(FindConVar("zr_infect_spawntime_min"), Value, true, true);
 	SetConVarFloat(FindConVar("zr_infect_spawntime_max"), Value, true, true);
+}
+void Map_OnRoundEnd(int Team)
+{
+	char Query[192];
+	if (Team == CS_TEAM_CT)
+	{
+		Map_Win++;
+		Format(Query, sizeof(Query), "UPDATE map SET win=win+1 WHERE name='%s'", Map_Name);
+	}
+	else
+	{
+		Map_Lose++;
+		Format(Query, sizeof(Query), "UPDATE map SET lose=lose+1 WHERE name='%s'", Map_Name);
+	}
+	SQL_TQuery(MySQL, MySQL_Query, Query);
+	PrintToChatAll("[ZA]地图累计胜利 %d,累计失败 %d", Map_Win, Map_Lose);
 }
