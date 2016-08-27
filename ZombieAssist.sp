@@ -1,12 +1,15 @@
+#pragma semicolon 1
 #include <sourcemod>
 #include <cstrike>
 #include <sdkhooks>
 #include <sdktools>
 #include <zombiereloaded>
+#include <stringescape>
 #include "zombie/check"
 #include "zombie/mysql"
 #include "zombie/client"
 #include "zombie/map"
+#include "zombie/alpha"
 #include "zombie/model"
 #include "zombie/weapon"
 

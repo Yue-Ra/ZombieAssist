@@ -1,7 +1,7 @@
 char Map_Name[32];
-int Map_Win;
-int Map_Lose;
-float Map_Spawn;
+int Map_Win = 0;
+int Map_Lose = 0;
+float Map_Spawn = 10.0;
 void Map_Init()
 {
 	GetCurrentMap(Map_Name, sizeof(Map_Name));
