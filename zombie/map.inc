@@ -8,7 +8,6 @@ void Map_Init()
 }
 void Map_Load()
 {
-	PrintToServer(Map_Name);
 	if (MySQL == INVALID_HANDLE)
 	{
 		return;
@@ -26,7 +25,6 @@ void Map_Clean()
 }
 void Map_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 {
-	PrintToServer("Map_Load_Query");
 	if (Owner == INVALID_HANDLE || Child == INVALID_HANDLE)
 	{
 		LogError("Map Handle Failure");
@@ -50,10 +48,8 @@ void Map_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 }
 void Map_Create()
 {
-	PrintToServer("Map_Create");
 	char Query[192];
 	Format(Query, sizeof(Query), "INSERT INTO map(name) VALUES ('%s')", Map_Name);
-	PrintToServer(Query);
 	SQL_TQuery(MySQL, MySQL_Query, Query);
 	Map_SetSpawnTime(Map_Spawn);
 	LogMessage("Map %s Create Success", Map_Name);

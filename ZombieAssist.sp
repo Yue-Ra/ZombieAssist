@@ -12,7 +12,14 @@
 #include "zombie/alpha"
 #include "zombie/model"
 #include "zombie/weapon"
-
+public Plugin myinfo =
+{
+	name = "Zombie Assist",
+	author = "Yuera",
+	description = "Zombiei Assist",
+	version = "1.0",
+	url = "http://www.moeub.com/"
+};
 public void OnPluginStart()
 {
 	MySQL_Start();
