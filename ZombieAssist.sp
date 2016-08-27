@@ -6,6 +6,7 @@
 #include <zombiereloaded>
 #include <stringescape>
 #include "zombie/check"
+#include "zombie/entity"
 #include "zombie/mysql"
 #include "zombie/client"
 #include "zombie/map"
@@ -30,6 +31,7 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_weapon", Weapon_Command);
 	RegAdminCmd("sm_weapon_reload", Weapon_Reload_Command, ADMFLAG_GENERIC);
 	RegConsoleCmd("sm_alpha", Alpha_Command);
+	Entity_OnPluginStart();
 }
 public void OnPluginEnd()
 {
