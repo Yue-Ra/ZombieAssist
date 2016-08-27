@@ -31,7 +31,20 @@ Action Weapon_Command(int Client, int Args)
 {
 	if (CheckHuman(Client))
 	{
-		Weapon_Menu(Client);
+		if (Args == 0)
+		{
+			Weapon_Menu(Client);
+			return;
+		}
+		char ItemName[32];
+		GetCmdArgString(ItemName, sizeof(ItemName));
+		for (int Num = 0; Num < Weapon_Max; Num++)
+		{
+			if (StrEqual(ItemName, Weapon_Name[Num], false))
+			{
+				Weapon_Buy(Client, Item);
+			}
+		}
 	}
 	return Plugin_Handled;
 }
