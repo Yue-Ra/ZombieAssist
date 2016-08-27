@@ -4,8 +4,12 @@ bool Alpha_Allow = true;
 
 Action Alpha_Command(int Client, int Args)
 {
-	Alpha_Client = !Alpha_Client[Client];
-	PrintToChat(Client, "[ZA]当前模型透明为 %s", Alpha_Client[Client] ? "开启" : "关闭");
+	if (CheckGame(Client))
+	{
+		Alpha_Client = !Alpha_Client[Client];
+		PrintToChat(Client, "[ZA]当前模型透明为 %s", Alpha_Client[Client] ? "开启" : "关闭");
+	}
+	return Plugin_Handled;
 }
 void Alpha_OnGameFrame()
 {
