@@ -22,6 +22,7 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_zbuy", Weapon_Command);
 	RegConsoleCmd("sm_weapon", Weapon_Command);
 	RegAdminCmd("sm_weapon_reload", Weapon_Reload_Command, ADMFLAG_GENERIC);
+	RegConsoleCmd("sm_alpha", Alpha_Command);
 }
 public void OnPluginEnd()
 {
@@ -47,4 +48,8 @@ public void OnClientPutInServer(int Client)
 public void OnClientDisconnect(int Client)
 {
 	Client_Clean(Client);
+}
+public void OnGameFrame()
+{
+	Alpha_OnGameFrame();
 }
