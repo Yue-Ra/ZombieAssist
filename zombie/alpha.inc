@@ -13,6 +13,10 @@ void Alpha_OnGameFrame()
 	{
 		return;
 	}
+	if (MaxClients < 2)
+	{
+		return;
+	}
 	for (int Client = 1; Client <= MaxClients; Client++)
 	{
 		if (!Alpha_Client[Client])
