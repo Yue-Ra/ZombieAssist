@@ -34,5 +34,4 @@ void MySQL_Connect(Handle Owner, Handle Child, const char[] Error, any Data)
 }
 void MySQL_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 {
-
 }

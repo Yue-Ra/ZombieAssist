@@ -11,7 +11,7 @@ Action Entity_Timer(Handle Timer)
 		{
 			continue;
 		}
-		if ((StrContains(ClassName, "weapon_", false) || StrContains(ClassName, "item_", false)) && GetEntDataEnt2(Entity, FindSendPropInfo("CBaseCombatWeapon", "m_hOwnerEntity")) && GetEntProp(Entity, Prop_Data, "m_iHammerID") == 0)
+		if ((StrContains(ClassName, "weapon_", false) != -1 || StrContains(ClassName, "item_", false) != -1) && GetOwner(Entity) == -1 && GetHammerId(Entity) == 0)
 		{
 			AcceptEntityInput(Entity, "Kill");
 		}

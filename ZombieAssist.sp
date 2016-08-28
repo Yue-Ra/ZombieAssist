@@ -5,6 +5,7 @@
 #include <sdktools>
 #include <zombiereloaded>
 #include <stringescape>
+#include "zombie/function"
 #include "zombie/check"
 #include "zombie/entity"
 #include "zombie/mysql"

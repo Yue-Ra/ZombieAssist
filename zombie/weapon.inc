@@ -55,14 +55,6 @@ Action Weapon_Reload_Command(int Client, int Args)
 	Weapon_Load();
 	return Plugin_Handled;
 }
-int GetCash(int Client)
-{
-	return GetEntData(Client, FindSendPropInfo("CCSPlayer", "m_iAccount"));
-}
-void SetCash(int Client, int Value)
-{
-	SetEntData(Client, FindSendPropInfo("CCSPlayer", "m_iAccount"), Value);
-}
 void Weapon_Menu(int Client)
 {
 	Menu MenuHandle = CreateMenu(Weapon_Menu_Handle);
