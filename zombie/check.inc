@@ -30,3 +30,27 @@ bool CheckZombie(int Client)
 	}
 	return ZR_IsClientZombie(Client);
 }
+int HumanCount()
+{
+	int Count = 0;
+	for (int Client = 1; Client <= MaxClients; Client++)
+	{
+		if (CheckHuman(Client))
+		{
+			Count++;
+		}
+	}
+	return Count;
+}
+int ZombieCount()
+{
+	int Count = 0;
+	for (int Client = 1; Client <= MaxClients; Client++)
+	{
+		if (CheckZombie(Client))
+		{
+			Count++;
+		}
+	}
+	return Count;
+}

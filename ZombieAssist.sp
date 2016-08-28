@@ -13,6 +13,7 @@
 #include "zombie/alpha"
 #include "zombie/model"
 #include "zombie/weapon"
+#include "zombie/damage"
 public Plugin myinfo =
 {
 	name = "Zombie Assist",
