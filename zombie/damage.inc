@@ -71,6 +71,12 @@ Action Damage_TakeDamage(int Client, int &Attack, int &inflictor, float &Damage,
 		{
 			return Plugin_Handled;
 		}
+		if(damage > 100)
+		{
+			//确保一些地图人类血多，僵尸背刀能致死
+			damage = 2000.0;
+			return Plugin_Changed;
+		}
 		return Plugin_Handled;
 	}
 	if (CheckZombie(Client) && CheckHuman(Attack))
