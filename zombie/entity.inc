@@ -7,15 +7,14 @@ Action Entity_Timer(Handle Timer)
 		{
 			continue;
 		}
-		GetEntityClassname(Entity, ClassName, sizeof(ClassName));
+		if (!GetEntityClassname(Entity, ClassName, sizeof(ClassName)))
+		{
+			continue;
+		}
 		if ((StrContains(ClassName, "weapon_", false) || StrContains(ClassName, "item_", false)) && GetEntDataEnt2(Entity, FindSendPropInfo("CBaseCombatWeapon", "m_hOwnerEntity")) && GetEntProp(Entity, Prop_Data, "m_iHammerID") == 0)
 		{
 			AcceptEntityInput(Entity, "Kill");
 		}
 	}
 	return Plugin_Handled;
-}
-void Entity_OnPluginStart()
-{
-	CreateTimer(30.0, Entity_Timer, _, TIMER_REPEAT);
 }

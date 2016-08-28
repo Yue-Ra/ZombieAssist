@@ -14,6 +14,8 @@
 #include "zombie/model"
 #include "zombie/weapon"
 #include "zombie/damage"
+#include "zombie/leader"
+
 public Plugin myinfo =
 {
 	name = "Zombie Assist",
@@ -32,7 +34,7 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_weapon", Weapon_Command);
 	RegAdminCmd("sm_weapon_reload", Weapon_Reload_Command, ADMFLAG_GENERIC);
 	RegConsoleCmd("sm_alpha", Alpha_Command);
-	Entity_OnPluginStart();
+	CreateTimer(30.0, Entity_Timer, _, TIMER_REPEAT);
 }
 public void OnPluginEnd()
 {
@@ -54,10 +56,12 @@ public void OnClientConnected(int Client)
 public void OnClientPutInServer(int Client)
 {
 	Client_Load(Client);
+	Damage_Hook(Client);
 }
 public void OnClientDisconnect(int Client)
 {
 	Client_Clean(Client);
+	Damage_Unhook(Client);
 }
 public void OnGameFrame()
 {

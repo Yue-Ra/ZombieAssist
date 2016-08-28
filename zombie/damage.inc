@@ -30,16 +30,63 @@ float Damage_Improve()
 	int Human = HumanCount();
 	if (Human == 0)
 	{
-		return;
+		return 1.0;
 	}
 	int Zombie = ZombieCount();
 	if (Zombie == 0)
 	{
-		return;
+		return 1.0;
 	}
 	if (Zombie < Human)
 	{
 		return 1.0;
 	}
-	return Zombie / Human;
+	return float(Zombie) / float(Human);
+}
+void Damage_Hook(int Client)
+{
+	SDKHook(Client, SDKHook_OnTakeDamage, Damage_TakeDamage);
+}
+void Damage_Unhook(int Client)
+{
+	SDKUnhook(Client, SDKHook_OnTakeDamage, Damage_TakeDamage);
+}
+Action Damage_TakeDamage(int Client, int &Attack, int &inflictor, float &Damage, int &damagetype, int &Weapon, float damageForce[3], float damagePosition[3])
+{
+	if (Client == Attack)
+	{
+		return Plugin_Handled;
+	}
+	if (!CheckAlive(Attack))
+	{
+		return Plugin_Continue;
+	}
+	if (GetClientTeam(Client) == GetClientTeam(Attack))
+	{
+		return Plugin_Handled;
+	}
+	if (CheckHuman(Client) && CheckZombie(Attack))
+	{
+		if (Leader_Block(Client))
+		{
+			return Plugin_Handled;
+		}
+		if (Damage == 165)
+		{
+			PrintToChatAll("[ZA]人类 %N 被僵尸 %N 爆菊了", Client, Attack);
+			ForcePlayerSuicide(Client);
+		}
+		return Plugin_Handled;
+	}
+	if (CheckZombie(Client) && CheckHuman(Attack))
+	{
+		Damage *= Damage_Improve();
+		if (Leader_Close(Attack))
+		{
+			Damage *= 1.5;
+		}
+		PrintCenterText(Attack, "对僵尸 %N 造成 %.2f 伤害", Client, Damage);
+		return Plugin_Changed;
+	}
+	return Plugin_Continue;
 }
