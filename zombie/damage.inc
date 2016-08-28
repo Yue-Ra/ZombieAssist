@@ -71,11 +71,11 @@ Action Damage_TakeDamage(int Client, int &Attack, int &inflictor, float &Damage,
 		{
 			return Plugin_Handled;
 		}
-		if (Damage == 165)
+		if(damage > 100)
 		{
-			PrintToChatAll("[ZA]人类 %N 被僵尸 %N 爆菊了", Client, Attack);
-			PrintCenterTextAll("[ZA]人类 %N 被僵尸 %N 爆菊了", Client, Attack);
-			ForcePlayerSuicide(Client);
+			//确保一些地图人类血多，僵尸背刀能致死
+			damage = 2000.0;
+			return Plugin_Changed;
 		}
 		return Plugin_Handled;
 	}
