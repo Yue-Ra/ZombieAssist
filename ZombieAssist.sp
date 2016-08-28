@@ -16,6 +16,7 @@
 #include "zombie/weapon"
 #include "zombie/damage"
 #include "zombie/leader"
+#include "zombie/hurt"
 
 public Plugin myinfo =
 {

@@ -71,12 +71,6 @@ Action Damage_TakeDamage(int Client, int &Attack, int &inflictor, float &Damage,
 		{
 			return Plugin_Handled;
 		}
-		if (Damage == 165)
-		{
-			PrintToChatAll("[ZA]人类 %N 被僵尸 %N 爆菊了", Client, Attack);
-			PrintCenterTextAll("[ZA]人类 %N 被僵尸 %N 爆菊了", Client, Attack);
-			ForcePlayerSuicide(Client);
-		}
 		return Plugin_Handled;
 	}
 	if (CheckZombie(Client) && CheckHuman(Attack))
