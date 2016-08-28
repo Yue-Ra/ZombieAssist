@@ -3,6 +3,15 @@ bool ub_mantou[MAXPLAYERS + 1];
 void MantouInit()
 {
 	HookEvent("player_death", Event_PlayerDeath);
+	MantouClean();
+}
+
+void MantouClean()
+{
+	for(int i = 0; i < MAXPLAYERS + 1; i++)
+	{
+		ub_mantou[i] = false;
+	}
 }
 
 Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
