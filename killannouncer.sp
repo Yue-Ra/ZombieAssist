@@ -1,16 +1,71 @@
 #include <sourcemod>
+#include <sdktools>
 #include <sdktools_sound>
 #include <clients>
+#include <sdktools_engine>
 
 bool firstblood;
 int player[MAXPLAYERS + 1][3];
 Handle player_timer[MAXPLAYERS + 1][2];
+char sound_firstblood[] = "announcer/firstblood.mp3";
+char sound_kill[][32] = {
+	"",
+	"",
+	"announcer/kill_2.mp3",
+	"announcer/kill_3.mp3",
+	"announcer/kill_4.mp3",
+	"announcer/kill_5.mp3"
+};
+char sound_title[][32] = {
+	"",
+	"",
+	"",
+	"announcer/title_3.mp3",
+	"announcer/title_4.mp3",
+	"announcer/title_5.mp3",
+	"announcer/title_6.mp3",
+	"announcer/title_7.mp3",
+	"announcer/title_8.mp3",
+	"announcer/title_9.mp3",
+	"announcer/title_10.mp3"
+};
+char string_firstblood[] = "%N拿下了第一滴血";
+char string_kill[][32] = {
+	"",
+	"",
+	"%N完成了一次双杀",
+	"%N完成了一次三杀",
+	"%N完成了一次疯狂杀戮",
+	"%N正在暴走"
+};
+char string_title[][64] = {
+	"",
+	"",
+	"",
+	"%N正在大杀特杀",
+	"%N已经主宰全场",
+	"%N已经杀人如麻",
+	"%N无人能挡",
+	"%N正在变态杀戮",
+	"%N像妖怪一般",
+	"%N入神一般",
+	"%N已经超越了神一般的存在，快去弄死"
+};
 
 #define KILLING 0
 #define TITLE 1
 #define DEATH 2
 
 #define KILL_INTERNAL 15.0
+
+public Plugin:myinfo =
+{
+	name = "Announcer",
+	author = "まきちゃん~",
+	description = "kill announcer",
+	version = "1.1",
+	url = "moeub.com"
+};
 
 public OnPluginStart()
 {
@@ -27,6 +82,29 @@ Action Event_RoundFreeEnd(Event e, const char[] name, bool dontBroadcast)
 
 public OnMapStart()
 {
+	for(int i = 2; i < 6; i++)
+	{
+		PrintToServer("cached: %s", sound_kill[i]);
+		char downloadFile[PLATFORM_MAX_PATH];
+		PrecacheSound(sound_kill[i], true);
+		Format(downloadFile, PLATFORM_MAX_PATH, "sound/%s", sound_kill[i]);
+		AddFileToDownloadsTable(downloadFile);
+	}
+
+	for(int i = 3; i < 11; i++)
+	{
+		PrintToServer("cached: %s", sound_title[i]);
+		char downloadFile[PLATFORM_MAX_PATH];
+		PrecacheSound(sound_title[i], true);
+		Format(downloadFile, PLATFORM_MAX_PATH, "sound/%s", sound_title[i]);
+		AddFileToDownloadsTable(downloadFile);
+	}
+
+	char downloadFile[PLATFORM_MAX_PATH];
+	PrecacheSound(sound_firstblood, true);
+	Format(downloadFile, PLATFORM_MAX_PATH, "sound/%s", sound_firstblood);
+	AddFileToDownloadsTable(downloadFile);
+
 	Clean();
 }
 
@@ -72,69 +150,32 @@ public Action Event_PlayerDeath(Event e, const char[] name, bool dontBroadcast)
 	if(firstblood)
 	{
 		Announcer_PlaySound("announcer/firstblood.mp3");
-		PrintToChatAll("%N拿下了第一滴血", attacker_client);
-		PrintCenterTextAll("%N打下了第一滴血", attacker_client);
+		PrintToChatAll(string_firstblood, attacker_client);
+		PrintCenterTextAll(string_firstblood, attacker_client);
 		firstblood = false;
 	}
 
-	switch(player[attacker][TITLE])
+	if(player[attacker][TITLE] >= 3 && player[attacker][TITLE] <= 9)
 	{
-		case 3:
+		Announcer_PlaySound(sound_title[player[attacker][TITLE]]);
+		PrintToChatAll(string_title[player[attacker][TITLE]], attacker_client);
+	}
+	else if(player[attacker][TITLE] > 9)
+	{
+		Announcer_PlaySound(sound_title[10]);
+		PrintToChatAll(string_title[10], attacker_client);
+		PrintCenterTextAll(string_title[10], attacker_client);
+	}
+	else
+	{
+		Announcer_PostKilling(player[attacker][KILLING], attacker_client);
+		if(player_timer[attacker][KILLING] != null)
 		{
-			Announcer_PlaySound("announcer/title_3_killingspree.mp3");
-			PrintToChatAll("%N正在大杀特杀", attacker_client);
+			KillTimer(player_timer[attacker][KILLING]);
+			player_timer[attacker][KILLING] = null;
 		}
-		case 4:
-		{
-			Announcer_PlaySound("announcer/title_4_dominating.mp3");
-			PrintToChatAll("%N已经主宰比赛", attacker_client);
-		}
-		case 5:
-		{
-			Announcer_PlaySound("announcer/title_5_megakill.mp3");
-			PrintToChatAll("%N已经杀人如麻", attacker_client);
-		}
-		case 6:
-		{
-			Announcer_PlaySound("announcer/title_6_unstoppable.mp3");
-			PrintToChatAll("%N无人能挡", attacker_client);
-		}
-		case 7:
-		{
-			Announcer_PlaySound("announcer/title_7_wickedsick.mp3");
-			PrintToChatAll("%N已经变态杀戮", attacker_client);
-		}
-		case 8:
-		{
-			Announcer_PlaySound("announcer/title_8_monsterkill.mp3");
-			PrintToChatAll("%N妖怪般的杀戮", attacker_client);
-		}
-		case 9:
-		{
-			Announcer_PlaySound("announcer/title_9_godlike.mp3");
-			PrintToChatAll("%N如同神一般", attacker_client);
-		}
-		default:
-		{
-			if(player[attacker][TITLE] > 9)
-			{
-				Announcer_PlaySound("announcer/title_10_holyshit.mp3");
-				PrintToChatAll("%N超越神一般的杀戮", attacker_client);
-				PrintCenterTextAll("%N已经超越神一般的杀戮，拜托谁去爆了ta", attacker_client);
-			}
-			else
-			{
-				Announcer_PostKilling(player[attacker][KILLING], attacker_client);
-				if(player_timer[attacker][KILLING] != null)
-				{
-					KillTimer(player_timer[attacker][KILLING]);
-					player_timer[attacker][KILLING] = null;
-				}
-				player_timer[attacker][KILLING] = CreateTimer(KILL_INTERNAL, Announcer_DecKilling, attacker);
-				return Plugin_Continue;
-			}
-		}
-
+		player_timer[attacker][KILLING] = CreateTimer(KILL_INTERNAL, Announcer_DecKilling, attacker);
+		return Plugin_Continue;
 	}
 
 	if(player_timer[attacker][TITLE] != null)
@@ -170,7 +211,9 @@ void Announcer_PlaySound(const char[] path)
 	{
 	    if (IsClientInGame(target_playerClient))
 	    {
-	        ClientCommand(target_playerClient, command);
+			new Float:vec[3];
+			GetClientEyePosition(target_playerClient, vec);
+			EmitAmbientSound(path, vec, SOUND_FROM_WORLD);
 	    }
 	}
 }
@@ -187,31 +230,16 @@ Action Announcer_DelayPostKilling(Handle timer, Handle pack)
 
 void Announcer_PostKilling(int kill, int attacker_client)
 {
-	switch(kill)
+	if(kill >=2 && kill <= 4)
 	{
-		case 2:
-		{
-			Announcer_PlaySound("announcer/kill_2.mp3");
-			PrintToChatAll("%N完成一次双杀", attacker_client);
-		}
-		case 3:
-		{
-			Announcer_PlaySound("announcer/kill_3.mp3");
-			PrintToChatAll("%N完成一次三杀", attacker_client);
-		}
-		case 4:
-		{
-			Announcer_PlaySound("announcer/kill_4.mp3");
-			PrintToChatAll("%N正在疯狂杀戮", attacker_client);
-		}
-		default:
-		{
-			if(kill > 4)
-			{
-				Announcer_PlaySound("announcer/kill_5.mp3");
-				PrintToChatAll("%N正在暴走", attacker_client);
-			}
-		}
+		Announcer_PlaySound(sound_kill[kill]);
+		PrintToChatAll(string_kill[kill], attacker_client);
+	}
+	else if(kill >= 5)
+	{
+		Announcer_PlaySound(sound_kill[5]);
+		PrintToChatAll(string_kill[5], attacker_client);
+		PrintCenterTextAll(string_kill[5], attacker_client);
 	}
 }
 
