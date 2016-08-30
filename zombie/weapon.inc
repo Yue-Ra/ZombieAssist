@@ -70,7 +70,7 @@ void Weapon_Menu(int Client)
 	char ItemName[32];
 	for (int Num = 0; Num < Weapon_Max; Num++)
 	{
-		Format(ItemName, sizeof(ItemName), "%20s    %10d", Weapon_Name[Num], Weapon_Cash[Num]);
+		Format(ItemName, sizeof(ItemName), "%s - %d", Weapon_Name[Num], Weapon_Cash[Num]);
 		AddMenuItem(MenuHandle, "", ItemName);
 	}
 	SetMenuExitBackButton(MenuHandle, true);
