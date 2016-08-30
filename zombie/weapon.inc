@@ -1,6 +1,7 @@
 char Weapon_Name[32][32];
 int Weapon_Type[32];
 int Weapon_Cash[32];
+char Weapon_Alias[32][32];
 
 bool Weapon_Allow = true;
 int Weapon_Max = 0;
@@ -24,6 +25,9 @@ void Weapon_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 		SQL_FetchString(Child, 0, Weapon_Name[Num], sizeof(Weapon_Name[]));
 		Weapon_Type[Num] = SQL_FetchInt(Child, 1);
 		Weapon_Cash[Num] = SQL_FetchInt(Child, 2);
+		SQL_FetchString(Child, 3, Weapon_Alias[Num], sizeof(Weapon_Alias[]));
+		LogMessage("Weapon %d\tName %s\tType %d\tCash %d\tAlias %s", Num, Weapon_Name[Num], Weapon_Type[Num], Weapon_Cash[Num], Weapon_Alias[Num]);
+		Num++;
 	}
 	Weapon_Max = Num;
 }
@@ -38,9 +42,13 @@ Action Weapon_Command(int Client, int Args)
 		}
 		char ItemName[32];
 		GetCmdArgString(ItemName, sizeof(ItemName));
+		if (StrContains(ItemName, "weapon_", false) == -1)
+		{
+			Format(ItemName, sizeof(ItemName), "weapon_%s", ItemName);
+		}
 		for (int Num = 0; Num < Weapon_Max; Num++)
 		{
-			if (StrEqual(ItemName, Weapon_Name[Num], false))
+			if (StrContains(ItemName, Weapon_Name[Num], false) || StrContains(ItemName, Weapon_Alias[Num], false))
 			{
 				Weapon_Buy(Client, Num);
 				return Plugin_Handled;
@@ -62,7 +70,7 @@ void Weapon_Menu(int Client)
 	char ItemName[32];
 	for (int Num = 0; Num < Weapon_Max; Num++)
 	{
-		Format(ItemName, sizeof(ItemName), "%16s    %5d", Weapon_Name[Num], Weapon_Cash[Num]);
+		Format(ItemName, sizeof(ItemName), "%20s    %10d", Weapon_Name[Num], Weapon_Cash[Num]);
 		AddMenuItem(MenuHandle, "", ItemName);
 	}
 	SetMenuExitBackButton(MenuHandle, true);
@@ -94,7 +102,7 @@ void Weapon_Buy(int Client, int Item)
 	}
 	SetCash(Client, Cash - Weapon_Cash[Item]);
 	int Slot = GetPlayerWeaponSlot(Client, Weapon_Type[Item]);
-	if (Slot)
+	if (Slot != -1)
 	{
 		CS_DropWeapon(Client, Slot, false, false);
 	}

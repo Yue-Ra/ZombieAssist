@@ -30,9 +30,9 @@ void Alpha_OnGameFrame()
 		if (CheckHuman(Client))
 		{
 			int Distance = GetCloseClientDistance(Client);
-			if (Distance < 30)
+			if (Distance < 50)
 			{
-				Distance = 30;
+				Distance = 50;
 			}
 			if (GetEntityRenderMode(Client) != RENDER_TRANSALPHA)
 			{

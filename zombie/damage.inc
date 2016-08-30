@@ -51,19 +51,17 @@ void Damage_Unhook(int Client)
 {
 	SDKUnhook(Client, SDKHook_OnTakeDamage, Damage_TakeDamage);
 }
-Action Damage_TakeDamage(int Client, int &Attack, int &inflictor, float &Damage, int &damagetype, int &Weapon, float damageForce[3], float damagePosition[3])
+Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage, int &damagetype, int &Weapon, float damageForce[3], float damagePosition[3])
 {
-	if (Client == Attack)
+	char ClassName[32];
+	GetEntityClassname(Attack, ClassName, sizeof(ClassName));
+	if (StrEqual(ClassName, "entityflame", false) && CheckHuman(Client))
 	{
 		return Plugin_Handled;
 	}
 	if (!CheckAlive(Attack))
 	{
 		return Plugin_Continue;
-	}
-	if (GetClientTeam(Client) == GetClientTeam(Attack))
-	{
-		return Plugin_Handled;
 	}
 	if (CheckHuman(Client) && CheckZombie(Attack))
 	{
@@ -76,12 +74,18 @@ Action Damage_TakeDamage(int Client, int &Attack, int &inflictor, float &Damage,
 			PrintToChatAll("[ZA]人类 %N 被僵尸 %N 爆菊了", Client, Attack);
 			PrintCenterTextAll("[ZA]人类 %N 被僵尸 %N 爆菊了", Client, Attack);
 			ForcePlayerSuicide(Client);
+			return Plugin_Handled;
 		}
-		return Plugin_Handled;
+		return Plugin_Continue;
 	}
 	if (CheckZombie(Client) && CheckHuman(Attack))
 	{
-		Damage *= Damage_Improve();
+		float Improve = Damage_Improve();
+		if (Improve > 6)
+		{
+			Improve = 6.0;
+		}
+		Damage *= Improve;
 		if (Leader_Close(Attack))
 		{
 			Damage *= 1.5;

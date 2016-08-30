@@ -7,6 +7,7 @@
 #include <stringescape>
 #include "zombie/function"
 #include "zombie/check"
+#include "zombie/navbar"
 #include "zombie/entity"
 #include "zombie/mysql"
 #include "zombie/client"
@@ -35,6 +36,7 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_weapon", Weapon_Command);
 	RegAdminCmd("sm_weapon_reload", Weapon_Reload_Command, ADMFLAG_GENERIC);
 	RegConsoleCmd("sm_alpha", Alpha_Command);
+	// CreateTimer(1.0, Navbar_Timer, _, TIMER_REPEAT);
 	CreateTimer(30.0, Entity_Timer, _, TIMER_REPEAT);
 }
 public void OnPluginEnd()
