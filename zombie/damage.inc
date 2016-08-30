@@ -41,7 +41,8 @@ float Damage_Improve()
 	{
 		return 1.0;
 	}
-	return float(Zombie) / float(Human);
+	float Value = float(Zombie) / float(Human);
+	return Value < 6 ? Value : 6.0;
 }
 void Damage_Hook(int Client)
 {
@@ -76,16 +77,26 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 			ForcePlayerSuicide(Client);
 			return Plugin_Handled;
 		}
+		if (Mode_Allow)
+		{
+			return Plugin_Handled;
+		}
 		return Plugin_Continue;
 	}
 	if (CheckZombie(Client) && CheckHuman(Attack))
 	{
-		float Improve = Damage_Improve();
-		if (Improve > 6)
+		if (Mode_True)
 		{
-			Improve = 6.0;
+			if (Damage == 15 || Damage == 20)
+			{
+				Damage = 4000.0;
+			}
+			else if (Damage == 55 || Damage == 65)
+			{
+				Damage = 10000.0;
+			}
 		}
-		Damage *= Improve;
+		Damage *= Damage_Improve();
 		if (Leader_Close(Attack))
 		{
 			Damage *= 1.5;

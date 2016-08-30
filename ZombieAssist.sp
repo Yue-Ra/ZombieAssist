@@ -7,18 +7,19 @@
 #include <stringescape>
 #include "zombie/function"
 #include "zombie/check"
+#include "zombie/mode"
 #include "zombie/navbar"
 #include "zombie/entity"
 #include "zombie/mysql"
 #include "zombie/client"
-#include "zombie/map"
 #include "zombie/alpha"
 #include "zombie/model"
 #include "zombie/weapon"
 #include "zombie/damage"
 #include "zombie/leader"
-#include "zombie/translate"
 #include "zombie/event"
+#include "zombie/map"
+#include "zombie/translate"
 
 public Plugin myinfo =
 {

@@ -8,6 +8,13 @@ void Navbar_OnRoundStart()
 }
 Action Navbar_Timer(Handle Timer)
 {
+	if (Mode_True && !Mode_Allow && GetTime() - Navbar_Time > 240)
+	{
+		Mode_Allow = true;
+		PrintToChatAll("[ZA]疫苗研究已完成");
+		PrintToChatAll("[ZA]疫苗研究已完成");
+		PrintToChatAll("[ZA]疫苗研究已完成");
+	}
 	if (!Navbar_Allow)
 	{
 		return Plugin_Stop;

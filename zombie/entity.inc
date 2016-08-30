@@ -1,5 +1,9 @@
 Action Entity_Timer(Handle Timer)
 {
+	if (Navbar_Time < 30)
+	{
+		return Plugin_Handled;
+	}
 	char ClassName[32];
 	for (int Entity = 0; Entity < 2048; Entity++)
 	{

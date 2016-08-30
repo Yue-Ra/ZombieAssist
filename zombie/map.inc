@@ -2,9 +2,15 @@ char Map_Name[32];
 int Map_Win = 0;
 int Map_Lose = 0;
 float Map_Spawn = 10.0;
+
 void Map_Init()
 {
 	GetCurrentMap(Map_Name, sizeof(Map_Name));
+	if (StrContains(Map_Name, "zm_", false) != -1)
+	{
+		Mode_True = true;
+		Mode_Init();
+	}
 }
 void Map_Load()
 {
@@ -47,6 +53,30 @@ void Map_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 	if (SQL_FetchInt(Child, 4) == 1)
 	{
 		SetConVarBounds(FindConVar("mp_roundtime"), ConVarBound_Upper, true, 15.0);
+	}
+	if (SQL_FetchInt(Child, 5) == 0)
+	{
+		Alpha_Allow = false;
+	}
+	if (SQL_FetchInt(Child, 6) == 0)
+	{
+		Model_Allow = false;
+	}
+	if (SQL_FetchInt(Child, 7) == 0)
+	{
+		Navbar_Allow = false;
+	}
+	if (SQL_FetchInt(Child, 8) == 0)
+	{
+		Damage_Allow = false;
+	}
+	if (SQL_FetchInt(Child, 9) == 0)
+	{
+		Weapon_Allow = false;
+	}
+	if (SQL_FetchInt(Child, 10) == 0)
+	{
+		Leader_Allow = false;
 	}
 	LogMessage("Map %s Load Success", Map_Name);
 }
