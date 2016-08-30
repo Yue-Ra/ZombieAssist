@@ -44,6 +44,10 @@ void Map_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 	Map_Lose = SQL_FetchInt(Child, 2);
 	Map_Spawn = SQL_FetchFloat(Child, 3);
 	Map_SetSpawnTime(Map_Spawn);
+	if (SQL_FetchInt(Child, 4) == 1)
+	{
+		SetConVarBounds(FindConVar("mp_roundtime"), ConVarBound_Upper, true, 15.0);
+	}
 	LogMessage("Map %s Load Success", Map_Name);
 }
 void Map_Create()

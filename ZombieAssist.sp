@@ -17,6 +17,7 @@
 #include "zombie/weapon"
 #include "zombie/damage"
 #include "zombie/leader"
+#include "zombie/event"
 
 public Plugin myinfo =
 {
@@ -29,6 +30,7 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
 	MySQL_Start();
+	Event_Init();
 	RegConsoleCmd("sm_skin", Model_Command);
 	RegConsoleCmd("sm_model", Model_Command);
 	RegAdminCmd("sm_model_reload", Model_Reload_Command, ADMFLAG_GENERIC);
@@ -36,7 +38,7 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_weapon", Weapon_Command);
 	RegAdminCmd("sm_weapon_reload", Weapon_Reload_Command, ADMFLAG_GENERIC);
 	RegConsoleCmd("sm_alpha", Alpha_Command);
-	// CreateTimer(1.0, Navbar_Timer, _, TIMER_REPEAT);
+	CreateTimer(1.0, Navbar_Timer, _, TIMER_REPEAT);
 	CreateTimer(30.0, Entity_Timer, _, TIMER_REPEAT);
 }
 public void OnPluginEnd()

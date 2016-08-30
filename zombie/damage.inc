@@ -5,7 +5,7 @@ bool Damage_Allow = true;
 
 void Damage_OnRoundStart()
 {
-	for (int Client = 1; Client <= MaxClinets; Client++)
+	for (int Client = 1; Client <= MaxClients; Client++)
 	{
 		Damage_Client[Client] = 0;
 	}
@@ -13,7 +13,7 @@ void Damage_OnRoundStart()
 void Damage_OnRoundEnd()
 {
 	Damage_First = 0;
-	for (int Client = 1; Client <= MaxClinets; Client++)
+	for (int Client = 1; Client <= MaxClients; Client++)
 	{
 		if (Damage_Client[Client] > Damage_Client[Damage_First])
 		{
