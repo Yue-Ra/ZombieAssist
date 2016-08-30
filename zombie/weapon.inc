@@ -48,7 +48,7 @@ Action Weapon_Command(int Client, int Args)
 		}
 		for (int Num = 0; Num < Weapon_Max; Num++)
 		{
-			if (StrContains(ItemName, Weapon_Name[Num], false) || StrContains(ItemName, Weapon_Alias[Num], false))
+			if (StrContains(ItemName, Weapon_Name[Num], false) != -1 || StrContains(ItemName, Weapon_Alias[Num], false) != -1)
 			{
 				Weapon_Buy(Client, Num);
 				return Plugin_Handled;
