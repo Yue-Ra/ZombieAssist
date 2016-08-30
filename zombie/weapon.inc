@@ -9,7 +9,7 @@ int Weapon_Max = 0;
 void Weapon_Load()
 {
 	char Query[192];
-	Format(Query, sizeof(Query), "SELECT * FROM weapon ORDER BY name ASC");
+	Format(Query, sizeof(Query), "SELECT * FROM weapon ORDER BY type ASC");
 	SQL_TQuery(MySQL, Weapon_Load_Query, Query);
 }
 void Weapon_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
