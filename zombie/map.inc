@@ -77,5 +77,5 @@ void Map_OnRoundEnd(int Team)
 		Format(Query, sizeof(Query), "UPDATE map SET lose=lose+1 WHERE name='%s'", Map_Name);
 	}
 	SQL_TQuery(MySQL, MySQL_Query, Query);
-	PrintToChatAll("[ZA]地图累计胜利 %d,累计失败 %d", Map_Win, Map_Lose);
+	PrintToChatAll("[ZA]地图累计胜利 %d 失败 %d", Map_Win, Map_Lose);
 }
