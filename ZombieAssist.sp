@@ -17,6 +17,7 @@
 #include "zombie/weapon"
 #include "zombie/damage"
 #include "zombie/leader"
+#include "zombie/translate"
 #include "zombie/event"
 
 public Plugin myinfo =
@@ -31,6 +32,7 @@ public void OnPluginStart()
 {
 	MySQL_Start();
 	Event_Init();
+	RegConsoleCmd("say", Say_Command);
 	RegConsoleCmd("sm_skin", Model_Command);
 	RegConsoleCmd("sm_model", Model_Command);
 	RegAdminCmd("sm_model_reload", Model_Reload_Command, ADMFLAG_GENERIC);
