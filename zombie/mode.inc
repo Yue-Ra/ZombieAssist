@@ -19,6 +19,20 @@ void Mode_Init()
 	SetConVarFloat(FindConVar("zr_infect_spawntime_min"), 5.0, false, false);
 	SetConVarFloat(FindConVar("zr_ztele_delay_human"), 3.0, false, false);
 }
+void Mode_Clean()
+{
+	if (Mode_True)
+	{
+		Mode_True = false;
+	}
+}
+void Mode_OnRoundEnd()
+{
+	if (Mode_Alert)
+	{
+		Mode_Alert = false;
+	}
+}
 bool Mode_Check()
 {
 	if (!Mode_True)
