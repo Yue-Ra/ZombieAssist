@@ -77,12 +77,12 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 		}
 		if (Damage == 195)
 		{
-			PrintToChatAll("[ZA]人类 %N 被僵尸 %N 爆菊了", Client, Attack);
+			CPrintToChatAll("{green}[ZA]{default}人类 %N 被僵尸 %N 爆菊了", Client, Attack);
 			PrintCenterTextAll("人类 %N 被僵尸 %N 爆菊了", Client, Attack);
 			ForcePlayerSuicide(Client);
 			return Plugin_Handled;
 		}
-		if (Mode_Allow)
+		if (Mode_Check())
 		{
 			return Plugin_Handled;
 		}
@@ -100,6 +100,10 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 			{
 				Damage = 10000.0;
 			}
+		}
+		if (Mode_Check())
+		{
+			Damage *= 100;
 		}
 		Damage *= Damage_Improve();
 		if (Leader_Close(Attack))

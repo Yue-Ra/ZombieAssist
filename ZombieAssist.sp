@@ -4,11 +4,12 @@
 #include <sdkhooks>
 #include <sdktools>
 #include <zombiereloaded>
+#include <morecolors>
 #include <stringescape>
 #include "zombie/function"
 #include "zombie/check"
-#include "zombie/mode"
 #include "zombie/navbar"
+#include "zombie/mode"
 #include "zombie/entity"
 #include "zombie/mysql"
 #include "zombie/client"
@@ -56,6 +57,10 @@ public void OnMapStart()
 public void OnMapEnd()
 {
 	Map_Clean();
+}
+public void OnConfigsExecuted()
+{
+	Mode_Init();
 }
 public void OnClientConnected(int Client)
 {

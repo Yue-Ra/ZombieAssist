@@ -45,7 +45,7 @@ bool Leader_Block(int Client)
 		return false;
 	}
 	Leader_Count--;
-	PrintToChat(Client, "[ZA]队长免疫次数剩下 %d 次", Client);
+	CPrintToChat(Client, "{green}[ZA]{default}队长免疫次数剩下 %d 次", Client);
 	return true;
 }
 bool Leader_Close(int Client)
