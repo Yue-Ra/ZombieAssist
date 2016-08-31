@@ -52,11 +52,16 @@ void Damage_Unhook(int Client)
 {
 	SDKUnhook(Client, SDKHook_OnTakeDamage, Damage_TakeDamage);
 }
-Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage, int &damagetype, int &Weapon, float damageForce[3], float damagePosition[3])
+Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage, int &DamageType, int &Weapon, float damageForce[3], float damagePosition[3])
 {
+	if (DamageType == 64)
+	{
+		IgniteEntity(Client, 5.0);
+		return Plugin_Handled;
+	}
 	char ClassName[32];
 	GetEntityClassname(Attack, ClassName, sizeof(ClassName));
-	if (StrEqual(ClassName, "entityflame", false) && CheckHuman(Client))
+	if (StrEqual(ClassName, "entityflame", false))
 	{
 		return Plugin_Handled;
 	}
