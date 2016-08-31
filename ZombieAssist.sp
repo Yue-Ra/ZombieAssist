@@ -7,6 +7,7 @@
 #include <morecolors>
 #include <stringescape>
 #include "zombie/function"
+#include "zombie/sound"
 #include "zombie/check"
 #include "zombie/navbar"
 #include "zombie/mode"

@@ -80,6 +80,7 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 			CPrintToChatAll("{green}[ZA]{default} 人类 %N 被僵尸 %N 爆菊了", Client, Attack);
 			PrintCenterTextAll("人类 %N 被僵尸 %N 爆菊了", Client, Attack);
 			ForcePlayerSuicide(Client);
+			Sound_Play();
 			return Plugin_Handled;
 		}
 		if (Mode_Check())
