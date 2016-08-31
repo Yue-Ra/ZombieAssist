@@ -1,5 +1,5 @@
 bool Mode_True = false;
-bool Mode_Alert = false;
+bool Mode_Start = false;
 
 void Mode_Init()
 {
@@ -28,27 +28,8 @@ void Mode_Clean()
 }
 void Mode_OnRoundEnd()
 {
-	if (Mode_Alert)
+	if (Mode_Start)
 	{
-		Mode_Alert = false;
+		Mode_Start = false;
 	}
-}
-bool Mode_Check()
-{
-	if (!Mode_True)
-	{
-		return false;
-	}
-	if (GetTime() - Navbar_Time > 240)
-	{
-		if (!Mode_Alert)
-		{
-			Mode_Alert = true;
-			CPrintToChatAll("{green}[ZA]{default} 疫苗研究已完成");
-			CPrintToChatAll("{green}[ZA]{default} 疫苗研究已完成");
-			CPrintToChatAll("{green}[ZA]{default} 疫苗研究已完成");
-		}
-		return true;
-	}
-	return false;
 }

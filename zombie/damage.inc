@@ -23,6 +23,10 @@ void Damage_OnRoundEnd()
 }
 float Damage_Improve()
 {
+	if (Mode_Start)
+	{
+		return 100.0;
+	}
 	if (!Damage_Allow)
 	{
 		return 1.0;
@@ -83,9 +87,19 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 			Sound_Play();
 			return Plugin_Handled;
 		}
-		if (Mode_Check())
+		if (Mode_Start)
 		{
 			return Plugin_Handled;
+		}
+		if (Mode_True)
+		{
+			char WeaponName[32];
+			GetClientWeapon(Client, WeaponName, sizeof(WeaponName));
+			if (StrEqual(WeaponName, "weapon_knife", false))
+			{
+				ForcePlayerSuicide(Client);
+				return Plugin_Handled;
+			}
 		}
 		return Plugin_Continue;
 	}
@@ -101,10 +115,6 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 			{
 				Damage = 10000.0;
 			}
-		}
-		if (Mode_Check())
-		{
-			Damage *= 100;
 		}
 		Damage *= Damage_Improve();
 		if (Leader_Close(Attack))

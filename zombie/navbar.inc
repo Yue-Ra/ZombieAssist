@@ -8,6 +8,19 @@ void Navbar_OnRoundStart()
 }
 Action Navbar_Timer(Handle Timer)
 {
+	if (Mode_True)
+	{
+		if (GetTime() - Navbar_Time > 240)
+		{
+			if (!Mode_Start)
+			{
+				Mode_Start = true;
+				CPrintToChatAll("{green}[ZA]{default} 疫苗研究已完成");
+				CPrintToChatAll("{green}[ZA]{default} 疫苗研究已完成");
+				CPrintToChatAll("{green}[ZA]{default} 疫苗研究已完成");
+			}
+		}
+	}
 	if (!Navbar_Allow)
 	{
 		return Plugin_Stop;
