@@ -87,7 +87,7 @@ void Model_Set(int Client)
 {
 	if (!Model_Allow)
 	{
-		CPrintToChat(Client, "{green}[ZA]{default}模型功能已被禁用");
+		CPrintToChat(Client, "{green}[ZA]{default} 模型功能已被禁用");
 		return;
 	}
 	if (Model_Client[Client] == 0)
@@ -96,18 +96,18 @@ void Model_Set(int Client)
 	}
 	if (!FileExists(Model_Path[Model_Client[Client]]))
 	{
-		CPrintToChat(Client, "{green}[ZA]{default}模型文件 %s 丢失", Model_Path[Model_Client[Client]]);
+		CPrintToChat(Client, "{green}[ZA]{default} 模型文件 %s 丢失", Model_Path[Model_Client[Client]]);
 		LogError("Model File %s Not Found", Model_Path[Model_Client[Client]]);
 		return;
 	}
 	SetEntityModel(Client, Model_Path[Model_Client[Client]]);
-	CPrintToChat(Client, "{green}[ZA]{default}当前模型 %s", Model_Name[Model_Client[Client]]);
+	CPrintToChat(Client, "{green}[ZA]{default} 当前模型 %s", Model_Name[Model_Client[Client]]);
 }
 void Model_OnRoundStart()
 {
 	if (!Model_Allow)
 	{
-		CPrintToChatAll("{green}[ZA]{default}模型功能已被禁用");
+		CPrintToChatAll("{green}[ZA]{default} 模型功能已被禁用");
 		return;
 	}
 	for (int Client = 1; Client <= MaxClients; Client++)
