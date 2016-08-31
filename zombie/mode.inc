@@ -43,6 +43,7 @@ bool Mode_Check()
 	{
 		if (!Mode_Alert)
 		{
+			Mode_Alert = true;
 			CPrintToChatAll("{green}[ZA]{default} 疫苗研究已完成");
 			CPrintToChatAll("{green}[ZA]{default} 疫苗研究已完成");
 			CPrintToChatAll("{green}[ZA]{default} 疫苗研究已完成");

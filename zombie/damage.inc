@@ -54,14 +54,14 @@ void Damage_Unhook(int Client)
 }
 Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage, int &DamageType, int &Weapon, float damageForce[3], float damagePosition[3])
 {
-	if (DamageType == 64)
+	if (DamageType == 64 && CheckZombie(Client))
 	{
 		IgniteEntity(Client, 5.0);
 		return Plugin_Handled;
 	}
 	char ClassName[32];
 	GetEntityClassname(Attack, ClassName, sizeof(ClassName));
-	if (StrEqual(ClassName, "entityflame", false))
+	if (StrEqual(ClassName, "entityflame", false) && CheckHuman(Client))
 	{
 		return Plugin_Handled;
 	}
