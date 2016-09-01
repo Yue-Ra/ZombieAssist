@@ -35,5 +35,5 @@ void Translate_Query(Handle Owner, Handle Child, const char[] Error, any Message
 	{
 		return;
 	}
-	PrintToChatAll("[ZA] %s", Translate);
+	CPrintToChatAll("{green}[ZA][翻译]{default} %s", Translate);
 }

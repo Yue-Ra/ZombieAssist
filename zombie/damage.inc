@@ -81,7 +81,7 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 		}
 		if (Damage == 195)
 		{
-			CPrintToChatAll("{green}[ZA]{default} 人类 %N 被僵尸 %N 爆菊了", Client, Attack);
+			CPrintToChatAll("{green}[ZA][爆菊]{default} 人类 %N 被僵尸 %N 爆菊了", Client, Attack);
 			PrintCenterTextAll("人类 %N 被僵尸 %N 爆菊了", Client, Attack);
 			ForcePlayerSuicide(Client);
 			Sound_Play();

@@ -47,6 +47,8 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_weapon", Weapon_Command);
 	RegAdminCmd("sm_weapon_reload", Weapon_Reload_Command, ADMFLAG_GENERIC);
 	RegConsoleCmd("sm_alpha", Alpha_Command);
+	CreateTimer(1.0, Navbar_Timer, _, TIMER_REPEAT);
+	CreateTimer(20.0, Info_Timer, _, TIMER_REPEAT);
 	CreateTimer(30.0, Entity_Timer, _, TIMER_REPEAT);
 }
 public void OnPluginEnd()
@@ -60,7 +62,6 @@ public void OnMapStart()
 	Info_Load();
 	Model_Load();
 	Weapon_Load();
-	CreateTimer(1.0, Navbar_Timer, _, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 }
 public void OnMapEnd()
 {

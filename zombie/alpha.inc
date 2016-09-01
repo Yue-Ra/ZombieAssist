@@ -7,7 +7,7 @@ Action Alpha_Command(int Client, int Args)
 	if (CheckGame(Client))
 	{
 		Alpha_Client = !Alpha_Client[Client];
-		CPrintToChat(Client, "{green}[ZA]{default} 当前模型透明为 %s", Alpha_Client[Client] ? "开启" : "关闭");
+		CPrintToChat(Client, "{green}[ZA][透明]{default} 当前模型透明为 %s", Alpha_Client[Client] ? "开启" : "关闭");
 	}
 	return Plugin_Handled;
 }

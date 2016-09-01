@@ -15,15 +15,15 @@ Action Navbar_Timer(Handle Timer)
 			if (!Mode_Start)
 			{
 				Mode_Start = true;
-				CPrintToChatAll("{green}[ZA]{default} 疫苗研究已完成");
-				CPrintToChatAll("{green}[ZA]{default} 疫苗研究已完成");
-				CPrintToChatAll("{green}[ZA]{default} 疫苗研究已完成");
+				CPrintToChatAll("{green}[ZA][感染]{default} 疫苗研究已完成");
+				CPrintToChatAll("{green}[ZA][感染]{default} 疫苗研究已完成");
+				CPrintToChatAll("{green}[ZA][感染]{default} 疫苗研究已完成");
 			}
 		}
 	}
 	if (!Navbar_Allow)
 	{
-		return Plugin_Stop;
+		return Plugin_Handled;
 	}
 	char Info[256];
 	Format(Info, sizeof(Info), "人类: %d\n僵尸: %d\n时间: %d\n伤害倍数: %.2f", HumanCount(), ZombieCount(), GetTime() - Navbar_Time, Damage_Improve());

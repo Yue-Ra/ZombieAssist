@@ -41,7 +41,7 @@ Action Info_Timer(Handle Timer)
 {
 	if (Info_Max == 0)
 	{
-		return Plugin_Stop;
+		return Plugin_Handled;
 	}
 	CPrintToChatAll("{green}[ZA][提示]{default} %s", Info_Msg[Info_Last]);
 	PrintHintTextToAll("[提示]%s", Info_Msg[Info_Last]);

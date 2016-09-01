@@ -9,5 +9,5 @@ void Clan_Init(int Client)
 }
 void Clan_Give(int Client)
 {
-	CPrintToChat(Client, "{green}[ZA]{default} 获得官方队标奖励");
+	CPrintToChat(Client, "{green}[ZA][队标]{default} 获得官方队标奖励");
 }
