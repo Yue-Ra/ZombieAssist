@@ -29,6 +29,7 @@ void MySQL_Connect(Handle Owner, Handle Child, const char[] Error, any Data)
 	MySQL = Child;
 	LogMessage("MySQL Connect Success");
 	Map_Load();
+	Info_Load();
 	Model_Load();
 	Weapon_Load();
 }

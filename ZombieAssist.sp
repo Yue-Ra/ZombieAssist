@@ -9,12 +9,14 @@
 #include "zombie/function"
 #include "zombie/sound"
 #include "zombie/check"
+#include "zombie/clan"
 #include "zombie/mode"
 #include "zombie/navbar"
 #include "zombie/entity"
 #include "zombie/mysql"
 #include "zombie/client"
 #include "zombie/alpha"
+#include "zombie/info"
 #include "zombie/model"
 #include "zombie/weapon"
 #include "zombie/damage"
@@ -38,6 +40,7 @@ public void OnPluginStart()
 	Event_Init();
 	RegConsoleCmd("say", Say_Command);
 	RegConsoleCmd("sm_skin", Model_Command);
+	RegAdminCmd("sm_info_reload", Info_Reload_Command, ADMFLAG_GENERIC);
 	RegConsoleCmd("sm_model", Model_Command);
 	RegAdminCmd("sm_model_reload", Model_Reload_Command, ADMFLAG_GENERIC);
 	RegConsoleCmd("sm_zbuy", Weapon_Command);
@@ -54,6 +57,9 @@ public void OnMapStart()
 {
 	Map_Init();
 	Map_Load();
+	Info_Load();
+	Model_Load();
+	Weapon_Load();
 	CreateTimer(1.0, Navbar_Timer, _, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 }
 public void OnMapEnd()
@@ -67,6 +73,7 @@ public void OnConfigsExecuted()
 }
 public void OnClientPostAdminCheck(int Client)
 {
+	Clan_Init(Client);
 	Admin_Init(Client);
 }
 public void OnClientConnected(int Client)

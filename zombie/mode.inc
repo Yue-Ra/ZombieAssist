@@ -3,6 +3,8 @@ bool Mode_Start = false;
 
 void Mode_Init()
 {
+	SetConVarInt(FindConVar("sv_gravity"), 800, false, false);
+	SetConVarFloat(FindConVar("mp_roundtime"), 10.0, true, false);
 	if (!Mode_True)
 	{
 		return;

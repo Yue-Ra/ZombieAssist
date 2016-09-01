@@ -8,6 +8,10 @@ int Weapon_Max = 0;
 
 void Weapon_Load()
 {
+	if (MySQL == INVALID_HANDLE)
+	{
+		return;
+	}
 	char Query[192];
 	Format(Query, sizeof(Query), "SELECT * FROM weapon ORDER BY type ASC");
 	SQL_TQuery(MySQL, Weapon_Load_Query, Query);

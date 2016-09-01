@@ -2,12 +2,17 @@ int Model_ID[128];
 char Model_Name[128][32];
 char Model_Path[128][128];
 int Model_Type[128];
+int Model_Client[MAXPLAYERS + 1];
 
 bool Model_Allow = true;
 int Model_Max = 0;
-int Model_Client[MAXPLAYERS + 1];
+
 void Model_Load()
 {
+	if (MySQL == INVALID_HANDLE)
+	{
+		return;
+	}
 	char Query[192];
 	Format(Query, sizeof(Query), "SELECT * FROM model ORDER BY id ASC");
 	SQL_TQuery(MySQL, Model_Query, Query);
