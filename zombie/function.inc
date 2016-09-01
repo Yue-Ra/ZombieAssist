@@ -12,7 +12,8 @@ int GetArmour(int Client)
 }
 void SetArmour(int Client, int Value)
 {
-	SetEntProp(Client, Prop_Send, "m_ArmorValue", Value, 1);
+	SetEntProp(Client, Prop_Send, "m_ArmorValue", Value);
+	SetEntProp(Client, Prop_Send, "m_bHasHelmet", Value ? 1 : 0);
 }
 int GetOwner(int Entity)
 {

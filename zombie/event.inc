@@ -16,6 +16,7 @@ void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
 	Navbar_OnRoundStart();
 	Damage_OnRoundStart();
+	Weapon_OnRoundStart();
 }
 void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
