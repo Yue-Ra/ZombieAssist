@@ -35,5 +35,5 @@ void Translate_Query(Handle Owner, Handle Child, const char[] Error, any Message
 	{
 		return;
 	}
-	PrintToChatAll(Translate);
+	PrintToChatAll("[ZA] %s", Translate);
 }

@@ -22,6 +22,7 @@
 #include "zombie/event"
 #include "zombie/map"
 #include "zombie/translate"
+#include "zombie/admin"
 
 public Plugin myinfo =
 {
@@ -63,6 +64,10 @@ public void OnMapEnd()
 public void OnConfigsExecuted()
 {
 	Mode_Init();
+}
+public void OnClientPostAdminCheck(int Client)
+{
+	Admin_Init(Client);
 }
 public void OnClientConnected(int Client)
 {
