@@ -11,6 +11,14 @@ void Map_Init()
 		Mode_True = true;
 	}
 }
+Action Map_Reload_Command(int Client, int Args)
+{
+	if (CheckGame(Client))
+	{
+		Map_Load();
+	}
+	return Plugin_Handled;
+}
 void Map_Load()
 {
 	if (MySQL == INVALID_HANDLE)

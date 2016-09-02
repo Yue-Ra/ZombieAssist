@@ -40,7 +40,9 @@ public void OnPluginStart()
 	MySQL_Start();
 	Alert_Init();
 	Event_Init();
+	Entity_Init();
 	RegConsoleCmd("say", Say_Command);
+	RegAdminCmd("sm_map_reload", Map_Reload_Command, ADMFLAG_GENERIC);
 	RegConsoleCmd("sm_skin", Model_Command);
 	RegAdminCmd("sm_info_reload", Info_Reload_Command, ADMFLAG_GENERIC);
 	RegConsoleCmd("sm_model", Model_Command);
