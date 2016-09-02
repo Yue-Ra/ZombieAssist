@@ -47,7 +47,7 @@ void SendKeyHintTextMsg(int Client, char[] Msg)
 void SendHudTextMsg(int Client, float X, float Y, float Time, int Red, int Green, int Blue, char[] Msg)
 {
 	Handle Hud = CreateHudSynchronizer();
-	SetHudTextParams(X, Y, Time, Red, Green, Blue, 0, 0, 0.0, 0.5, 0.5);
+	SetHudTextParams(X, Y, Time, Red, Green, Blue, 0, 0, 0.0, 0.0, 0.0);
 	if (Client == 0)
 	{
 		for (int Target = 1; Target <= MaxClients; Target++)

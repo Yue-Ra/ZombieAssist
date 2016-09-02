@@ -1,10 +1,12 @@
 int Alert_Time = -1;
 Handle Alert_Handle = INVALID_HANDLE;
 Regex Alert_Regex;
+Regex Alert_Number;
 
 void Alert_Init()
 {
-	Alert_Regex = CompileRegex("([0-9]+s|[0-9]+ s)");
+	Alert_Regex = CompileRegex("([0-9]+s|[0-9]+ s|[0-9]+S|[0-9]+ S)");
+	Alert_Number = CompileRegex("([0-9]+)");
 }
 void Alert_OnRoundEnd()
 {
@@ -16,12 +18,12 @@ void Alert_OnRoundEnd()
 }
 void Alert_Check(const char[] Msg)
 {
-	if (Alert_Regex.Match(Msg) == -1)
+	if (Alert_Regex.Match(Msg) == -1 && Alert_Number.Match(Msg) == -1)
 	{
 		return;
 	}
 	char Str[32];
-	if (!Alert_Regex.GetSubString(0, Str, sizeof(Str)))
+	if (!Alert_Regex.GetSubString(0, Str, sizeof(Str)) && !Alert_Number.GetSubString(0, Str, sizeof(Str)))
 	{
 		return;
 	}
@@ -58,8 +60,8 @@ void Alert_Create(int Time)
 	if (Time == 0)
 	{
 		Color[0] = 0;
-		Color[1] = 255;
-		Color[2] = 0;
+		Color[1] = 0;
+		Color[2] = 255;
 		Format(Msg, sizeof(Msg), "GO!");
 	}
 	else if (Time < 3)
@@ -72,8 +74,8 @@ void Alert_Create(int Time)
 	else
 	{
 		Color[0] = 0;
-		Color[1] = 0;
-		Color[2] = 255;
+		Color[1] = 255;
+		Color[2] = 0;
 		Format(Msg, sizeof(Msg), "%d", Time);
 	}
 	SendHudTextMsg(0, -1.0, -0.35, 1.0, Color[0], Color[1], Color[2], Msg);
