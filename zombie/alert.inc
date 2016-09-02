@@ -1,12 +1,10 @@
 int Alert_Time = -1;
 Handle Alert_Handle = INVALID_HANDLE;
 Regex Alert_Regex;
-Regex Alert_Number;
 
 void Alert_Init()
 {
-	Alert_Regex = CompileRegex("([0-9]+s|[0-9]+ s|[0-9]+S|[0-9]+ S)");
-	Alert_Number = CompileRegex("([0-9]+)");
+	Alert_Regex = CompileRegex("([0-9]+)");
 }
 void Alert_OnRoundEnd()
 {
@@ -18,12 +16,13 @@ void Alert_OnRoundEnd()
 }
 void Alert_Check(const char[] Msg)
 {
-	if (Alert_Number.Match(Msg) == -1 && Alert_Regex.Match(Msg) == -1)
+	int Count = Alert_Regex.Match(Msg);
+	if (Count == -1)
 	{
 		return;
 	}
 	char Str[32];
-	if (!Alert_Number.GetSubString(0, Str, sizeof(Str)) && !Alert_Regex.GetSubString(0, Str, sizeof(Str)))
+	if (!Alert_Regex.GetSubString(Count - 1, Str, sizeof(Str)))
 	{
 		return;
 	}
