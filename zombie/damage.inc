@@ -2,6 +2,7 @@ int Damage_Client[MAXPLAYERS + 1] = {0, ...};
 int Damage_First = 0;
 
 bool Damage_Allow = true;
+bool Damage_Fall = true;
 
 void Damage_OnRoundStart()
 {
@@ -58,7 +59,11 @@ void Damage_Unhook(int Client)
 }
 Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage, int &DamageType, int &Weapon, float damageForce[3], float damagePosition[3])
 {
-	if (DamageType == 64 && CheckZombie(Client))
+	if (DamageType == 32 && !Damage_Fall)
+	{
+		return Plugin_Handled;
+	}
+	if (DamageType == DMG_BURN && CheckZombie(Client))
 	{
 		IgniteEntity(Client, 5.0);
 		return Plugin_Handled;
@@ -81,7 +86,7 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 		}
 		if (Damage == 195)
 		{
-			CPrintToChatAll("{green}[ZA][爆菊]{default} 人类 %N 被僵尸 %N 爆菊了", Client, Attack);
+			CPrintToChatAll("{green}[ZA][伤害]{red} 人类 %N 被僵尸 %N 爆菊了", Client, Attack);
 			PrintCenterTextAll("人类 %N 被僵尸 %N 爆菊了", Client, Attack);
 			ForcePlayerSuicide(Client);
 			Sound_Play();
@@ -105,6 +110,10 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 	}
 	if (CheckZombie(Client) && CheckHuman(Attack))
 	{
+		if (Damage == 15 || Damage == 20 || Damage == 55 || Damage == 65 || Damage == 195)
+		{
+			CPrintToChatAll("{green}[ZA][伤害]{red} 人类 %N 刀了僵尸 %N", Attack, Client);
+		}
 		if (Mode_True)
 		{
 			if (Damage == 15 || Damage == 20)
@@ -121,7 +130,7 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 		{
 			Damage *= 1.5;
 		}
-		PrintCenterText(Attack, "对僵尸 %N 造成 %.2f 伤害", Client, Damage);
+		PrintCenterText(Attack, "[伤害]对僵尸 %N 造成 %.2f 伤害", Client, Damage);
 		return Plugin_Changed;
 	}
 	return Plugin_Continue;

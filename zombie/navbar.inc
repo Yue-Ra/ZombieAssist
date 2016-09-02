@@ -15,9 +15,9 @@ Action Navbar_Timer(Handle Timer)
 			if (!Mode_Start)
 			{
 				Mode_Start = true;
-				CPrintToChatAll("{green}[ZA][感染]{default} 疫苗研究已完成");
-				CPrintToChatAll("{green}[ZA][感染]{default} 疫苗研究已完成");
-				CPrintToChatAll("{green}[ZA][感染]{default} 疫苗研究已完成");
+				CPrintToChatAll("{green}[ZA][感染]{blue} 疫苗研究已完成");
+				CPrintToChatAll("{green}[ZA][感染]{blue} 疫苗研究已完成");
+				CPrintToChatAll("{green}[ZA][感染]{blue} 疫苗研究已完成");
 			}
 		}
 	}

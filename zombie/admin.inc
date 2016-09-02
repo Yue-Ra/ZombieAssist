@@ -26,5 +26,9 @@ int Admin_Menu_Handle(Menu MenuHandle, MenuAction ActionHandle, int Client, int 
 {
 	if (ActionHandle == MenuAction_Select)
 	{
+		if (Item == 0)
+		{
+			Map_Menu(Client);
+		}
 	}
 }

@@ -22,5 +22,6 @@ void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
 	Map_OnRoundEnd(GetEventInt(event, "winner"));
 	Mode_OnRoundEnd();
+	Alert_OnRoundEnd();
 	Damage_OnRoundEnd();
 }

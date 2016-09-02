@@ -4,6 +4,7 @@ Action Say_Command(int Client, int Args)
 	{
 		char Message[192];
 		GetCmdArgString(Message, sizeof(Message));
+		Alert_Check(Message);
 		char Escape[384];
 		EscapeStringMySQL(Message, Escape, sizeof(Escape));
 		char Query[384];
@@ -35,5 +36,5 @@ void Translate_Query(Handle Owner, Handle Child, const char[] Error, any Message
 	{
 		return;
 	}
-	CPrintToChatAll("{green}[ZA][翻译]{default} %s", Translate);
+	CPrintToChatAll("{green}[ZA][翻译]{blue} %s", Translate);
 }

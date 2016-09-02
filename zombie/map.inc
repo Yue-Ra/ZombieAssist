@@ -77,7 +77,39 @@ void Map_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 	{
 		Leader_Allow = false;
 	}
+	if (SQL_FetchInt(Child, 11) == 0)
+	{
+		Damage_Fall = false;
+	}
 	LogMessage("Map %s Load Success", Map_Name);
+}
+Action Map_Command(int Client)
+{
+	if (CheckGame(Client))
+	{
+		Map_Menu(Client);
+	}
+	return Plugin_Handled;
+}
+void Map_Menu(int Client)
+{
+	Menu MenuHandle = CreateMenu(Map_Menu_Handle);
+	SetMenuTitle(MenuHandle, "地图菜单");
+	AddMenuItem(MenuHandle, "", "僵尸出现时间");
+	AddMenuItem(MenuHandle, "", "延长回合时间");
+	AddMenuItem(MenuHandle, "", "模型透明开关");
+	AddMenuItem(MenuHandle, "", "人类模型开关");
+	AddMenuItem(MenuHandle, "", "侧边信息开关");
+	AddMenuItem(MenuHandle, "", "伤害加成开关");
+	AddMenuItem(MenuHandle, "", "远程购买开关");
+	AddMenuItem(MenuHandle, "", "人类队长开关");
+	AddMenuItem(MenuHandle, "", "掉落伤害开关");
+	SetMenuExitBackButton(MenuHandle, true);
+	DisplayMenu(MenuHandle, Client, 30);
+}
+int Map_Menu_Handle(Menu MenuHandle,MenuAction ActionHandle,int Client,int Item)
+{
+
 }
 void Map_Create()
 {
@@ -106,5 +138,5 @@ void Map_OnRoundEnd(int Team)
 		Format(Query, sizeof(Query), "UPDATE map SET lose=lose+1 WHERE name='%s'", Map_Name);
 	}
 	SQL_TQuery(MySQL, MySQL_Query, Query);
-	CPrintToChatAll("{green}[ZA][地图]{default} 地图累计胜利 %d 失败 %d", Map_Win, Map_Lose);
+	CPrintToChatAll("{green}[ZA][地图]{blue} 地图累计胜利 %d 失败 %d", Map_Win, Map_Lose);
 }

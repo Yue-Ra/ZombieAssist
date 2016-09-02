@@ -71,7 +71,7 @@ Action Weapon_Command(int Client, int Args)
 				return Plugin_Handled;
 			}
 		}
-		CPrintToChat(Client, "{green}[ZA][武器]{default} 武器名称不存在");
+		CPrintToChat(Client, "{green}[ZA][武器]{red} 武器名称不存在");
 	}
 	return Plugin_Handled;
 }
@@ -108,18 +108,18 @@ void Weapon_Buy(int Client, int Item)
 	}
 	if (!Weapon_Allow)
 	{
-		CPrintToChat(Client, "{green}[ZA][武器]{default} 武器功能已被禁用");
+		CPrintToChat(Client, "{green}[ZA][武器]{red} 武器功能已被禁用");
 		return;
 	}
 	int Cash = GetCash(Client);
 	if (Cash < Weapon_Cash[Item])
 	{
-		CPrintToChat(Client, "{green}[ZA][武器]{default} 金钱不足，还需要 %d", Weapon_Cash[Item] - Cash);
+		CPrintToChat(Client, "{green}[ZA][武器]{red} 金钱不足，还需要 %d", Weapon_Cash[Item] - Cash);
 		return;
 	}
 	if (Weapon_Limit[Item] > 0 && Weapon_Client[Client][Item] >= Weapon_Limit[Item])
 	{
-		CPrintToChat(Client, "{green}[ZA][武器]{default} 武器购买超过上限 %d", Weapon_Limit[Item]);
+		CPrintToChat(Client, "{green}[ZA][武器]{red} 武器购买超过上限 %d", Weapon_Limit[Item]);
 		return;
 	}
 	Weapon_Client[Client][Item]++;

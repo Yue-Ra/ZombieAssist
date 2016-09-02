@@ -23,7 +23,7 @@ int GetHammerId(int Entity)
 {
 	return GetEntProp(Entity, Prop_Data, "m_iHammerID");
 }
-void SendKeyHintTextMsg(Client, char[] Msg)
+void SendKeyHintTextMsg(int Client, char[] Msg)
 {
 	Handle Hud = INVALID_HANDLE;
 	if (Client == 0)
@@ -43,4 +43,26 @@ void SendKeyHintTextMsg(Client, char[] Msg)
 	BfWriteByte(Hud, 1);
 	BfWriteString(Hud, Info);
 	EndMessage();
+}
+void SendHudTextMsg(int Client, float X, float Y, float Time, int Red, int Green, int Blue, char[] Msg)
+{
+	Handle Hud = CreateHudSynchronizer();
+	SetHudTextParams(X, Y, Time, Red, Green, Blue, 0, 0, 0.0, 0.5, 0.5);
+	if (Client == 0)
+	{
+		for (int Target = 1; Target <= MaxClients; Target++)
+		{
+			if (CheckAlive(Target))
+			{
+				ClearSyncHud(Target, Hud);
+				ShowSyncHudText(Target, Hud, Msg);
+			}
+		}
+	}
+	else
+	{
+		ClearSyncHud(Client, Hud);
+		ShowSyncHudText(Client, Hud, Msg);
+	}
+	CloseHandle(Hud);
 }

@@ -7,6 +7,7 @@ void Mode_Init()
 	SetConVarInt(FindConVar("sm_parachute_roundmsg"), 0, false, false);
 	SetConVarInt(FindConVar("sm_parachute_welcome"), 0, false, false);
 	SetConVarInt(FindConVar("sm_parachute_msgtype"), 0, false, false);
+	SetConVarInt(FindConVar("sv_enablebunnyhopping"), 0, false, false);
 	SetConVarInt(FindConVar("sv_gravity"), 800, false, false);
 	SetConVarFloat(FindConVar("mp_roundtime"), 10.0, true, false);
 	if (!Mode_True)
@@ -14,6 +15,7 @@ void Mode_Init()
 		return;
 	}
 	SetConVarInt(FindConVar("sm_parachute_enabled"), 1, false, false);
+	SetConVarInt(FindConVar("sv_enablebunnyhopping"), 1, false, false);
 	SetConVarInt(FindConVar("zr_account_cashdmg"), 1, false, false);
 	SetConVarInt(FindConVar("zr_damage_suicide_human"), 0, false, false);
 	SetConVarInt(FindConVar("zr_infect_mzombie_countdown"), 0, false, false);
