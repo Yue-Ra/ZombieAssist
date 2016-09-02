@@ -63,7 +63,7 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 	{
 		return Plugin_Handled;
 	}
-	if (DamageType == DMG_BURN && CheckZombie(Client))
+	if (DamageType == 64 && CheckZombie(Client))
 	{
 		IgniteEntity(Client, 5.0);
 		return Plugin_Handled;
