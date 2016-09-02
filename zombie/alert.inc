@@ -18,12 +18,12 @@ void Alert_OnRoundEnd()
 }
 void Alert_Check(const char[] Msg)
 {
-	if (Alert_Regex.Match(Msg) == -1 && Alert_Number.Match(Msg) == -1)
+	if (Alert_Number.Match(Msg) == -1 && Alert_Regex.Match(Msg) == -1)
 	{
 		return;
 	}
 	char Str[32];
-	if (!Alert_Regex.GetSubString(0, Str, sizeof(Str)) && !Alert_Number.GetSubString(0, Str, sizeof(Str)))
+	if (!Alert_Number.GetSubString(0, Str, sizeof(Str)) && !Alert_Regex.GetSubString(0, Str, sizeof(Str)))
 	{
 		return;
 	}
