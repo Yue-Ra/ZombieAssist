@@ -10,16 +10,7 @@ Action Navbar_Timer(Handle Timer)
 {
 	if (Mode_True)
 	{
-		if (GetTime() - Navbar_Time > 240)
-		{
-			if (!Mode_Start)
-			{
-				Mode_Start = true;
-				CPrintToChatAll("{green}[ZA][感染]{blue} 疫苗研究已完成");
-				CPrintToChatAll("{green}[ZA][感染]{blue} 疫苗研究已完成");
-				CPrintToChatAll("{green}[ZA][感染]{blue} 疫苗研究已完成");
-			}
-		}
+		Mode_Check(GetTime() - Navbar_Time);
 	}
 	if (!Navbar_Allow)
 	{

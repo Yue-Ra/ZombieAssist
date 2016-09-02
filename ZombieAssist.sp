@@ -68,8 +68,8 @@ public void OnMapStart()
 }
 public void OnMapEnd()
 {
-	Map_Clean();
-	Mode_Clean();
+	Map_OnMapEnd();
+	Mode_OnMapEnd();
 }
 public void OnConfigsExecuted()
 {

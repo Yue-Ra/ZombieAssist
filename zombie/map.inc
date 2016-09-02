@@ -21,7 +21,7 @@ void Map_Load()
 	Format(Query, sizeof(Query), "SELECT * FROM map WHERE name='%s'", Map_Name);
 	SQL_TQuery(MySQL, Map_Load_Query, Query);
 }
-void Map_Clean()
+void Map_OnMapEnd()
 {
 	Format(Map_Name, sizeof(Map_Name), "");
 	Map_Win = 0;
@@ -107,7 +107,7 @@ void Map_Menu(int Client)
 	SetMenuExitBackButton(MenuHandle, true);
 	DisplayMenu(MenuHandle, Client, 30);
 }
-int Map_Menu_Handle(Menu MenuHandle,MenuAction ActionHandle,int Client,int Item)
+int Map_Menu_Handle(Menu MenuHandle, MenuAction ActionHandle, int Client, int Item)
 {
 
 }

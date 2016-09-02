@@ -28,7 +28,17 @@ void Mode_Init()
 	SetConVarFloat(FindConVar("zr_infect_spawntime_min"), 5.0, false, false);
 	SetConVarFloat(FindConVar("zr_ztele_delay_human"), 3.0, false, false);
 }
-void Mode_Clean()
+void Mode_Check(int Time)
+{
+	if (Time == 240)
+	{
+		Mode_Start = true;
+		CPrintToChatAll("{green}[ZA][感染]{blue} 疫苗研究已完成");
+		CPrintToChatAll("{green}[ZA][感染]{blue} 疫苗研究已完成");
+		CPrintToChatAll("{green}[ZA][感染]{blue} 疫苗研究已完成");
+	}
+}
+void Mode_OnMapEnd()
 {
 	if (Mode_True)
 	{
