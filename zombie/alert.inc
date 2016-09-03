@@ -77,5 +77,5 @@ void Alert_Create(int Time)
 		Color[2] = 0;
 		Format(Msg, sizeof(Msg), "%d", Time);
 	}
-	SendHudTextMsg(0, -1.0, -0.35, 1.0, Color[0], Color[1], Color[2], Msg);
+	SendHudTextMsg(0, -1.0, 0.65, 1.0, Color[0], Color[1], Color[2], Msg);
 }

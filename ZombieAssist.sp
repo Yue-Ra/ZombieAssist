@@ -21,7 +21,6 @@
 #include "zombie/model"
 #include "zombie/weapon"
 #include "zombie/damage"
-#include "zombie/leader"
 #include "zombie/event"
 #include "zombie/map"
 #include "zombie/translate"

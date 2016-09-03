@@ -81,10 +81,6 @@ void Map_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 	{
 		Weapon_Allow = false;
 	}
-	if (SQL_FetchInt(Child, 10) == 0)
-	{
-		Leader_Allow = false;
-	}
 	if (SQL_FetchInt(Child, 11) == 0)
 	{
 		Damage_Fall = false;

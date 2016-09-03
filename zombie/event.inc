@@ -7,21 +7,20 @@ void Event_Init()
 void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int Client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if (CheckAlive(Client))
+	if (CheckHuman(Client))
 	{
 		SetArmour(Client, 100);
 	}
 }
 void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
-	Navbar_OnRoundStart();
 	Damage_OnRoundStart();
 	Weapon_OnRoundStart();
+	Navbar_OnRoundStart();
 }
 void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
 	Map_OnRoundEnd(GetEventInt(event, "winner"));
 	Mode_OnRoundEnd();
 	Alert_OnRoundEnd();
-	Damage_OnRoundEnd();
 }

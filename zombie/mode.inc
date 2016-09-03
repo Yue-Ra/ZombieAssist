@@ -7,15 +7,17 @@ void Mode_Init()
 	SetConVarInt(FindConVar("sm_parachute_roundmsg"), 0, false, false);
 	SetConVarInt(FindConVar("sm_parachute_welcome"), 0, false, false);
 	SetConVarInt(FindConVar("sm_parachute_msgtype"), 0, false, false);
-	SetConVarInt(FindConVar("sv_enablebunnyhopping"), 0, false, false);
-	SetConVarInt(FindConVar("sv_gravity"), 800, false, false);
+	SetConVarInt(FindConVar("sm_parachute_button"), 2, false, false);
+	SetConVarInt(FindConVar("sv_enablebunnyhopping"), 0, true, false);
+	SetConVarInt(FindConVar("sv_gravity"), 800, true, false);
 	SetConVarFloat(FindConVar("mp_roundtime"), 10.0, true, false);
 	if (!Mode_True)
 	{
 		return;
 	}
+	SetConVarInt(FindConVar("mp_timelimit"), 30, true, false);
 	SetConVarInt(FindConVar("sm_parachute_enabled"), 1, false, false);
-	SetConVarInt(FindConVar("sv_enablebunnyhopping"), 1, false, false);
+	SetConVarInt(FindConVar("sv_enablebunnyhopping"), 1, true, false);
 	SetConVarInt(FindConVar("zr_account_cashdmg"), 1, false, false);
 	SetConVarInt(FindConVar("zr_damage_suicide_human"), 0, false, false);
 	SetConVarInt(FindConVar("zr_infect_mzombie_countdown"), 0, false, false);
@@ -30,12 +32,11 @@ void Mode_Init()
 }
 void Mode_Check(int Time)
 {
-	if (Time == 240)
+	if (Time == 180)
 	{
 		Mode_Start = true;
 		CPrintToChatAll("{green}[ZA][感染]{blue} 疫苗研究已完成");
-		CPrintToChatAll("{green}[ZA][感染]{blue} 疫苗研究已完成");
-		CPrintToChatAll("{green}[ZA][感染]{blue} 疫苗研究已完成");
+		PrintCenterTextAll("[感染]疫苗研究已完成");
 	}
 }
 void Mode_OnMapEnd()

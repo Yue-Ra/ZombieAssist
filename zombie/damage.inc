@@ -1,26 +1,94 @@
-int Damage_Client[MAXPLAYERS + 1] = {0, ...};
-int Damage_First = 0;
+int Damage_Attack[MAXPLAYERS + 1];
+int Damage_Infect[MAXPLAYERS + 1];
+int Damage_Attack_Rank[5];
+int Damage_Infect_Rank[5];
 
 bool Damage_Allow = true;
 bool Damage_Fall = true;
 
+void Damage_Init(int Client)
+{
+	Damage_Attack[Client] = 0;
+	Damage_Infect[Client] = 0;
+}
 void Damage_OnRoundStart()
 {
+	Damage_Show();
 	for (int Client = 1; Client <= MaxClients; Client++)
 	{
-		Damage_Client[Client] = 0;
+		Damage_Attack[Client] = 0;
+		Damage_Infect[Client] = 0;
 	}
 }
-void Damage_OnRoundEnd()
+void Damage_Show()
 {
-	Damage_First = 0;
-	for (int Client = 1; Client <= MaxClients; Client++)
+	if (GetTime() - Navbar_Time < 120 || GetTeamClientCount(CS_TEAM_CT) + GetTeamClientCount(CS_TEAM_T) < 15)
 	{
-		if (Damage_Client[Client] > Damage_Client[Damage_First])
-		{
-			Damage_First = Client;
-		}
+		return;
 	}
+	int Temp = 0;
+	for (int Num = 0; Num < 5; Num++)
+	{
+		for (int Client = 1; Client <= MaxClients; Client++)
+		{
+			if (Damage_Attack_Rank[0] == Client || Damage_Attack_Rank[1] == Client || Damage_Attack_Rank[2] == Client || Damage_Attack_Rank[3] == Client || Damage_Attack_Rank[4] == Client)
+			{
+				continue;
+			}
+			if (Damage_Attack[Client] > Temp)
+			{
+				Temp = Damage_Attack[Client];
+				Damage_Attack_Rank[Num] = Client;
+			}
+		}
+		Temp = 0;
+	}
+	for (int Num = 0; Num < 5; Num++)
+	{
+		for (int Client = 1; Client <= MaxClients; Client++)
+		{
+			if (Damage_Infect_Rank[0] == Client || Damage_Infect_Rank[1] == Client || Damage_Infect_Rank[2] == Client || Damage_Infect_Rank[3] == Client || Damage_Infect_Rank[4] == Client)
+			{
+				continue;
+			}
+			if (Damage_Infect[Client] > Temp)
+			{
+				Temp = Damage_Infect[Client];
+				Damage_Infect_Rank[Num] = Client;
+			}
+		}
+		Temp = 0;
+	}
+	CreateTimer(0.0, Damage_Attack_Timer);
+	CreateTimer(3.0, Damage_Infect_Timer);
+}
+Action Damage_Attack_Timer(Handle Timer)
+{
+	char Msg[192] = "伤害排行榜";
+	for (int Num = 0; Num < 5; Num++)
+	{
+		if (CheckGame(Damage_Attack_Rank[Num]))
+		{
+			Format(Msg, sizeof(Msg), "%s\n%d - %N", Msg, Num + 1, Damage_Attack_Rank[Num]);
+		}
+		Damage_Attack_Rank[Num] = 0;
+	}
+	SendHudTextMsg(0, 0.0, 0.65, 3.0, 0, 255, 0, Msg);
+	return Plugin_Handled;
+}
+Action Damage_Infect_Timer(Handle Timer)
+{
+	char Msg[192] = "感染排行榜";
+	for (int Num = 0; Num < 5; Num++)
+	{
+		if (CheckGame(Damage_Infect_Rank[Num]))
+		{
+			Format(Msg, sizeof(Msg), "%s\n%d - %N", Msg, Num + 1, Damage_Infect_Rank[Num]);
+		}
+		Damage_Infect_Rank[Num] = 0;
+	}
+	SendHudTextMsg(0, 0.0, 0.65, 3.0, 0, 255, 0, Msg);
+	return Plugin_Handled;
 }
 float Damage_Improve()
 {
@@ -80,28 +148,26 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 	}
 	if (CheckHuman(Client) && CheckZombie(Attack))
 	{
-		if (Leader_Block(Client))
-		{
-			return Plugin_Handled;
-		}
 		if (Damage == 195)
 		{
+			Damage_Infect[Attack]++;
 			CPrintToChatAll("{green}[ZA][伤害]{red} 人类 %N 被僵尸 %N 爆菊了", Client, Attack);
 			PrintCenterTextAll("人类 %N 被僵尸 %N 爆菊了", Client, Attack);
 			ForcePlayerSuicide(Client);
 			Sound_Play();
 			return Plugin_Handled;
 		}
-		if (Mode_Start)
-		{
-			return Plugin_Handled;
-		}
 		if (Mode_True)
 		{
+			if (Mode_Start)
+			{
+				return Plugin_Handled;
+			}
 			char WeaponName[32];
 			GetClientWeapon(Client, WeaponName, sizeof(WeaponName));
 			if (StrEqual(WeaponName, "weapon_knife", false))
 			{
+				Damage_Infect[Attack]++;
 				ForcePlayerSuicide(Client);
 				return Plugin_Handled;
 			}
@@ -110,6 +176,7 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 	}
 	if (CheckZombie(Client) && CheckHuman(Attack))
 	{
+		Damage_Attack[Attack] += Damage;
 		if (Damage == 15 || Damage == 20 || Damage == 55 || Damage == 65 || Damage == 195)
 		{
 			CPrintToChatAll("{green}[ZA][伤害]{red} 人类 %N 刀了僵尸 %N", Attack, Client);
@@ -122,14 +189,14 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 			}
 			else if (Damage == 55 || Damage == 65)
 			{
-				Damage = 10000.0;
+				Damage = 8000.0;
+			}
+			else if (Damage == 195)
+			{
+				Damage = 15000.0;
 			}
 		}
 		Damage *= Damage_Improve();
-		if (Leader_Close(Attack))
-		{
-			Damage *= 1.5;
-		}
 		PrintCenterText(Attack, "[伤害]对僵尸 %N 造成 %.2f 伤害", Client, Damage);
 		return Plugin_Changed;
 	}
