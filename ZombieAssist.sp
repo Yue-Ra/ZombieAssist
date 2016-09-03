@@ -36,10 +36,10 @@ public Plugin myinfo =
 };
 public void OnPluginStart()
 {
-	MySQL_Start();
-	Alert_Init();
-	Event_Init();
-	Entity_Init();
+	MySQL_OnPluginStart();
+	Alert_OnPluginStart();
+	Event_OnPluginStart();
+	Entity_OnPluginStart();
 	RegConsoleCmd("say", Say_Command);
 	RegAdminCmd("sm_map_reload", Map_Reload_Command, ADMFLAG_GENERIC);
 	RegConsoleCmd("sm_skin", Model_Command);
@@ -57,7 +57,7 @@ public void OnPluginStart()
 }
 public void OnPluginEnd()
 {
-	MySQL_Close();
+	MySQL_OnPluginEnd();
 }
 public void OnMapStart()
 {
@@ -66,6 +66,7 @@ public void OnMapStart()
 	Info_Load();
 	Model_Load();
 	Weapon_Load();
+	Damage_OnMapStart();
 }
 public void OnMapEnd()
 {
@@ -74,12 +75,7 @@ public void OnMapEnd()
 }
 public void OnConfigsExecuted()
 {
-	Mode_Init();
-}
-public void OnClientPostAdminCheck(int Client)
-{
-	Clan_Init(Client);
-	Admin_Init(Client);
+	Mode_OnConfigsExecuted();
 }
 public void OnClientConnected(int Client)
 {
@@ -87,13 +83,16 @@ public void OnClientConnected(int Client)
 }
 public void OnClientPutInServer(int Client)
 {
+	Clan_Init(Client);
+	Admin_Init(Client);
+	Damage_Init(Client);
 	Client_Load(Client);
 	Damage_Hook(Client);
 }
 public void OnClientDisconnect(int Client)
 {
-	Client_Clean(Client);
-	Damage_Unhook(Client);
+	Client_OnClientDisconnect(Client);
+	Damage_OnClientDisconnect(Client);
 }
 public void OnGameFrame()
 {

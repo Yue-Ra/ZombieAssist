@@ -2,7 +2,7 @@ int Alert_Time = -1;
 Handle Alert_Handle = INVALID_HANDLE;
 Regex Alert_Regex;
 
-void Alert_Init()
+void Alert_OnPluginStart()
 {
 	Alert_Regex = CompileRegex("([0-9]+)");
 }
@@ -27,7 +27,10 @@ void Alert_Check(const char[] Msg)
 		return;
 	}
 	Alert_Time = StringToInt(Str);
-	Alert_Create(Alert_Time);
+	if (Alert_Time < 11)
+	{
+		Alert_Create(Alert_Time);
+	}
 	if (Alert_Handle != INVALID_HANDLE)
 	{
 		KillTimer(Alert_Handle);
@@ -45,10 +48,15 @@ Action Alert_Timer(Handle Timer)
 	else
 	{
 		Alert_Time--;
-		if (Alert_Time > -1)
+		if (Alert_Time < 0)
 		{
-			Alert_Create(Alert_Time);
+			return Plugin_Handled;
 		}
+		if (Alert_Time > 10)
+		{
+			return Plugin_Handled;
+		}
+		Alert_Create(Alert_Time);
 	}
 	return Plugin_Handled;
 }
@@ -63,7 +71,7 @@ void Alert_Create(int Time)
 		Color[2] = 255;
 		Format(Msg, sizeof(Msg), "GO!");
 	}
-	else if (Time < 3)
+	else if (Time < 4)
 	{
 		Color[0] = 255;
 		Color[1] = 0;

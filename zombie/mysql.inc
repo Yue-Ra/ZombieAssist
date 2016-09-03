@@ -1,12 +1,12 @@
 Handle MySQL = INVALID_HANDLE;
-void MySQL_Start()
+void MySQL_OnPluginStart()
 {
 	if (MySQL == INVALID_HANDLE)
 	{
 		SQL_TConnect(MySQL_Connect, "moeub");
 	}
 }
-void MySQL_Close()
+void MySQL_OnPluginEnd()
 {
 	if (MySQL == INVALID_HANDLE)
 	{

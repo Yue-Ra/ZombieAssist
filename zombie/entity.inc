@@ -1,4 +1,4 @@
-void Entity_Init()
+void Entity_OnPluginStart()
 {
 	HookEntityOutput("func_button", "OnPressed", Entity_OnPressed);
 }

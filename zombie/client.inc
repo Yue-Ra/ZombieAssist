@@ -14,7 +14,7 @@ void Client_Load(int Client)
 	Format(Query, sizeof(Query), "SELECT * FROM user WHERE steam='%s'", Client_Steam[Client]);
 	SQL_TQuery(MySQL, Client_Load_Query, Query, Client);
 }
-void Client_Clean(int Client)
+void Client_OnClientDisconnect(int Client)
 {
 	Client_ID[Client] = 0;
 	Format(Client_Name[Client], sizeof(Client_Name[]), "");

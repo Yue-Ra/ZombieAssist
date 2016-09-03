@@ -1,7 +1,7 @@
 bool Mode_True = false;
 bool Mode_Start = false;
 
-void Mode_Init()
+void Mode_OnConfigsExecuted()
 {
 	SetConVarInt(FindConVar("sm_parachute_enabled"), 0, false, false);
 	SetConVarInt(FindConVar("sm_parachute_roundmsg"), 0, false, false);

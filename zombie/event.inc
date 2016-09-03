@@ -1,4 +1,4 @@
-void Event_Init()
+void Event_OnPluginStart()
 {
 	HookEvent("player_spawn", Event_PlayerSpawn, EventHookMode_Post);
 	HookEvent("round_start", Event_RoundStart, EventHookMode_Post);
@@ -20,6 +20,7 @@ void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 }
 void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
+	Navbar_OnRoundEnd();
 	Map_OnRoundEnd(GetEventInt(event, "winner"));
 	Mode_OnRoundEnd();
 	Alert_OnRoundEnd();

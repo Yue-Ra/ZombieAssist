@@ -2,10 +2,17 @@ int Damage_Attack[MAXPLAYERS + 1];
 int Damage_Infect[MAXPLAYERS + 1];
 int Damage_Attack_Rank[5];
 int Damage_Infect_Rank[5];
+int Damage_Attack_Count[5];
+int Damage_Infect_Count[5];
 
 bool Damage_Allow = true;
 bool Damage_Fall = true;
 
+void Damage_OnMapStart()
+{
+	Damage_Allow = true;
+	Damage_Fall = true;
+}
 void Damage_Init(int Client)
 {
 	Damage_Attack[Client] = 0;
@@ -22,7 +29,7 @@ void Damage_OnRoundStart()
 }
 void Damage_Show()
 {
-	if (GetTime() - Navbar_Time < 120 || GetTeamClientCount(CS_TEAM_CT) + GetTeamClientCount(CS_TEAM_T) < 15)
+	if (!Navbar_Check)
 	{
 		return;
 	}
@@ -39,6 +46,7 @@ void Damage_Show()
 			{
 				Temp = Damage_Attack[Client];
 				Damage_Attack_Rank[Num] = Client;
+				Damage_Attack_Count[Num] = Damage_Attack[Client];
 			}
 		}
 		Temp = 0;
@@ -55,12 +63,13 @@ void Damage_Show()
 			{
 				Temp = Damage_Infect[Client];
 				Damage_Infect_Rank[Num] = Client;
+				Damage_Infect_Count[Num] = Damage_Infect[Client];
 			}
 		}
 		Temp = 0;
 	}
-	CreateTimer(0.0, Damage_Attack_Timer);
-	CreateTimer(3.0, Damage_Infect_Timer);
+	CreateTimer(1.0, Damage_Attack_Timer);
+	CreateTimer(4.0, Damage_Infect_Timer);
 }
 Action Damage_Attack_Timer(Handle Timer)
 {
@@ -69,11 +78,12 @@ Action Damage_Attack_Timer(Handle Timer)
 	{
 		if (CheckGame(Damage_Attack_Rank[Num]))
 		{
-			Format(Msg, sizeof(Msg), "%s\n%d - %N", Msg, Num + 1, Damage_Attack_Rank[Num]);
+			Format(Msg, sizeof(Msg), "%s\n%d. %N - %d", Msg, Num + 1, Damage_Attack_Rank[Num], Damage_Attack_Count[Num]);
 		}
 		Damage_Attack_Rank[Num] = 0;
+		Damage_Attack_Count[Num] = 0;
 	}
-	SendHudTextMsg(0, 0.0, 0.65, 3.0, 0, 255, 0, Msg);
+	SendHudTextMsg(0, 0.02, 0.28, 3.0, 0, 255, 0, Msg);
 	return Plugin_Handled;
 }
 Action Damage_Infect_Timer(Handle Timer)
@@ -83,11 +93,12 @@ Action Damage_Infect_Timer(Handle Timer)
 	{
 		if (CheckGame(Damage_Infect_Rank[Num]))
 		{
-			Format(Msg, sizeof(Msg), "%s\n%d - %N", Msg, Num + 1, Damage_Infect_Rank[Num]);
+			Format(Msg, sizeof(Msg), "%s\n%d. %N - %d", Msg, Num + 1, Damage_Infect_Rank[Num], Damage_Infect_Count[Num]);
 		}
 		Damage_Infect_Rank[Num] = 0;
+		Damage_Infect_Count[Num] = 0;
 	}
-	SendHudTextMsg(0, 0.0, 0.65, 3.0, 0, 255, 0, Msg);
+	SendHudTextMsg(0, 0.02, 0.28, 3.0, 0, 255, 0, Msg);
 	return Plugin_Handled;
 }
 float Damage_Improve()
@@ -121,7 +132,7 @@ void Damage_Hook(int Client)
 {
 	SDKHook(Client, SDKHook_OnTakeDamage, Damage_TakeDamage);
 }
-void Damage_Unhook(int Client)
+void Damage_OnClientDisconnect(int Client)
 {
 	SDKUnhook(Client, SDKHook_OnTakeDamage, Damage_TakeDamage);
 }
@@ -172,11 +183,12 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 				return Plugin_Handled;
 			}
 		}
+		Damage_Infect[Attack]++;
 		return Plugin_Continue;
 	}
 	if (CheckZombie(Client) && CheckHuman(Attack))
 	{
-		Damage_Attack[Attack] += Damage;
+		Damage_Attack[Attack] += RoundToCeil(Damage);
 		if (Damage == 15 || Damage == 20 || Damage == 55 || Damage == 65 || Damage == 195)
 		{
 			CPrintToChatAll("{green}[ZA][伤害]{red} 人类 %N 刀了僵尸 %N", Attack, Client);

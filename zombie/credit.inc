@@ -31,7 +31,7 @@ void Credit_Give(int Client, int Type)
 }
 void Credit_OnRoundEnd()
 {
-	if (Team != CS_TEAM_CT || GetTime() - Navbar_Time < 120 || GetTeamClientCount(CS_TEAM_CT) + GetTeamClientCount(CS_TEAM_T) < 15)
+	if (!Navbar_Check)
 	{
 		Credit_Show = false;
 		return;
