@@ -1,89 +1,92 @@
-int Alert_Time = -1;
-Handle Alert_Handle = INVALID_HANDLE;
+int Alert_Count[6];
+char Alert_Found[6][32];
+char Alert_String[6][192];
+Handle Alert_Handle[6];
 Regex Alert_Regex;
+Regex Alert_Ignore;
 
 void Alert_OnPluginStart()
 {
 	Alert_Regex = CompileRegex("([0-9]+)");
+	Alert_Ignore = CompileRegex("(LVL|LEVEL|STAGE|MINUTE|等级|关)", PCRE_CASELESS);
+}
+void Alert_OnMapStart()
+{
+	for (int Num = 0; Num < 6; Num++)
+	{
+		Alert_Count[Num] = 0;
+		ClearTimer(Alert_Handle[Num]);
+	}
 }
 void Alert_OnRoundEnd()
 {
-	if (Alert_Handle != INVALID_HANDLE)
+	for (int Num = 0; Num < 6; Num++)
 	{
-		KillTimer(Alert_Handle);
-		Alert_Handle = INVALID_HANDLE;
+		Alert_Count[Num] = 0;
+		ClearTimer(Alert_Handle[Num]);
 	}
+}
+int Alert_Alive()
+{
+	for (int Num = 0; Num < 6; Num++)
+	{
+		if (Alert_Count[Num] == 0)
+		{
+			return Num;
+		}
+	}
+	Alert_Count[0] = 0;
+	ClearTimer(Alert_Handle[0]);
+	return 0;
 }
 void Alert_Check(const char[] Msg)
 {
+	if (Alert_Ignore.Match(Msg) > 0)
+	{
+		return;
+	}
 	int Count = Alert_Regex.Match(Msg);
 	if (Count == -1)
 	{
 		return;
 	}
-	char Str[32];
-	if (!Alert_Regex.GetSubString(Count - 1, Str, sizeof(Str)))
+	int Num = Alert_Alive();
+	strcopy(Alert_String[Num], sizeof(Alert_String[]), Msg);
+	if (!Alert_Regex.GetSubString(Count - 1, Alert_Found[Num], sizeof(Alert_Found[])))
 	{
 		return;
 	}
-	Alert_Time = StringToInt(Str);
-	if (Alert_Time < 11)
-	{
-		Alert_Create(Alert_Time);
-	}
-	if (Alert_Handle != INVALID_HANDLE)
-	{
-		KillTimer(Alert_Handle);
-		Alert_Handle = INVALID_HANDLE;
-	}
-	Alert_Handle = CreateTimer(1.0, Alert_Timer, _, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+	Alert_Count[Num] = StringToInt(Alert_Found[Num]);
+	Alert_Create(Alert_Count[Num], Num);
+	ClearTimer(Alert_Handle[Num]);
+	Alert_Handle[Num] = CreateTimer(1.0, Alert_Timer, Num, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 }
-Action Alert_Timer(Handle Timer)
+Action Alert_Timer(Handle Timer, any Num)
 {
-	if (Alert_Time < 0)
+	Alert_Count[Num]--;
+	if (Alert_Count[Num] <= 0)
 	{
-		KillTimer(Alert_Handle);
-		Alert_Handle = INVALID_HANDLE;
+		ClearTimer(Alert_Handle[Num]);
+		return Plugin_Handled;
 	}
-	else
-	{
-		Alert_Time--;
-		if (Alert_Time < 0)
-		{
-			return Plugin_Handled;
-		}
-		if (Alert_Time > 10)
-		{
-			return Plugin_Handled;
-		}
-		Alert_Create(Alert_Time);
-	}
+	Alert_Create(Alert_Count[Num], Num);
 	return Plugin_Handled;
 }
-void Alert_Create(int Time)
+void Alert_Create(int Time, int Line)
 {
 	int Color[3];
-	char Msg[32];
-	if (Time == 0)
-	{
-		Color[0] = 0;
-		Color[1] = 0;
-		Color[2] = 255;
-		Format(Msg, sizeof(Msg), "GO!");
-	}
-	else if (Time < 4)
+	char Str[32];
+	Format(Str, sizeof(Str), "%d", Time);
+	char Msg[192];
+	strcopy(Msg, sizeof(Msg), Alert_String[Line]);
+	ReplaceString(Msg, sizeof(Msg), Alert_Found[Line], Str, false);
+	Color[0] = 0;
+	Color[1] = 255;
+	Color[2] = 0;
+	if (Time < 6)
 	{
 		Color[0] = 255;
 		Color[1] = 0;
-		Color[2] = 0;
-		Format(Msg, sizeof(Msg), "%d", Time);
 	}
-	else
-	{
-		Color[0] = 0;
-		Color[1] = 255;
-		Color[2] = 0;
-		Format(Msg, sizeof(Msg), "%d", Time);
-	}
-	SendHudTextMsg(0, -1.0, 0.65, 1.0, Color[0], Color[1], Color[2], Msg);
+	SendHudTextMsg(0, -1.0, 0.72 + 0.03 * Line, 1.1, Color[0], Color[1], Color[2], Msg);
 }

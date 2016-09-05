@@ -2,8 +2,8 @@ char Weapon_Name[32][32];
 int Weapon_Type[32];
 int Weapon_Cash[32];
 char Weapon_Alias[32][32];
-int Weapon_Limit[32];
-int Weapon_Client[MAXPLAYERS + 1][32];
+int Weapon_Limit = 0;
+int Weapon_Client[MAXPLAYERS + 1];
 
 bool Weapon_Allow = true;
 int Weapon_Max = 0;
@@ -12,10 +12,7 @@ void Weapon_OnRoundStart()
 {
 	for (int Client = 1; Client <= MaxClients; Client++)
 	{
-		for (int Num = 0; Num < 32; Num++)
-		{
-			Weapon_Client[Client][Num] = 0;
-		}
+		Weapon_Client[Client] = 0;
 	}
 }
 void Weapon_Load()
@@ -42,8 +39,7 @@ void Weapon_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 		Weapon_Type[Num] = SQL_FetchInt(Child, 1);
 		Weapon_Cash[Num] = SQL_FetchInt(Child, 2);
 		SQL_FetchString(Child, 3, Weapon_Alias[Num], sizeof(Weapon_Alias[]));
-		Weapon_Limit[Num] = SQL_FetchInt(Child, 4);
-		LogMessage("Weapon %d\tName %s\tType %d\tCash %d\tAlias %s\tLimit %d", Num, Weapon_Name[Num], Weapon_Type[Num], Weapon_Cash[Num], Weapon_Alias[Num], Weapon_Limit[Num]);
+		LogMessage("Weapon %d\tName %s\tType %d\tCash %d\tAlias %s", Num, Weapon_Name[Num], Weapon_Type[Num], Weapon_Cash[Num], Weapon_Alias[Num]);
 		Num++;
 	}
 	Weapon_Max = Num;
@@ -117,12 +113,18 @@ void Weapon_Buy(int Client, int Item)
 		CPrintToChat(Client, "{green}[ZA][武器]{red} 金钱不足，还需要 %d", Weapon_Cash[Item] - Cash);
 		return;
 	}
-	if (Weapon_Limit[Item] > 0 && Weapon_Client[Client][Item] >= Weapon_Limit[Item])
+	if (Weapon_Limit > 0 && StrEqual(Weapon_Name[Item], "weapon_hegrenade", false))
 	{
-		CPrintToChat(Client, "{green}[ZA][武器]{red} 武器购买超过上限 %d", Weapon_Limit[Item]);
-		return;
+		if (Weapon_Client[Client] >= Weapon_Limit)
+		{
+			CPrintToChat(Client, "{green}[ZA][武器]{red} 手雷购买超过上限 %d", Weapon_Limit);
+			return;
+		}
+		else
+		{
+			Weapon_Client[Client]++;
+		}
 	}
-	Weapon_Client[Client][Item]++;
 	SetCash(Client, Cash - Weapon_Cash[Item]);
 	int Slot = GetPlayerWeaponSlot(Client, Weapon_Type[Item]);
 	if (Slot != -1)

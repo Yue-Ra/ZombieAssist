@@ -66,6 +66,7 @@ public void OnMapStart()
 	Info_Load();
 	Model_Load();
 	Weapon_Load();
+	Alert_OnMapStart();
 	Damage_OnMapStart();
 }
 public void OnMapEnd()

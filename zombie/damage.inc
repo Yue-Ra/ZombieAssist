@@ -147,6 +147,10 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 		IgniteEntity(Client, 5.0);
 		return Plugin_Handled;
 	}
+	if (Attack == -1 && GetTeamClientCount(CS_TEAM_CT) + GetTeamClientCount(CS_TEAM_T) < 6)
+	{
+		return Plugin_Handled;
+	}
 	char ClassName[32];
 	GetEntityClassname(Attack, ClassName, sizeof(ClassName));
 	if (StrEqual(ClassName, "entityflame", false) && CheckHuman(Client))
