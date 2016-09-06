@@ -22,6 +22,9 @@
 #include "zombie/weapon"
 #include "zombie/damage"
 #include "zombie/event"
+#include "zombie/smoke"
+#include "zombie/infect"
+#include "zombie/credit"
 #include "zombie/map"
 #include "zombie/translate"
 #include "zombie/admin"
@@ -40,6 +43,9 @@ public void OnPluginStart()
 	Alert_OnPluginStart();
 	Event_OnPluginStart();
 	Entity_OnPluginStart();
+	RegConsoleCmd("sm_jifen", Credit_Command);
+	RegConsoleCmd("sm_credit", Credit_Command);
+	RegAdminCmd("sm_credit_reload", Credit_Reload_Command, ADMFLAG_GENERIC);
 	RegConsoleCmd("say", Say_Command);
 	RegAdminCmd("sm_map_reload", Map_Reload_Command, ADMFLAG_GENERIC);
 	RegConsoleCmd("sm_skin", Model_Command);
@@ -61,13 +67,17 @@ public void OnPluginEnd()
 }
 public void OnMapStart()
 {
+	Alpha_OnMapStart();
+	Credit_OnMapStart();
+	Weapon_OnMapStart();
+	Damage_OnMapStart();
 	Map_Init();
 	Map_Load();
 	Info_Load();
+	Alert_Init();
 	Model_Load();
+	Credit_Load();
 	Weapon_Load();
-	Alert_OnMapStart();
-	Damage_OnMapStart();
 }
 public void OnMapEnd()
 {
@@ -89,6 +99,8 @@ public void OnClientPutInServer(int Client)
 	Damage_Init(Client);
 	Client_Load(Client);
 	Damage_Hook(Client);
+	Credit_OnClientPutInServer(Client);
+	Weapon_OnClientPutInServer(Client);
 }
 public void OnClientDisconnect(int Client)
 {

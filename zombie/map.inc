@@ -87,6 +87,10 @@ void Map_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 	}
 	SetConVarIntValue("sv_enablebunnyhopping", SQL_FetchInt(Child, 12), true);
 	Weapon_Limit = SQL_FetchInt(Child, 13);
+	if (SQL_FetchInt(Child, 14) == 0)
+	{
+		Credit_Allow = false;
+	}
 	LogMessage("Map %s Load Success", Map_Name);
 }
 Action Map_Command(int Client)

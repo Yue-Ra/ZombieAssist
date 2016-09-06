@@ -1,6 +1,6 @@
-bool Alpha_Client[MAXPLAYERS + 1] = {true, ...};
+bool Alpha_Client[MAXPLAYERS + 1];
 
-bool Alpha_Allow = true;
+bool Alpha_Allow;
 
 Action Alpha_Command(int Client, int Args)
 {
@@ -11,13 +11,21 @@ Action Alpha_Command(int Client, int Args)
 	}
 	return Plugin_Handled;
 }
+void Alpha_OnMapStart()
+{
+	Alpha_Allow = true;
+	for (int Client = 1; Client <= MaxClients; Client++)
+	{
+		Alpha_Client[Client] = true;
+	}
+}
 void Alpha_OnGameFrame()
 {
 	if (!Alpha_Allow)
 	{
 		return;
 	}
-	if (MaxClients < 2)
+	if (GetTeamClientCount(CS_TEAM_CT) + GetTeamClientCount(CS_TEAM_T) < 2)
 	{
 		return;
 	}
@@ -34,11 +42,7 @@ void Alpha_OnGameFrame()
 			{
 				Distance = 100;
 			}
-			if (GetEntityRenderMode(Client) != RENDER_TRANSALPHA)
-			{
-				SetEntityRenderMode(Client, RENDER_TRANSALPHA);
-			}
-			SetEntityRenderColor(Client, 255, 255, 255, Distance);
+			SetAlpha(Client, Distance);
 		}
 	}
 }

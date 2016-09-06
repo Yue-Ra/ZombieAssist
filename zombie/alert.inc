@@ -8,17 +8,9 @@ Regex Alert_Ignore;
 void Alert_OnPluginStart()
 {
 	Alert_Regex = CompileRegex("([0-9]+)");
-	Alert_Ignore = CompileRegex("(LVL|LEVEL|STAGE|MINUTE|等级|关)", PCRE_CASELESS);
+	Alert_Ignore = CompileRegex("(MAP|LVL|TYPE|LEVEL|STAGE|MINUTE|POINTS|等级|关)", PCRE_CASELESS);
 }
-void Alert_OnMapStart()
-{
-	for (int Num = 0; Num < 6; Num++)
-	{
-		Alert_Count[Num] = 0;
-		ClearTimer(Alert_Handle[Num]);
-	}
-}
-void Alert_OnRoundEnd()
+void Alert_Init()
 {
 	for (int Num = 0; Num < 6; Num++)
 	{
@@ -56,6 +48,18 @@ void Alert_Check(const char[] Msg)
 	{
 		return;
 	}
+	ReplaceString(Alert_String[Num], sizeof(Alert_String[]), Alert_Found[Num], "{TIME}", false);
+	for (int Line = 0; Line < 6; Line++)
+	{
+		if (Alert_Count[Line] == 0 || Num == Line)
+		{
+			continue;
+		}
+		if (StrEqual(Alert_String[Num], Alert_String[Line], false))
+		{
+			return;
+		}
+	}
 	Alert_Count[Num] = StringToInt(Alert_Found[Num]);
 	Alert_Create(Alert_Count[Num], Num);
 	ClearTimer(Alert_Handle[Num]);
@@ -79,7 +83,7 @@ void Alert_Create(int Time, int Line)
 	Format(Str, sizeof(Str), "%d", Time);
 	char Msg[192];
 	strcopy(Msg, sizeof(Msg), Alert_String[Line]);
-	ReplaceString(Msg, sizeof(Msg), Alert_Found[Line], Str, false);
+	ReplaceString(Msg, sizeof(Msg), "{TIME}", Str, false);
 	Color[0] = 0;
 	Color[1] = 255;
 	Color[2] = 0;

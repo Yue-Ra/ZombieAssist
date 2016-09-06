@@ -1,9 +1,12 @@
 int Damage_Attack[MAXPLAYERS + 1];
+int Damage_Attack_Temp[MAXPLAYERS + 1];
 int Damage_Infect[MAXPLAYERS + 1];
 int Damage_Attack_Rank[5];
 int Damage_Infect_Rank[5];
 int Damage_Attack_Count[5];
 int Damage_Infect_Count[5];
+
+bool Damage_Low[MAXPLAYERS + 1];
 
 bool Damage_Allow = true;
 bool Damage_Fall = true;
@@ -16,6 +19,7 @@ void Damage_OnMapStart()
 void Damage_Init(int Client)
 {
 	Damage_Attack[Client] = 0;
+	Damage_Attack_Temp[Client] = 0;
 	Damage_Infect[Client] = 0;
 }
 void Damage_OnRoundStart()
@@ -23,9 +27,26 @@ void Damage_OnRoundStart()
 	Damage_Show();
 	for (int Client = 1; Client <= MaxClients; Client++)
 	{
+		Damage_Low[Client] = false;
 		Damage_Attack[Client] = 0;
+		Damage_Attack_Temp[Client] = 0;
 		Damage_Infect[Client] = 0;
 	}
+}
+void Damage_Attack_Up(int Client, int Value)
+{
+	Damage_Attack[Client] += Value;
+	Damage_Attack_Temp[Client] += Value;
+	if (Damage_Attack_Temp[Client] < 8000)
+	{
+		return;
+	}
+	Damage_Attack_Temp[Client] -= 8000;
+	Credit_Up(Client, 1);
+}
+void Damage_Down(int Client)
+{
+	Damage_Low[Client] = true;
 }
 void Damage_Show()
 {
@@ -142,7 +163,7 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 	{
 		return Plugin_Handled;
 	}
-	if (DamageType == 64 && CheckZombie(Client))
+	if (DamageType == 64 && CheckZombie(Client) && Damage < 100)
 	{
 		IgniteEntity(Client, 5.0);
 		return Plugin_Handled;
@@ -170,6 +191,8 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 			PrintCenterTextAll("人类 %N 被僵尸 %N 爆菊了", Client, Attack);
 			ForcePlayerSuicide(Client);
 			Sound_Play();
+			Credit_Up(Attack, 1);
+			Infect_Respawn_Check(Attack);
 			return Plugin_Handled;
 		}
 		if (Mode_True)
@@ -192,7 +215,6 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 	}
 	if (CheckZombie(Client) && CheckHuman(Attack))
 	{
-		Damage_Attack[Attack] += RoundToCeil(Damage);
 		if (Damage == 15 || Damage == 20 || Damage == 55 || Damage == 65 || Damage == 195)
 		{
 			CPrintToChatAll("{green}[ZA][伤害]{red} 人类 %N 刀了僵尸 %N", Attack, Client);
@@ -213,6 +235,10 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 			}
 		}
 		Damage *= Damage_Improve();
+		if (Damage_Low[Client])
+		{
+			Damage *= 0.9;
+		}
 		PrintCenterText(Attack, "[伤害]对僵尸 %N 造成 %.2f 伤害", Client, Damage);
 		return Plugin_Changed;
 	}

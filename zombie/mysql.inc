@@ -31,6 +31,7 @@ void MySQL_Connect(Handle Owner, Handle Child, const char[] Error, any Data)
 	Map_Load();
 	Info_Load();
 	Model_Load();
+	Credit_Load();
 	Weapon_Load();
 }
 void MySQL_Query(Handle Owner, Handle Child, const char[] Error, any Data)

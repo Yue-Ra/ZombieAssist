@@ -4,16 +4,27 @@ int Weapon_Cash[32];
 char Weapon_Alias[32][32];
 int Weapon_Limit = 0;
 int Weapon_Client[MAXPLAYERS + 1];
+int Weapon_Time[MAXPLAYERS + 1];
 
 bool Weapon_Allow = true;
 int Weapon_Max = 0;
 
+void Weapon_OnMapStart()
+{
+	Weapon_Limit = 0;
+}
 void Weapon_OnRoundStart()
 {
 	for (int Client = 1; Client <= MaxClients; Client++)
 	{
+		Weapon_Time[Client] = 0;
 		Weapon_Client[Client] = 0;
 	}
+}
+void Weapon_OnClientPutInServer(int Client)
+{
+	Weapon_Time[Client] = 0;
+	Weapon_Client[Client] = 0;
 }
 void Weapon_Load()
 {
@@ -132,4 +143,17 @@ void Weapon_Buy(int Client, int Item)
 		CS_DropWeapon(Client, Slot, false, false);
 	}
 	GivePlayerItem(Client, Weapon_Name[Item]);
+}
+void Weapon_Unlimited(int Client)
+{
+	Weapon_Time[Client] = GetTime() + 5;
+}
+void Weapon_Credit(int Client)
+{
+	if (Weapon_Time[Client] < GetTime())
+	{
+		return;
+	}
+	int Weapon = GetWeapon(Client);
+	SetAmmo(Weapon, GetAmmo(Weapon) + 1);
 }

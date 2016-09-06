@@ -1,48 +1,306 @@
 int Credit_Client[MAXPLAYERS + 1];
-int Credit_Count[MAXPLAYERS + 1] = {20, ...};
+
+int Credit_Human_Max = 0;
+int Credit_Zombie_Max = 0;
+
+char Credit_Human_Name[6][16];
+char Credit_Human_Info[6][64];
+char Credit_Human_Alias[6][16];
+int Credit_Human_Cost[6];
+
+char Credit_Zombie_Name[6][16];
+char Credit_Zombie_Info[6][64];
+char Credit_Zombie_Alias[6][16];
+int Credit_Zombie_Cost[6];
 
 bool Credit_Allow = false;
-bool Credit_Show = false;
 
-void Credit_OnRoundStart()
+void Credit_Up(int Client, int Value)
 {
-	for (int Client = 1; Client <= MaxClients; Client++)
+	Credit_Client[Client] += Value;
+	if (Credit_Client[Client] > 20)
 	{
-		Credit_Client[Client] = Credit_Count[Client];
+		Credit_Client[Client] = 20;
 	}
-	if (!Credit_Show)
+}
+bool Credit_Down(int Client, int Value)
+{
+	if (Credit_Client[Client] < Value)
+	{
+		CPrintToChat(Client, "{green}[ZA][积分]{red} 积分不足,还需要 %d", Value - Credit_Client[Client]);
+		return false;
+	}
+	Credit_Client[Client] -= Value;
+	return true;
+}
+void Credit_Load()
+{
+	if (MySQL == INVALID_HANDLE)
 	{
 		return;
 	}
-	char Msg[192];
-	Format(Msg, sizeof(Msg), "生化尖兵: %N\n团队精英: %N,%N\n僵尸克星: %N,%N\n感染精英: %N,%N");
-	SendHudTextMsg(0, 0.0, 0.6, 5.0, 0, 255, Msg);
+	char Query[192];
+	Format(Query, sizeof(Query), "SELECT * FROM credit WHERE type=0 ORDER BY id ASC");
+	LogMessage(Query);
+	SQL_TQuery(MySQL, Credit_Load_Query, Query, CS_TEAM_CT);
+	Format(Query, sizeof(Query), "SELECT * FROM credit WHERE type=1 ORDER BY id ASC");
+	LogMessage(Query);
+	SQL_TQuery(MySQL, Credit_Load_Query, Query, CS_TEAM_T);
 }
-void Credit_Give(int Client, int Type)
+void Credit_Load_Query(Handle Owner, Handle Child, const char[] Error, any Team)
 {
-	if (Type == 1)
+	if (Owner == INVALID_HANDLE || Child == INVALID_HANDLE)
 	{
-		Credit_Human_1 = Client;
-	}
-	else if (Type == 2)
-	{
-
-	}
-}
-void Credit_OnRoundEnd()
-{
-	if (!Navbar_Check)
-	{
-		Credit_Show = false;
+		LogError("Credit Handle Failure");
 		return;
 	}
-	Credit_Show = true;
-	for (int Client = 1; Client <= MaxClients; Client++)
+	int Num = 0;
+	while (SQL_FetchRow(Child))
 	{
-		Credit_Damage[Client] = false;
-		if (CheckAlive(Client))
+		if (Team == CS_TEAM_CT)
 		{
-			Credit_Count[Client]++;
+			SQL_FetchString(Child, 2, Credit_Human_Name[Num], sizeof(Credit_Human_Name[]));
+			SQL_FetchString(Child, 3, Credit_Human_Info[Num], sizeof(Credit_Human_Info[]));
+			SQL_FetchString(Child, 4, Credit_Human_Alias[Num], sizeof(Credit_Human_Alias[]));
+			Credit_Human_Cost[Num] = SQL_FetchInt(Child, 5);
+			LogMessage("Credit Human %d\tName %s\tInfo %s\tAlias %s\tCost %d", Num, Credit_Human_Name[Num], Credit_Human_Info[Num], Credit_Human_Alias[Num], Credit_Human_Cost[Num]);
 		}
+		else
+		{
+			SQL_FetchString(Child, 2, Credit_Zombie_Name[Num], sizeof(Credit_Zombie_Name[]));
+			SQL_FetchString(Child, 3, Credit_Zombie_Info[Num], sizeof(Credit_Zombie_Info[]));
+			SQL_FetchString(Child, 4, Credit_Zombie_Alias[Num], sizeof(Credit_Zombie_Alias[]));
+			Credit_Zombie_Cost[Num] = SQL_FetchInt(Child, 5);
+			LogMessage("Credit Zombie %d\tName %s\tInfo %s\tAlias %s\tCost %d", Num, Credit_Zombie_Name[Num], Credit_Zombie_Info[Num], Credit_Zombie_Alias[Num], Credit_Zombie_Cost[Num]);
+		}
+		Num++;
+	}
+	if (Team == CS_TEAM_CT)
+	{
+		Credit_Human_Max = Num;
+	}
+	else
+	{
+		Credit_Zombie_Max = Num;
+	}
+}
+Action Credit_Reload_Command(int Client, int Args)
+{
+	if (CheckGame(Client))
+	{
+		Credit_Load();
+	}
+	return Plugin_Handled;
+}
+void Credit_OnMapStart()
+{
+	Credit_Allow = true;
+	for (int Client = 1; Client <= MaxClients; Client++)
+	{
+		Credit_Client[Client] = 0;
+	}
+}
+void Credit_OnClientPutInServer(int Client)
+{
+	Credit_Client[Client] = 0;
+}
+void Credit_OnRoundEnd(int Team)
+{
+	int Give = 1;
+	if (Team == CS_TEAM_CT)
+	{
+		if (HumanCount() < 20)
+		{
+			Give = 2;
+		}
+		for (int Client = 1; Client <= MaxClients; Client++)
+		{
+			if (CheckHuman(Client))
+			{
+				Credit_Up(Client, Give);
+			}
+		}
+	}
+	else
+	{
+		for (int Client = 1; Client <= MaxClients; Client++)
+		{
+			if (CheckZombie(Client))
+			{
+				Credit_Up(Client, Give);
+			}
+		}
+	}
+}
+Action Credit_Command(int Client, int Args)
+{
+	if (CheckAlive(Client))
+	{
+		if (!Credit_Allow)
+		{
+			CPrintToChat(Client, "{green}[ZA][积分]{red} 积分功能已被禁用");
+			return Plugin_Handled;
+		}
+		if (CheckHuman(Client))
+		{
+			Credit_Human_Menu(Client);
+		}
+		else
+		{
+			Credit_Zombie_Menu(Client);
+		}
+	}
+	return Plugin_Handled;
+}
+void Credit_Human_Menu(int Client)
+{
+	Menu MenuHandle = CreateMenu(Credit_Human_Menu_Handle);
+	SetMenuTitle(MenuHandle, "【人类】积分菜单\n当前积分 %d", Credit_Client[Client]);
+	for (int Num = 0; Num < Credit_Human_Max; Num++)
+	{
+		char Line[192];
+		Format(Line, sizeof(Line), "【人类】%s - %d积分\n%s", Credit_Human_Name[Num], Credit_Human_Cost[Num], Credit_Human_Info[Num]);
+		AddMenuItem(MenuHandle, "", Line);
+	}
+	SetMenuExitBackButton(MenuHandle, true);
+	DisplayMenu(MenuHandle, Client, 30);
+}
+void Credit_Zombie_Menu(int Client)
+{
+	Menu MenuHandle = CreateMenu(Credit_Zombie_Menu_Handle);
+	SetMenuTitle(MenuHandle, "【僵尸】积分菜单\n当前积分 %d", Credit_Client[Client]);
+	for (int Num = 0; Num < Credit_Zombie_Max; Num++)
+	{
+		char Line[192];
+		Format(Line, sizeof(Line), "【僵尸】%s - %d积分\n%s", Credit_Zombie_Name[Num], Credit_Zombie_Cost[Num], Credit_Zombie_Info[Num]);
+		AddMenuItem(MenuHandle, "", Line);
+	}
+	SetMenuExitBackButton(MenuHandle, true);
+	DisplayMenu(MenuHandle, Client, 30);
+}
+int Credit_Human_Menu_Handle(Menu MenuHandle, MenuAction ActionHandle, int Client, int Item)
+{
+	if (ActionHandle == MenuAction_Select)
+	{
+		Credit_Human_Buy(Client, Item);
+	}
+}
+int Credit_Zombie_Menu_Handle(Menu MenuHandle, MenuAction ActionHandle, int Client, int Item)
+{
+	if (ActionHandle == MenuAction_Select)
+	{
+		Creidt_Zombie_Buy(Client, Item);
+	}
+}
+void Credit_Human_Buy(int Client, int Item)
+{
+	if (!IsPlayerAlive(Client))
+	{
+		CPrintToChat(Client, "{green}[ZA][积分]{red} 没活还想玩积分?");
+		return;
+	}
+	if (ZR_IsClientZombie(Client))
+	{
+		CPrintToChat(Client, "{green}[ZA][积分]{red} 僵尸还想玩人类积分?");
+		return;
+	}
+	switch (Item)
+	{
+	case 0: Credit_Human_1(Client);
+	case 1: Credit_Human_2(Client);
+	case 2: Credit_Human_3(Client);
+	case 3: Credit_Human_4(Client);
+	case 4: Credit_Human_5(Client);
+	}
+}
+void Creidt_Zombie_Buy(int Client, int Item)
+{
+	if (!IsPlayerAlive(Client))
+	{
+		CPrintToChat(Client, "{green}[ZA][积分]{red} 没活还想玩积分?");
+		return;
+	}
+	if (ZR_IsClientZombie(Client))
+	{
+		CPrintToChat(Client, "{green}[ZA][积分]{red} 人类还想玩僵尸积分?");
+		return;
+	}
+	switch (Item)
+	{
+	case 0: Credit_Zombie_1(Client);
+	case 1: Credit_Zombie_2(Client);
+	case 2: Credit_Zombie_3(Client);
+	case 3: Credit_Zombie_4(Client);
+	case 4: Credit_Zombie_5(Client);
+	}
+}
+void Credit_Human_1(int Client)
+{
+	if (Credit_Down(Client, Credit_Human_Cost[0]))
+	{
+		GivePlayerItem(Client, "weapon_smokegrenade");
+	}
+}
+void Credit_Human_2(int Client)
+{
+	if (Credit_Down(Client, Credit_Human_Cost[1]))
+	{
+		AddHealth(Client, 20);
+	}
+}
+void Credit_Human_3(int Client)
+{
+	if (Credit_Down(Client, Credit_Human_Cost[2]))
+	{
+		Weapon_Unlimited(Client);
+	}
+}
+void Credit_Human_4(int Client)
+{
+	if (Credit_Down(Client, Credit_Human_Cost[3]))
+	{
+		Infect_NoInfect(Client);
+	}
+}
+void Credit_Human_5(int Client)
+{
+	if (Credit_Down(Client, Credit_Human_Cost[4]))
+	{
+		Infect_NoMother(Client);
+	}
+}
+void Credit_Zombie_1(int Client)
+{
+	if (Credit_Down(Client, Credit_Zombie_Cost[0]))
+	{
+		AddHealth(Client, 2000);
+	}
+}
+void Credit_Zombie_2(int Client)
+{
+	if (Credit_Down(Client, Credit_Zombie_Cost[1]))
+	{
+		Damage_Down(Client);
+	}
+}
+void Credit_Zombie_3(int Client)
+{
+	if (Credit_Down(Client, Credit_Zombie_Cost[2]))
+	{
+		Smoke_Client(Client);
+	}
+}
+void Credit_Zombie_4(int Client)
+{
+	if (Credit_Down(Client, Credit_Zombie_Cost[3]))
+	{
+		Infect_Respawn(Client);
+	}
+}
+void Credit_Zombie_5(int Client)
+{
+	if (Credit_Down(Client, Credit_Zombie_Cost[4]))
+	{
+		SetAlpha(Client, 75);
 	}
 }

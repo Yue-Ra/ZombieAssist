@@ -7,6 +7,38 @@ stock void ClearTimer(& Handle: Timer)
 	KillTimer(Timer);
 	Timer = INVALID_HANDLE;
 }
+stock void SetAlpha(int Client, int Value)
+{
+	if (!IsPlayerAlive(Client))
+	{
+		return;
+	}
+	if (GetEntityRenderMode(Client) != RENDER_TRANSALPHA)
+	{
+		SetEntityRenderMode(Client, RENDER_TRANSALPHA);
+	}
+	SetEntityRenderColor(Client, 255, 255, 255, Value);
+}
+stock void AddHealth(int Client, int Value)
+{
+	if (!IsPlayerAlive(Client))
+	{
+		return;
+	}
+	SetEntityHealth(Client, GetClientHealth(Client) + Value);
+}
+stock int GetWeapon(int Client)
+{
+	return GetEntPropEnt(Client, Prop_Send, "m_hActiveWeapon");
+}
+stock int GetAmmo(int Weapon)
+{
+	return GetEntProp(Weapon, Prop_Data, "m_iClip1");
+}
+stock void SetAmmo(int Weapon, int Value)
+{
+	SetEntProp(Weapon, Prop_Data, "m_iClip1", Value);
+}
 stock int GetCash(int Client)
 {
 	return GetEntData(Client, FindSendPropInfo("CCSPlayer", "m_iAccount"));
