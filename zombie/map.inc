@@ -61,36 +61,15 @@ void Map_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 	{
 		SetConVarBounds(FindConVar("mp_roundtime"), ConVarBound_Upper, true, 15.0);
 	}
-	if (SQL_FetchInt(Child, 5) == 0)
-	{
-		Alpha_Allow = false;
-	}
-	if (SQL_FetchInt(Child, 6) == 0)
-	{
-		Model_Allow = false;
-	}
-	if (SQL_FetchInt(Child, 7) == 0)
-	{
-		Navbar_Allow = false;
-	}
-	if (SQL_FetchInt(Child, 8) == 0)
-	{
-		Damage_Allow = false;
-	}
-	if (SQL_FetchInt(Child, 9) == 0)
-	{
-		Weapon_Allow = false;
-	}
-	if (SQL_FetchInt(Child, 11) == 0)
-	{
-		Damage_Fall = false;
-	}
+	Alpha_Allow = SQL_FetchInt(Child, 5) == 0 ? false : true;
+	Model_Allow = SQL_FetchInt(Child, 6) == 0 ? false : true;
+	Navbar_Allow = SQL_FetchInt(Child, 7) == 0 ? false : true;
+	Damage_Allow = SQL_FetchInt(Child, 8) == 0 ? false : true;
+	Weapon_Allow = SQL_FetchInt(Child, 9) == 0 ? false : true;
+	Damage_Fall = SQL_FetchInt(Child, 11) == 0 ? false : true;
 	SetConVarIntValue("sv_enablebunnyhopping", SQL_FetchInt(Child, 12), true);
 	Weapon_Limit = SQL_FetchInt(Child, 13);
-	if (SQL_FetchInt(Child, 14) == 0)
-	{
-		Credit_Allow = false;
-	}
+	Credit_Allow = SQL_FetchInt(Child, 14) == 0 ? false : true;
 	LogMessage("Map %s Load Success", Map_Name);
 }
 Action Map_Command(int Client)
