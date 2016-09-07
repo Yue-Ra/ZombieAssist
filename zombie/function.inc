@@ -121,5 +121,78 @@ stock void SendHudTextMsg(int Client, float X, float Y, float Time, int Red, int
 	{
 		ShowSyncHudText(Client, Hud, Msg);
 	}
-	// CloseHandle(Hud);
+}
+stock void DealDamage(int Client, int Damage, int Attack = 0, int Type = DMG_GENERIC, char Weapon[] = "")
+{
+	if (!CheckAlive(Client) || Damage <= 0)
+	{
+		return;
+	}
+	char DamageStr[16];
+	IntToString(Damage, DamageStr, sizeof(DamageStr));
+	char TypeStr[32];
+	IntToString(Type, TypeStr, sizeof(TypeStr));
+	int Entity = CreateEntityByName("point_hurt");
+	if (Entity == -1)
+	{
+		return;
+	}
+	DispatchKeyValue(Client, "targetname", "war3_hurtme");
+	DispatchKeyValue(Entity, "DamageTarget", "war3_hurtme");
+	DispatchKeyValue(Entity, "Damage", DamageStr);
+	DispatchKeyValue(Entity, "DamageType", TypeStr);
+	if (!StrEqual(Weapon, "", false))
+	{
+		DispatchKeyValue(Entity, "classname", Weapon);
+	}
+	DispatchSpawn(Entity);
+	AcceptEntityInput(Entity, "Hurt", (Attack > 0) ? Attack : -1);
+	DispatchKeyValue(Entity, "classname", "point_hurt");
+	DispatchKeyValue(Client, "targetname", "war3_donthurtme");
+	AcceptEntityInput(Entity, "Kill");
+}
+stock void makeExplosion(int Attack = 0, int Inflictor = -1, const float Position[3], const char Weapon[] = "", int Magnitude = 100, int Radius = 0, float Damage = 0.0, int Flags = 0)
+{
+	int Entity = CreateEntityByName("env_explosion");
+	if (Entity == -1)
+	{
+		return;
+	}
+	DispatchKeyValueVector(Entity, "Origin", Position);
+	char Buffer[64];
+	IntToString(Magnitude, Buffer, sizeof(Buffer));
+	DispatchKeyValue(Entity, "iMagnitude", Buffer);
+	if (Radius > 0)
+	{
+		IntToString(Radius, Buffer, sizeof(Buffer));
+		DispatchKeyValue(Entity, "iRadiusOverride", Buffer);
+	}
+	if (Damage > 0.0)
+	{
+		DispatchKeyValueFloat(Entity, "Damage", Damage);
+	}
+	if (Flags != 0)
+	{
+		IntToString(Flags, Buffer, sizeof(Buffer));
+		DispatchKeyValue(Entity, "spawnflags", Buffer);
+	}
+	if (!StrEqual(Weapon, "", false))
+	{
+		DispatchKeyValue(Entity, "classname", Weapon);
+		if (Inflictor != -1)
+		{
+			DispatchKeyValue(Inflictor, "classname", Weapon);
+		}
+	}
+	DispatchSpawn(Entity);
+	if (IsClientInGame(Attack))
+	{
+		SetEntPropEnt(Entity, Prop_Send, "m_hOwnerEntity", Attack);
+	}
+	if (Inflictor != -1)
+	{
+		SetEntPropEnt(Entity, Prop_Data, "m_hInflictor", Inflictor);
+	}
+	AcceptEntityInput(Entity, "Explode");
+	AcceptEntityInput(Entity, "Kill");
 }

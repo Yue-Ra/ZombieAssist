@@ -7,14 +7,22 @@ char Credit_Human_Name[6][16];
 char Credit_Human_Info[6][64];
 char Credit_Human_Alias[6][16];
 int Credit_Human_Cost[6];
+int Credit_Human_Cool[6];
+int Credit_Human_Time[MAXPLAYERS + 1][6];
 
 char Credit_Zombie_Name[6][16];
 char Credit_Zombie_Info[6][64];
 char Credit_Zombie_Alias[6][16];
 int Credit_Zombie_Cost[6];
+int Credit_Zombie_Cool[6];
+int Credit_Zombie_Time[MAXPLAYERS + 1][6];
 
 bool Credit_Allow = false;
 
+Action Credit_Test(int Client, int Args)
+{
+	Credit_Client[Client] = 20;
+}
 void Credit_Up(int Client, int Value)
 {
 	Credit_Client[Client] += Value;
@@ -63,7 +71,8 @@ void Credit_Load_Query(Handle Owner, Handle Child, const char[] Error, any Team)
 			SQL_FetchString(Child, 3, Credit_Human_Info[Num], sizeof(Credit_Human_Info[]));
 			SQL_FetchString(Child, 4, Credit_Human_Alias[Num], sizeof(Credit_Human_Alias[]));
 			Credit_Human_Cost[Num] = SQL_FetchInt(Child, 5);
-			LogMessage("Credit Human %d\tName %s\tInfo %s\tAlias %s\tCost %d", Num, Credit_Human_Name[Num], Credit_Human_Info[Num], Credit_Human_Alias[Num], Credit_Human_Cost[Num]);
+			Credit_Human_Cool[Num] = SQL_FetchInt(Child, 6);
+			LogMessage("Credit Human %d\tName %s\tInfo %s\tAlias %s\tCost %d\tCool %d", Num, Credit_Human_Name[Num], Credit_Human_Info[Num], Credit_Human_Alias[Num], Credit_Human_Cost[Num], Credit_Human_Cool[Num]);
 		}
 		else
 		{
@@ -71,7 +80,8 @@ void Credit_Load_Query(Handle Owner, Handle Child, const char[] Error, any Team)
 			SQL_FetchString(Child, 3, Credit_Zombie_Info[Num], sizeof(Credit_Zombie_Info[]));
 			SQL_FetchString(Child, 4, Credit_Zombie_Alias[Num], sizeof(Credit_Zombie_Alias[]));
 			Credit_Zombie_Cost[Num] = SQL_FetchInt(Child, 5);
-			LogMessage("Credit Zombie %d\tName %s\tInfo %s\tAlias %s\tCost %d", Num, Credit_Zombie_Name[Num], Credit_Zombie_Info[Num], Credit_Zombie_Alias[Num], Credit_Zombie_Cost[Num]);
+			Credit_Zombie_Cool[Num] = SQL_FetchInt(Child, 6);
+			LogMessage("Credit Zombie %d\tName %s\tInfo %s\tAlias %s\tCost %d\tCool %d", Num, Credit_Zombie_Name[Num], Credit_Zombie_Info[Num], Credit_Zombie_Alias[Num], Credit_Zombie_Cost[Num], Credit_Zombie_Cool[Num]);
 		}
 		Num++;
 	}
@@ -103,6 +113,11 @@ void Credit_OnMapStart()
 void Credit_OnClientPutInServer(int Client)
 {
 	Credit_Client[Client] = 0;
+	for (int Item = 0; Item < 6; Item++)
+	{
+		Credit_Human_Time[Client][Item] = 0;
+		Credit_Zombie_Time[Client][Item] = 0;
+	}
 }
 void Credit_OnRoundEnd(int Team)
 {
@@ -131,6 +146,14 @@ void Credit_OnRoundEnd(int Team)
 			}
 		}
 	}
+	for (int Client = 1; Client <= MaxClients; Client++)
+	{
+		for (int Item = 0; Item < 6; Item++)
+		{
+			Credit_Human_Time[Client][Item] = 0;
+			Credit_Zombie_Time[Client][Item] = 0;
+		}
+	}
 }
 Action Credit_Command(int Client, int Args)
 {
@@ -141,13 +164,76 @@ Action Credit_Command(int Client, int Args)
 			CPrintToChat(Client, "{green}[ZA][积分]{red} 积分功能已被禁用");
 			return Plugin_Handled;
 		}
+		if (Args == 0)
+		{
+			if (CheckHuman(Client))
+			{
+				Credit_Human_Menu(Client);
+			}
+			else
+			{
+				Credit_Zombie_Menu(Client);
+			}
+			return Plugin_Handled;
+		}
+		char Alias[32];
+		GetCmdArgString(Alias, sizeof(Alias));
+		int Time = GetTime();
 		if (CheckHuman(Client))
 		{
-			Credit_Human_Menu(Client);
+			for (int Item = 0; Item < 6; Item++)
+			{
+				if (StrEqual(Alias, Credit_Human_Alias[Item], false))
+				{
+					if (Credit_Human_Time[Client][Item] > Time)
+					{
+						CPrintToChat(Client, "{green}[ZA][积分]{red} %s 冷却时间还有 %d 秒", Credit_Human_Name[Item], Credit_Human_Time[Client][Item] - Time);
+						return Plugin_Handled;
+					}
+					if (!Credit_Down(Client, Credit_Human_Cost[Item]))
+					{
+						return Plugin_Handled;
+					}
+					Credit_Human_Time[Client][Item] = Time + Credit_Human_Cool[Item];
+					switch (Item)
+					{
+					case 0: Credit_Human_1(Client);
+					case 1: Credit_Human_2(Client);
+					case 2: Credit_Human_3(Client);
+					case 3: Credit_Human_4(Client);
+					case 4: Credit_Human_5(Client);
+					}
+					return Plugin_Handled;
+				}
+			}
 		}
 		else
 		{
-			Credit_Zombie_Menu(Client);
+			for (int Item = 0; Item < 6; Item++)
+			{
+				if (StrEqual(Alias, Credit_Zombie_Alias[Item], false))
+				{
+					if (Credit_Zombie_Time[Client][Item] > Time)
+					{
+						CPrintToChat(Client, "{green}[ZA][积分]{red} %s 冷却时间还有 %d 秒", Credit_Zombie_Name[Item], Credit_Zombie_Time[Client][Item] - Time);
+						return Plugin_Handled;
+					}
+					if (!Credit_Down(Client, Credit_Zombie_Cost[Item]))
+					{
+						return Plugin_Handled;
+					}
+					Credit_Zombie_Time[Client][Item] = Time + Credit_Zombie_Cool[Item];
+					switch (Item)
+					{
+					case 0: Credit_Zombie_1(Client);
+					case 1: Credit_Zombie_2(Client);
+					case 2: Credit_Zombie_3(Client);
+					case 3: Credit_Zombie_4(Client);
+					case 4: Credit_Zombie_5(Client);
+					}
+					return Plugin_Handled;
+				}
+			}
 		}
 	}
 	return Plugin_Handled;
@@ -159,7 +245,7 @@ void Credit_Human_Menu(int Client)
 	for (int Num = 0; Num < Credit_Human_Max; Num++)
 	{
 		char Line[192];
-		Format(Line, sizeof(Line), "【人类】%s - %d积分\n%s", Credit_Human_Name[Num], Credit_Human_Cost[Num], Credit_Human_Info[Num]);
+		Format(Line, sizeof(Line), "【人类】%s - %d积分\n【快捷】%s - %s", Credit_Human_Name[Num], Credit_Human_Cost[Num], Credit_Human_Alias[Num], Credit_Human_Info[Num]);
 		AddMenuItem(MenuHandle, "", Line);
 	}
 	SetMenuExitBackButton(MenuHandle, true);
@@ -172,7 +258,7 @@ void Credit_Zombie_Menu(int Client)
 	for (int Num = 0; Num < Credit_Zombie_Max; Num++)
 	{
 		char Line[192];
-		Format(Line, sizeof(Line), "【僵尸】%s - %d积分\n%s", Credit_Zombie_Name[Num], Credit_Zombie_Cost[Num], Credit_Zombie_Info[Num]);
+		Format(Line, sizeof(Line), "【僵尸】%s - %d积分\n【快捷】%s - %s", Credit_Zombie_Name[Num], Credit_Zombie_Cost[Num], Credit_Zombie_Alias[Num] , Credit_Zombie_Info[Num]);
 		AddMenuItem(MenuHandle, "", Line);
 	}
 	SetMenuExitBackButton(MenuHandle, true);
@@ -182,7 +268,7 @@ int Credit_Human_Menu_Handle(Menu MenuHandle, MenuAction ActionHandle, int Clien
 {
 	if (ActionHandle == MenuAction_Select)
 	{
-		Credit_Human_Buy(Client, Item);
+		Credit_Human_Buy(Client, Item );
 	}
 }
 int Credit_Zombie_Menu_Handle(Menu MenuHandle, MenuAction ActionHandle, int Client, int Item)
@@ -204,6 +290,17 @@ void Credit_Human_Buy(int Client, int Item)
 		CPrintToChat(Client, "{green}[ZA][积分]{red} 僵尸还想玩人类积分?");
 		return;
 	}
+	int Time = GetTime();
+	if (Credit_Human_Time[Client][Item] > Time)
+	{
+		CPrintToChat(Client, "{green}[ZA][积分]{red} %s 冷却时间还有 %d 秒", Credit_Human_Name[Item], Credit_Human_Time[Client][Item] - Time);
+		return;
+	}
+	if (!Credit_Down(Client, Credit_Human_Cost[Item]))
+	{
+		return;
+	}
+	Credit_Human_Time[Client][Item] = Time + Credit_Human_Cool[Item];
 	switch (Item)
 	{
 	case 0: Credit_Human_1(Client);
@@ -220,11 +317,22 @@ void Creidt_Zombie_Buy(int Client, int Item)
 		CPrintToChat(Client, "{green}[ZA][积分]{red} 没活还想玩积分?");
 		return;
 	}
-	if (ZR_IsClientZombie(Client))
+	if (ZR_IsClientHuman(Client))
 	{
 		CPrintToChat(Client, "{green}[ZA][积分]{red} 人类还想玩僵尸积分?");
 		return;
 	}
+	int Time = GetTime();
+	if (Credit_Zombie_Time[Client][Item] > Time)
+	{
+		CPrintToChat(Client, "{green}[ZA][积分]{red} %s 冷却时间还有 %d 秒", Credit_Zombie_Name[Item], Credit_Zombie_Time[Client][Item] - Time);
+		return;
+	}
+	if (!Credit_Down(Client, Credit_Zombie_Cost[Item]))
+	{
+		return;
+	}
+	Credit_Zombie_Time[Client][Item] = Time + Credit_Zombie_Cool[Item];
 	switch (Item)
 	{
 	case 0: Credit_Zombie_1(Client);
@@ -236,71 +344,41 @@ void Creidt_Zombie_Buy(int Client, int Item)
 }
 void Credit_Human_1(int Client)
 {
-	if (Credit_Down(Client, Credit_Human_Cost[0]))
-	{
-		GivePlayerItem(Client, "weapon_smokegrenade");
-	}
+	GivePlayerItem(Client, "weapon_smokegrenade");
 }
 void Credit_Human_2(int Client)
 {
-	if (Credit_Down(Client, Credit_Human_Cost[1]))
-	{
-		AddHealth(Client, 20);
-	}
+	AddHealth(Client, 20);
 }
 void Credit_Human_3(int Client)
 {
-	if (Credit_Down(Client, Credit_Human_Cost[2]))
-	{
-		Weapon_Unlimited(Client);
-	}
+	Weapon_Unlimited(Client);
 }
 void Credit_Human_4(int Client)
 {
-	if (Credit_Down(Client, Credit_Human_Cost[3]))
-	{
-		Infect_NoInfect(Client);
-	}
+	Infect_NoMother(Client);
 }
 void Credit_Human_5(int Client)
 {
-	if (Credit_Down(Client, Credit_Human_Cost[4]))
-	{
-		Infect_NoMother(Client);
-	}
+	Infect_NoInfect(Client);
 }
 void Credit_Zombie_1(int Client)
 {
-	if (Credit_Down(Client, Credit_Zombie_Cost[0]))
-	{
-		AddHealth(Client, 2000);
-	}
+	AddHealth(Client, 2000);
 }
 void Credit_Zombie_2(int Client)
 {
-	if (Credit_Down(Client, Credit_Zombie_Cost[1]))
-	{
-		Damage_Down(Client);
-	}
+	Damage_Zombie_Credit(Client);
 }
 void Credit_Zombie_3(int Client)
 {
-	if (Credit_Down(Client, Credit_Zombie_Cost[2]))
-	{
-		Smoke_Client(Client);
-	}
+	Smoke_Client(Client);
 }
 void Credit_Zombie_4(int Client)
 {
-	if (Credit_Down(Client, Credit_Zombie_Cost[3]))
-	{
-		Infect_Respawn(Client);
-	}
+	Infect_Respawn(Client);
 }
 void Credit_Zombie_5(int Client)
 {
-	if (Credit_Down(Client, Credit_Zombie_Cost[4]))
-	{
-		SetAlpha(Client, 75);
-	}
+	Alpha_Zombie_Credit(Client);
 }

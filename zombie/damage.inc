@@ -6,7 +6,7 @@ int Damage_Infect_Rank[5];
 int Damage_Attack_Count[5];
 int Damage_Infect_Count[5];
 
-bool Damage_Low[MAXPLAYERS + 1];
+int Damage_Zombie[MAXPLAYERS + 1];
 
 bool Damage_Allow = true;
 bool Damage_Fall = true;
@@ -18,6 +18,7 @@ void Damage_OnMapStart()
 }
 void Damage_Init(int Client)
 {
+	Damage_Zombie[Client] = 0;
 	Damage_Attack[Client] = 0;
 	Damage_Attack_Temp[Client] = 0;
 	Damage_Infect[Client] = 0;
@@ -27,7 +28,7 @@ void Damage_OnRoundStart()
 	Damage_Show();
 	for (int Client = 1; Client <= MaxClients; Client++)
 	{
-		Damage_Low[Client] = false;
+		Damage_Zombie[Client] = 0;
 		Damage_Attack[Client] = 0;
 		Damage_Attack_Temp[Client] = 0;
 		Damage_Infect[Client] = 0;
@@ -42,11 +43,8 @@ void Damage_Attack_Up(int Client, int Value)
 		return;
 	}
 	Damage_Attack_Temp[Client] -= 8000;
+	CPrintToChat(Client, "{green}[ZA][伤害]{blue} 通过 8000 伤害获得 1 积分");
 	Credit_Up(Client, 1);
-}
-void Damage_Down(int Client)
-{
-	Damage_Low[Client] = true;
 }
 void Damage_Show()
 {
@@ -215,32 +213,40 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 	}
 	if (CheckZombie(Client) && CheckHuman(Attack))
 	{
+		Damage_Attack_Up(Attack, RoundToCeil(Damage));
 		if (Damage == 15 || Damage == 20 || Damage == 55 || Damage == 65 || Damage == 195)
 		{
 			CPrintToChatAll("{green}[ZA][伤害]{red} 人类 %N 刀了僵尸 %N", Attack, Client);
 		}
 		if (Mode_True)
 		{
-			if (Damage == 15 || Damage == 20)
+			if (!(GetEntityFlags(Attack) & FL_DUCKING))
 			{
-				Damage = 4000.0;
-			}
-			else if (Damage == 55 || Damage == 65)
-			{
-				Damage = 8000.0;
-			}
-			else if (Damage == 195)
-			{
-				Damage = 15000.0;
+				if (Damage == 15 || Damage == 20)
+				{
+					Damage = 4000.0;
+				}
+				else if (Damage == 55 || Damage == 65)
+				{
+					Damage = 8000.0;
+				}
+				else if (Damage == 195)
+				{
+					Damage = 15000.0;
+				}
 			}
 		}
 		Damage *= Damage_Improve();
-		if (Damage_Low[Client])
+		if (Damage_Zombie[Client] >= GetTime())
 		{
-			Damage *= 0.9;
+			Damage *= 0.4;
 		}
 		PrintCenterText(Attack, "[伤害]对僵尸 %N 造成 %.2f 伤害", Client, Damage);
 		return Plugin_Changed;
 	}
 	return Plugin_Continue;
+}
+void Damage_Zombie_Credit(int Client)
+{
+	Damage_Zombie[Client] = GetTime() + 3;
 }
