@@ -2,6 +2,7 @@ bool Infect_Human_NoInfect[MAXPLAYERS + 1];
 bool Infect_Human_NoMother[MAXPLAYERS + 1];
 bool Infect_Zombie_Respawn[MAXPLAYERS + 1];
 int Infect_Zombie_Time[MAXPLAYERS + 1];
+bool Infect_Enable = true;
 
 void Infect_Init()
 {
@@ -61,6 +62,11 @@ Action Infect_Respawn_Client_Timer(Handle Timer, any Client)
 }
 public Action ZR_OnClientInfect(&Client, &Attack, &bool: motherInfect, &bool: respawnOverride, &bool: Respawn)
 {
+	if(!Infect_Enable)
+	{
+		CPrintToChat(&Client, "{green}[ZA]{blue} 管理员关闭了尸变");
+		return Plugin_Handled;
+	}
 	if (GetTeamClientCount(CS_TEAM_CT) + GetTeamClientCount(CS_TEAM_T) < 6)
 	{
 		CPrintToChat(Client, "{green}[ZA]{blue} 玩家不足免疫尸变");
@@ -77,6 +83,20 @@ public Action ZR_OnClientInfect(&Client, &Attack, &bool: motherInfect, &bool: re
 		CPrintToChat(Client, "{green}[ZA]{blue} 你免疫了一次感染");
 		Infect_Human_NoInfect[Client] = false;
 		return Plugin_Handled;
+	}
+	return Plugin_Continue;
+}
+
+Action Infect_Command(int Client, int Args)
+{
+	Infect_Enable = !Infect_Enable;
+	if(Infect_Enable)
+	{
+		CPrintToChat(Client, "{blue} 尸变已被{green}打开");
+	}
+	else
+	{
+		CPrintToChat(Client, "{blue} 尸变已被{ged}关闭");
 	}
 	return Plugin_Continue;
 }
