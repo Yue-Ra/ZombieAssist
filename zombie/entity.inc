@@ -6,12 +6,12 @@ void Entity_OnPressed(const char[] Output, int Caller, int Activer, float Delay)
 {
 	if (CheckAlive(Activer))
 	{
-		CPrintToChatAll("{green}[ZA][实体]{blue} %N 使用了按钮/道具", Activer);
+		CPrintToChatAll("{green}[ZA][实体]{gold} %N{blue} 使用了按钮/道具", Activer);
 	}
 }
 Action Entity_Timer(Handle Timer)
 {
-	if (Navbar_Time < 30)
+	if (Time_Time < 30)
 	{
 		return Plugin_Handled;
 	}

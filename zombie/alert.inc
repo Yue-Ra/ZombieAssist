@@ -8,7 +8,7 @@ Regex Alert_Ignore;
 void Alert_OnPluginStart()
 {
 	Alert_Regex = CompileRegex("([0-9]+)");
-	Alert_Ignore = CompileRegex("(%|HP|MAP|LVL|TYPE|LEVEL|STAGE|MINUTE|POINTS|CONTACT|等级|关)", PCRE_CASELESS);
+	Alert_Ignore = CompileRegex("(%|HP|GIL|MAP|LVL|ONLY|TYPE|LEVEL|STAGE|SHOOTS|MINUTE|POINTS|CONTACT|关|等级|分钟)", PCRE_CASELESS);
 }
 void Alert_Init()
 {

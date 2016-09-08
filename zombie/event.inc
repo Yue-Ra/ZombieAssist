@@ -5,6 +5,7 @@ void Event_OnPluginStart()
 	HookEvent("weapon_fire", Event_WeaponFire, EventHookMode_Post);
 	HookEvent("round_start", Event_RoundStart, EventHookMode_Post);
 	HookEvent("round_end", Event_RoundEnd, EventHookMode_Post);
+	HookEvent("round_freeze_end", Event_RoundFreezeEnd, EventHookMode_Post);
 }
 void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
@@ -20,7 +21,7 @@ void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 	int Attack = GetClientOfUserId(GetEventInt(event, "attacker"));
 	if (CheckZombie(Client) && CheckHuman(Attack))
 	{
-		Credit_Up(Attack, 1);
+		Credit_Give(Attack, Mode_True ? 1 : 3 , "击杀僵尸");
 	}
 }
 void Event_WeaponFire(Event event, const char[] name, bool dontBroadcast)
@@ -30,18 +31,22 @@ void Event_WeaponFire(Event event, const char[] name, bool dontBroadcast)
 }
 void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
+	Clan_Check();
 	Infect_Init();
 	Damage_OnRoundStart();
 	Weapon_OnRoundStart();
-	Navbar_OnRoundStart();
+	Time_OnRoundStart();
 }
 void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
 	int Team = GetEventInt(event, "winner");
 	Alert_Init();
 	Alpha_OnRoundEnd();
-	Navbar_OnRoundEnd();
 	Map_OnRoundEnd(Team);
 	Credit_OnRoundEnd(Team);
 	Mode_OnRoundEnd();
+}
+void Event_RoundFreezeEnd(Event event, const char[] name, bool dontBroadcast)
+{
+	Time_OnRoundFreezeEnd();
 }

@@ -8,7 +8,7 @@ Action Alpha_Command(int Client, int Args)
 	if (CheckGame(Client))
 	{
 		Alpha_Client[Client] = !Alpha_Client[Client];
-		CPrintToChat(Client, "{green}[ZA][透明]{blue} 当前模型透明为 %s", Alpha_Client[Client] ? "开启" : "关闭");
+		CPrintToChat(Client, "{green}[ZA][透明]{blue} 当前模型透明为 {gold}%s", Alpha_Client[Client] ? "开启" : "关闭");
 	}
 	return Plugin_Handled;
 }
@@ -40,7 +40,7 @@ void Alpha_OnGameFrame()
 	{
 		return;
 	}
-	if (GetTeamClientCount(CS_TEAM_CT) + GetTeamClientCount(CS_TEAM_T) < 2)
+	if (!CheckRound(2))
 	{
 		return;
 	}

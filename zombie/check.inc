@@ -30,6 +30,18 @@ bool CheckZombie(int Client)
 	}
 	return ZR_IsClientZombie(Client);
 }
+bool CheckRound(int Client)
+{
+	if (MaxClients < Client)
+	{
+		return false;
+	}
+	if (GetTeamClientCount(CS_TEAM_CT) + GetTeamClientCount(CS_TEAM_T) < Client)
+	{
+		return false;
+	}
+	return true;
+}
 int HumanCount()
 {
 	int Count = 0;

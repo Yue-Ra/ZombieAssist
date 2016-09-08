@@ -31,10 +31,10 @@ void Infect_Respawn_Check(int Client)
 	if (!Infect_Zombie_Respawn[Client])
 	{
 		Infect_Zombie_Time[Client] = GetTime() + 5;
-		CPrintToChat(Client, "{green}[ZA][感染]{blue} 5秒内使用爆菊馒头可以变成人类");
+		CPrintToChat(Client, "{green}[ZA][感染]{blue} {gold}5{blue}秒内使用爆菊馒头可以变成人类");
 		return;
 	}
-	CPrintToChatAll("{green}[ZA][感染]{blue} 僵尸 %N 拥有爆菊馒头效果,5秒后将变成人类", Client);
+	CPrintToChatAll("{green}[ZA][感染]{blue} 僵尸 %N 拥有爆菊馒头效果,{gold}5{blue}秒后将变成人类", Client);
 	CreateTimer(5.0, Infect_Respawn_Client_Timer, Client);
 }
 void Infect_Respawn_Credit(int Client)
@@ -48,7 +48,7 @@ void Infect_Respawn_Credit(int Client)
 		CPrintToChat(Client, "{green}[ZA][感染]{red} 爆菊馒头用的太晚啦,已经无效了");
 		return;
 	}
-	CPrintToChatAll("{green}[ZA][感染]{blue} 僵尸 %N 拥有爆菊馒头效果,5秒后将变成人类", Client);
+	CPrintToChatAll("{green}[ZA][感染]{blue} 僵尸 %N 拥有爆菊馒头效果,{gold}5{blue}秒后将变成人类", Client);
 	CreateTimer(5.0, Infect_Respawn_Client_Timer, Client);
 }
 Action Infect_Respawn_Client_Timer(Handle Timer, any Client)
@@ -61,22 +61,22 @@ Action Infect_Respawn_Client_Timer(Handle Timer, any Client)
 }
 public Action ZR_OnClientInfect(&Client, &Attack, &bool: motherInfect, &bool: respawnOverride, &bool: Respawn)
 {
-	// if (GetTeamClientCount(CS_TEAM_CT) + GetTeamClientCount(CS_TEAM_T) < 6)
-	// {
-	// 	CPrintToChat(Client, "{green}[ZA]{blue} 玩家不足免疫尸变");
-	// 	return Plugin_Handled;
-	// }
 	if (Attack <= 0 && Infect_Human_NoMother[Client])
 	{
 		CPrintToChat(Client, "{green}[ZA]{blue} 你免疫了开局尸变");
 		Infect_Human_NoMother[Client] = false;
 		return Plugin_Handled;
 	}
-	if (CheckZombie(Attack) && Infect_Human_NoInfect[Client])
+	if (CheckZombie(Attack))
 	{
-		CPrintToChat(Client, "{green}[ZA]{blue} 你免疫了一次感染");
-		Infect_Human_NoInfect[Client] = false;
-		return Plugin_Handled;
+		if (Infect_Human_NoInfect[Client])
+		{
+			CPrintToChat(Client, "{green}[ZA]{blue} 你免疫了一次感染");
+			Infect_Human_NoInfect[Client] = false;
+			return Plugin_Handled;
+		}
+		Credit_Give(Attack, 1, "感染人类");
+		//CPrintToChat(Attack, "{green}[ZA][感染]{blue} 感染人类获得 {gold}1{blue} 积分");
 	}
 	return Plugin_Continue;
 }

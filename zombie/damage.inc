@@ -28,27 +28,24 @@ void Damage_OnRoundStart()
 	Damage_Show();
 	for (int Client = 1; Client <= MaxClients; Client++)
 	{
-		Damage_Zombie[Client] = 0;
-		Damage_Attack[Client] = 0;
-		Damage_Attack_Temp[Client] = 0;
-		Damage_Infect[Client] = 0;
+		Damage_Init(Client);
 	}
 }
 void Damage_Attack_Up(int Client, int Value)
 {
 	Damage_Attack[Client] += Value;
 	Damage_Attack_Temp[Client] += Value;
-	if (Damage_Attack_Temp[Client] < 8000)
+	if (Damage_Attack_Temp[Client] < 4000)
 	{
 		return;
 	}
-	Damage_Attack_Temp[Client] -= 8000;
-	CPrintToChat(Client, "{green}[ZA][伤害]{blue} 通过 8000 伤害获得 1 积分");
-	Credit_Up(Client, 1);
+	Damage_Attack_Temp[Client] -= 4000;
+	CPrintToChat(Client, "{green}[ZA][伤害]{blue} 通过 4000 伤害获得 {gold}1{blue} 积分");
+	Credit_Give(Client, 1, "4000点伤害");
 }
 void Damage_Show()
 {
-	if (!Navbar_Check)
+	if (!CheckRound(15) || Time_Time < 120)
 	{
 		return;
 	}
@@ -57,6 +54,10 @@ void Damage_Show()
 	{
 		for (int Client = 1; Client <= MaxClients; Client++)
 		{
+			if (Damage_Attack[Client] < 2500)
+			{
+				continue;
+			}
 			if (Damage_Attack_Rank[0] == Client || Damage_Attack_Rank[1] == Client || Damage_Attack_Rank[2] == Client || Damage_Attack_Rank[3] == Client || Damage_Attack_Rank[4] == Client)
 			{
 				continue;
@@ -74,6 +75,10 @@ void Damage_Show()
 	{
 		for (int Client = 1; Client <= MaxClients; Client++)
 		{
+			if (Damage_Infect[Client] < 2)
+			{
+				continue;
+			}
 			if (Damage_Infect_Rank[0] == Client || Damage_Infect_Rank[1] == Client || Damage_Infect_Rank[2] == Client || Damage_Infect_Rank[3] == Client || Damage_Infect_Rank[4] == Client)
 			{
 				continue;
@@ -97,7 +102,11 @@ Action Damage_Attack_Timer(Handle Timer)
 	{
 		if (CheckGame(Damage_Attack_Rank[Num]))
 		{
-			Format(Msg, sizeof(Msg), "%s\n%d. %N - %d", Msg, Num + 1, Damage_Attack_Rank[Num], Damage_Attack_Count[Num]);
+			int Credit = 5 - Num;
+			Format(Msg, sizeof(Msg), "伤害排行榜第 {gold}%d{blue} 名", Num + 1);
+			Credit_Give(Damage_Attack_Rank[Num], Credit, Msg, true);
+			Format(Msg, sizeof(Msg), "%s\n%d. %N - %d - %d积分", Msg, Num + 1, Damage_Attack_Rank[Num], Damage_Attack_Count[Num], Credit);
+			//CPrintToChatAll("{green}[ZA][伤害]{blue} 玩家 %N 在伤害排行榜第 {gold}%d{blue} 名获得 {gold}%d{blue} 积分", Damage_Attack_Rank[Num], Num + 1, Credit);
 		}
 		Damage_Attack_Rank[Num] = 0;
 		Damage_Attack_Count[Num] = 0;
@@ -112,7 +121,11 @@ Action Damage_Infect_Timer(Handle Timer)
 	{
 		if (CheckGame(Damage_Infect_Rank[Num]))
 		{
-			Format(Msg, sizeof(Msg), "%s\n%d. %N - %d", Msg, Num + 1, Damage_Infect_Rank[Num], Damage_Infect_Count[Num]);
+			int Credit = (6 - Num) / 2;
+			Format(Msg, sizeof(Msg), "感染排行榜第 {gold}%d{blue} 名", Num + 1);
+			Credit_Give(Damage_Attack_Rank[Num], Credit, Msg, true);
+			Format(Msg, sizeof(Msg), "%s\n%d. %N - %d - %d积分", Msg, Num + 1, Damage_Infect_Rank[Num], Damage_Infect_Count[Num], Credit);
+			//CPrintToChatAll("{green}[ZA][感染]{blue} 玩家 %N 在感染排行榜第 {gold}%d{blue} 名获得 {gold}%d{blue} 积分", Damage_Infect_Rank[Num], Num + 1, Credit);
 		}
 		Damage_Infect_Rank[Num] = 0;
 		Damage_Infect_Count[Num] = 0;
@@ -166,10 +179,6 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 		IgniteEntity(Client, 5.0);
 		return Plugin_Handled;
 	}
-	if (Attack == -1 && GetTeamClientCount(CS_TEAM_CT) + GetTeamClientCount(CS_TEAM_T) < 6)
-	{
-		return Plugin_Handled;
-	}
 	char ClassName[32];
 	GetEntityClassname(Attack, ClassName, sizeof(ClassName));
 	if (StrEqual(ClassName, "entityflame", false) && CheckHuman(Client))
@@ -189,7 +198,7 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 			PrintCenterTextAll("人类 %N 被僵尸 %N 爆菊了", Client, Attack);
 			ForcePlayerSuicide(Client);
 			Sound_Play();
-			Credit_Up(Attack, 1);
+			Credit_Give(Attack, 1, "爆菊人类");
 			Infect_Respawn_Check(Attack);
 			return Plugin_Handled;
 		}
@@ -228,7 +237,7 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 				}
 				else if (Damage == 55 || Damage == 65)
 				{
-					Damage = 8000.0;
+					Damage = 4000.0;
 				}
 				else if (Damage == 195)
 				{

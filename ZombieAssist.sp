@@ -7,10 +7,10 @@
 #include <morecolors>
 #include <stringescape>
 #include "zombie/function"
+#include "zombie/time"
 #include "zombie/alert"
 #include "zombie/sound"
 #include "zombie/check"
-#include "zombie/clan"
 #include "zombie/mode"
 #include "zombie/navbar"
 #include "zombie/entity"
@@ -23,8 +23,10 @@
 #include "zombie/damage"
 #include "zombie/event"
 #include "zombie/smoke"
-#include "zombie/infect"
 #include "zombie/credit"
+#include "zombie/level"
+#include "zombie/infect"
+#include "zombie/clan"
 #include "zombie/map"
 #include "zombie/translate"
 #include "zombie/admin"
@@ -58,6 +60,7 @@ public void OnPluginStart()
 	RegAdminCmd("sm_weapon_reload", Weapon_Reload_Command, ADMFLAG_GENERIC);
 	RegConsoleCmd("sm_alpha", Alpha_Command);
 	RegAdminCmd("sm_zeadmin", Admin_Command, ADMFLAG_GENERIC);
+	CreateTimer(1.0, Level_Timer, _, TIMER_REPEAT);
 	CreateTimer(1.0, Navbar_Timer, _, TIMER_REPEAT);
 	CreateTimer(20.0, Info_Timer, _, TIMER_REPEAT);
 	CreateTimer(30.0, Entity_Timer, _, TIMER_REPEAT);
@@ -95,7 +98,6 @@ public void OnClientConnected(int Client)
 }
 public void OnClientPutInServer(int Client)
 {
-	Clan_Init(Client);
 	Admin_Init(Client);
 	Damage_Init(Client);
 	Client_Load(Client);

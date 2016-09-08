@@ -91,10 +91,11 @@ void Weapon_Menu(int Client)
 {
 	Menu MenuHandle = CreateMenu(Weapon_Menu_Handle);
 	SetMenuTitle(MenuHandle, "武器菜单\n当前金钱 %d", GetCash(Client));
-	char ItemName[32];
+	char ItemName[64];
 	for (int Num = 0; Num < Weapon_Max; Num++)
 	{
-		Format(ItemName, sizeof(ItemName), "%s - %d", Weapon_Name[Num], Weapon_Cash[Num]);
+		Format(ItemName, sizeof(ItemName), "%s(%s) - %d", Weapon_Name[Num], Weapon_Alias[Num], Weapon_Cash[Num]);
+		ReplaceString(ItemName, sizeof(ItemName), "weapon_", "", false);
 		AddMenuItem(MenuHandle, "", ItemName);
 	}
 	SetMenuExitBackButton(MenuHandle, true);
@@ -109,26 +110,27 @@ int Weapon_Menu_Handle(Menu MenuHandle, MenuAction ActionHandle, int Client, int
 }
 void Weapon_Buy(int Client, int Item)
 {
-	if (!CheckHuman(Client))
-	{
-		return;
-	}
 	if (!Weapon_Allow)
 	{
 		CPrintToChat(Client, "{green}[ZA][武器]{red} 武器功能已被禁用");
 		return;
 	}
+	if (!CheckHuman(Client))
+	{
+		CPrintToChat(Client, "{green}[ZA][武器]{red} 只有人类才能打手枪");
+		return;
+	}
 	int Cash = GetCash(Client);
 	if (Cash < Weapon_Cash[Item])
 	{
-		CPrintToChat(Client, "{green}[ZA][武器]{red} 金钱不足，还需要 %d", Weapon_Cash[Item] - Cash);
+		CPrintToChat(Client, "{green}[ZA][武器]{red} 金钱不足,还需要 {gold}%d", Weapon_Cash[Item] - Cash);
 		return;
 	}
 	if (Weapon_Limit > 0 && StrEqual(Weapon_Name[Item], "weapon_hegrenade", false))
 	{
 		if (Weapon_Client[Client] >= Weapon_Limit)
 		{
-			CPrintToChat(Client, "{green}[ZA][武器]{red} 手雷购买超过上限 %d", Weapon_Limit);
+			CPrintToChat(Client, "{green}[ZA][武器]{red} 手雷购买超过上限 {gold}%d", Weapon_Limit);
 			return;
 		}
 		else

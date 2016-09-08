@@ -23,19 +23,27 @@ Action Credit_Test(int Client, int Args)
 {
 	Credit_Client[Client] = 20;
 }
-void Credit_Up(int Client, int Value)
+void Credit_Give(int Client, int Value, const char[] Reason, bool ChatAll = false)
 {
 	Credit_Client[Client] += Value;
 	if (Credit_Client[Client] > 20)
 	{
 		Credit_Client[Client] = 20;
 	}
+	if (!ChatAll)
+	{
+		CPrintToChat(Client, "{green}[ZA][积分]{blue} 你通过 %s 获得了 {gold}%d{blue} 积分", Reason, Value);
+	}
+	else
+	{
+		CPrintToChatAll("{green}[ZA][积分]{blue} 玩家 %N 通过 %s 获得了 {gold}%d{blue} 积分", Client, Reason, Value);
+	}
 }
 bool Credit_Down(int Client, int Value)
 {
 	if (Credit_Client[Client] < Value)
 	{
-		CPrintToChat(Client, "{green}[ZA][积分]{red} 积分不足,还需要 %d", Value - Credit_Client[Client]);
+		CPrintToChat(Client, "{green}[ZA][积分]{red} 积分不足,还需要 {gold}%d", Value - Credit_Client[Client]);
 		return false;
 	}
 	Credit_Client[Client] -= Value;
@@ -108,6 +116,11 @@ void Credit_OnMapStart()
 	for (int Client = 1; Client <= MaxClients; Client++)
 	{
 		Credit_Client[Client] = 0;
+		for (int Item = 0; Item < 6; Item++)
+		{
+			Credit_Human_Time[Client][Item] = 0;
+			Credit_Zombie_Time[Client][Item] = 0;
+		}
 	}
 }
 void Credit_OnClientPutInServer(int Client)
@@ -121,29 +134,23 @@ void Credit_OnClientPutInServer(int Client)
 }
 void Credit_OnRoundEnd(int Team)
 {
-	int Give = 1;
 	if (Team == CS_TEAM_CT)
 	{
-		if (HumanCount() < 20)
-		{
-			Give = 2;
-		}
+		CPrintToChatAll("{green}[ZA][积分]{blue} 存活人类获得 {gold}3{blue} 积分");
 		for (int Client = 1; Client <= MaxClients; Client++)
 		{
-			if (CheckHuman(Client))
+			if (CheckAlive(Client))
 			{
-				Credit_Up(Client, Give);
+				Credit_Give(Client, 3, "人类胜利");
 			}
 		}
 	}
 	else
 	{
+		CPrintToChatAll("{green}[ZA][积分]{blue} 所有玩家获得 {gold}1{blue} 积分");
 		for (int Client = 1; Client <= MaxClients; Client++)
 		{
-			if (CheckZombie(Client))
-			{
-				Credit_Up(Client, Give);
-			}
+			Credit_Give(Client, 1, "这局游戏");
 		}
 	}
 	for (int Client = 1; Client <= MaxClients; Client++)
@@ -187,7 +194,7 @@ Action Credit_Command(int Client, int Args)
 				{
 					if (Credit_Human_Time[Client][Item] > Time)
 					{
-						CPrintToChat(Client, "{green}[ZA][积分]{red} %s 冷却时间还有 %d 秒", Credit_Human_Name[Item], Credit_Human_Time[Client][Item] - Time);
+						CPrintToChat(Client, "{green}[ZA][积分]{red} %s 冷却时间还有 {gold}%d{red} 秒", Credit_Human_Name[Item], Credit_Human_Time[Client][Item] - Time);
 						return Plugin_Handled;
 					}
 					if (!Credit_Down(Client, Credit_Human_Cost[Item]))
@@ -215,7 +222,7 @@ Action Credit_Command(int Client, int Args)
 				{
 					if (Credit_Zombie_Time[Client][Item] > Time)
 					{
-						CPrintToChat(Client, "{green}[ZA][积分]{red} %s 冷却时间还有 %d 秒", Credit_Zombie_Name[Item], Credit_Zombie_Time[Client][Item] - Time);
+						CPrintToChat(Client, "{green}[ZA][积分]{red} %s 冷却时间还有 {gold}%d{red} 秒", Credit_Zombie_Name[Item], Credit_Zombie_Time[Client][Item] - Time);
 						return Plugin_Handled;
 					}
 					if (!Credit_Down(Client, Credit_Zombie_Cost[Item]))
@@ -293,7 +300,7 @@ void Credit_Human_Buy(int Client, int Item)
 	int Time = GetTime();
 	if (Credit_Human_Time[Client][Item] > Time)
 	{
-		CPrintToChat(Client, "{green}[ZA][积分]{red} %s 冷却时间还有 %d 秒", Credit_Human_Name[Item], Credit_Human_Time[Client][Item] - Time);
+		CPrintToChat(Client, "{green}[ZA][积分]{red} %s 冷却时间还有 {gold}%d{red} 秒", Credit_Human_Name[Item], Credit_Human_Time[Client][Item] - Time);
 		return;
 	}
 	if (!Credit_Down(Client, Credit_Human_Cost[Item]))
@@ -325,7 +332,7 @@ void Creidt_Zombie_Buy(int Client, int Item)
 	int Time = GetTime();
 	if (Credit_Zombie_Time[Client][Item] > Time)
 	{
-		CPrintToChat(Client, "{green}[ZA][积分]{red} %s 冷却时间还有 %d 秒", Credit_Zombie_Name[Item], Credit_Zombie_Time[Client][Item] - Time);
+		CPrintToChat(Client, "{green}[ZA][积分]{red} %s 冷却时间还有 {gold}%d{red} 秒", Credit_Zombie_Name[Item], Credit_Zombie_Time[Client][Item] - Time);
 		return;
 	}
 	if (!Credit_Down(Client, Credit_Zombie_Cost[Item]))

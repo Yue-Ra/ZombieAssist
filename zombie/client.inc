@@ -39,11 +39,12 @@ void Client_Load_Query(Handle Owner, Handle Child, const char[] Error, any Clien
 		return;
 	}
 	Client_ID[Client] = SQL_FetchInt(Child, 0);
+	Level_Init(Client, SQL_FetchInt(Child, 3), SQL_FetchInt(Child, 4));
 	char Query[192];
 	Format(Query, sizeof(Query), "UPDATE user SET name='%s' WHERE id=%d", Client_Name[Client], Client_ID[Client]);
 	SQL_TQuery(MySQL, MySQL_Query, Query);
 	LogMessage(Query);
-	CPrintToChat(Client, "{green}[ZA][用户]{blue} 玩家信息读取完成,玩家UID为: %d", Client_ID[Client]);
+	CPrintToChat(Client, "{green}[ZA][用户]{blue} 玩家信息读取完成,玩家UID为 {gold}%d", Client_ID[Client]);
 	LogMessage("Client %d Load Success", Client_ID[Client]);
 }
 void Client_Create(int Client)
