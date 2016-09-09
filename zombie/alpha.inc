@@ -8,6 +8,10 @@ Action Alpha_Command(int Client, int Args)
 	if (CheckGame(Client))
 	{
 		Alpha_Client[Client] = !Alpha_Client[Client];
+		if (!Alpha_Client[Client])
+		{
+			SetAlpha(Client, 255);
+		}
 		CPrintToChat(Client, "{green}[ZA][透明]{blue} 当前模型透明为 {gold}%s", Alpha_Client[Client] ? "开启" : "关闭");
 	}
 	return Plugin_Handled;

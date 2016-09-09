@@ -46,8 +46,8 @@ public void OnPluginStart()
 	Event_OnPluginStart();
 	Entity_OnPluginStart();
 	RegConsoleCmd("sm_jifen", Credit_Command);
-	RegAdminCmd("sm_test", Credit_Test, ADMFLAG_GENERIC);
 	RegConsoleCmd("sm_credit", Credit_Command);
+	RegConsoleCmd("sm_credits", Credit_Command);
 	RegAdminCmd("sm_credit_reload", Credit_Reload_Command, ADMFLAG_GENERIC);
 	RegConsoleCmd("say", Say_Command);
 	RegAdminCmd("sm_map_reload", Map_Reload_Command, ADMFLAG_GENERIC);

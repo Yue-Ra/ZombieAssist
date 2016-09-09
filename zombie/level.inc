@@ -7,7 +7,7 @@ Action Level_Timer(Handle Timer)
 	char Msg[192];
 	for (int Client = 1; Client <= MaxClients; Client++)
 	{
-		if (CheckAlive(Client))
+		if (CheckGame(Client))
 		{
 			Format(Msg, sizeof(Msg), "积分 %d\n等级 %d\n经验 %d/%d", Credit_Client[Client], Level_Client[Client], Level_Points[Client], Level_Points_Client[Client]);
 			SendHudTextMsg(Client, 0.9, 0.7, 1.0, 255, 200, 0, Msg);

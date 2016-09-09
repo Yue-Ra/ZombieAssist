@@ -17,9 +17,8 @@ void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 }
 void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
-	int Client = GetClientOfUserId(GetEventInt(event, "userid"));
 	int Attack = GetClientOfUserId(GetEventInt(event, "attacker"));
-	if (CheckZombie(Client) && CheckHuman(Attack))
+	if (CheckHuman(Attack))
 	{
 		Credit_Give(Attack, Mode_True ? 1 : 3 , "击杀僵尸");
 	}

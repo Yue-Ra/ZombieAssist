@@ -103,10 +103,10 @@ Action Damage_Attack_Timer(Handle Timer)
 		if (CheckGame(Damage_Attack_Rank[Num]))
 		{
 			int Credit = 5 - Num;
-			Format(Msg, sizeof(Msg), "伤害排行榜第 {gold}%d{blue} 名", Num + 1);
-			Credit_Give(Damage_Attack_Rank[Num], Credit, Msg, true);
+			char Rank[32];
+			Format(Rank, sizeof(Rank), "伤害排行榜第 %d 名", Num + 1);
+			Credit_Give(Damage_Attack_Rank[Num], Credit, Rank, true);
 			Format(Msg, sizeof(Msg), "%s\n%d. %N - %d - %d积分", Msg, Num + 1, Damage_Attack_Rank[Num], Damage_Attack_Count[Num], Credit);
-			//CPrintToChatAll("{green}[ZA][伤害]{blue} 玩家 %N 在伤害排行榜第 {gold}%d{blue} 名获得 {gold}%d{blue} 积分", Damage_Attack_Rank[Num], Num + 1, Credit);
 		}
 		Damage_Attack_Rank[Num] = 0;
 		Damage_Attack_Count[Num] = 0;
@@ -122,10 +122,10 @@ Action Damage_Infect_Timer(Handle Timer)
 		if (CheckGame(Damage_Infect_Rank[Num]))
 		{
 			int Credit = (6 - Num) / 2;
-			Format(Msg, sizeof(Msg), "感染排行榜第 {gold}%d{blue} 名", Num + 1);
-			Credit_Give(Damage_Attack_Rank[Num], Credit, Msg, true);
+			char Rank[32];
+			Format(Rank, sizeof(Rank), "感染排行榜第 %d 名", Num + 1);
+			Credit_Give(Damage_Infect_Rank[Num], Credit, Rank, true);
 			Format(Msg, sizeof(Msg), "%s\n%d. %N - %d - %d积分", Msg, Num + 1, Damage_Infect_Rank[Num], Damage_Infect_Count[Num], Credit);
-			//CPrintToChatAll("{green}[ZA][感染]{blue} 玩家 %N 在感染排行榜第 {gold}%d{blue} 名获得 {gold}%d{blue} 积分", Damage_Infect_Rank[Num], Num + 1, Credit);
 		}
 		Damage_Infect_Rank[Num] = 0;
 		Damage_Infect_Count[Num] = 0;

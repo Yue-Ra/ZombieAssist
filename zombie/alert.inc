@@ -1,5 +1,4 @@
 int Alert_Count[6];
-char Alert_Found[6][32];
 char Alert_String[6][192];
 Handle Alert_Handle[6];
 Regex Alert_Regex;
@@ -8,7 +7,7 @@ Regex Alert_Ignore;
 void Alert_OnPluginStart()
 {
 	Alert_Regex = CompileRegex("([0-9]+)");
-	Alert_Ignore = CompileRegex("(%|HP|GIL|MAP|LVL|ONLY|TYPE|LEVEL|STAGE|SHOOTS|MINUTE|POINTS|CONTACT|关|等级|分钟)", PCRE_CASELESS);
+	Alert_Ignore = CompileRegex("(%|@|BY|HP|TIP|GIL|MAP|LVL|ONLY|TYPE|EIFEL|LEVEL|STAGE|SHOOTS|MINUTE|POINTS|CONTACT|COWBELL|COOLDOWN|关|等级|提示|分钟)", PCRE_CASELESS);
 }
 void Alert_Init()
 {
@@ -42,25 +41,26 @@ void Alert_Check(const char[] Msg)
 	{
 		return;
 	}
-	int Num = Alert_Alive();
-	strcopy(Alert_String[Num], sizeof(Alert_String[]), Msg);
-	if (!Alert_Regex.GetSubString(Count - 1, Alert_Found[Num], sizeof(Alert_Found[])))
+	char Found[32];
+	if (!Alert_Regex.GetSubString(Count - 1, Found, sizeof(Found)))
 	{
 		return;
 	}
-	ReplaceString(Alert_String[Num], sizeof(Alert_String[]), Alert_Found[Num], "{TIME}", false);
+	int Num = StringToInt(Found);
+	char RegexStr[192];
+	strcopy(RegexStr, sizeof(RegexStr), Msg);
+	ReplaceString(RegexStr, sizeof(RegexStr), Found, "{TIME}", false);
 	for (int Line = 0; Line < 6; Line++)
 	{
-		if (Alert_Count[Line] == 0 || Num == Line)
-		{
-			continue;
-		}
-		if (StrEqual(Alert_String[Num], Alert_String[Line], false))
+		if (StrEqual(RegexStr, Alert_String[Line], false))
 		{
 			return;
 		}
 	}
-	Alert_Count[Num] = StringToInt(Alert_Found[Num]);
+	int Time = Num;
+	Num = Alert_Alive();
+	Alert_Count[Num] = Time;
+	strcopy(Alert_String[Num], sizeof(Alert_String[]), RegexStr);
 	Alert_Create(Alert_Count[Num], Num);
 	ClearTimer(Alert_Handle[Num]);
 	Alert_Handle[Num] = CreateTimer(1.0, Alert_Timer, Num, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
@@ -68,12 +68,14 @@ void Alert_Check(const char[] Msg)
 Action Alert_Timer(Handle Timer, any Num)
 {
 	Alert_Count[Num]--;
-	if (Alert_Count[Num] <= 0)
+	if (Alert_Count[Num] > 0)
 	{
-		ClearTimer(Alert_Handle[Num]);
+		Alert_Create(Alert_Count[Num], Num);
 		return Plugin_Handled;
 	}
-	Alert_Create(Alert_Count[Num], Num);
+	Alert_Count[Num] = 0;
+	Format(Alert_String[Num], sizeof(Alert_String[]), "");
+	ClearTimer(Alert_Handle[Num]);
 	return Plugin_Handled;
 }
 void Alert_Create(int Time, int Line)

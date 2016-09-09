@@ -121,6 +121,12 @@ stock void SendHudTextMsg(int Client, float X, float Y, float Time, int Red, int
 	{
 		ShowSyncHudText(Client, Hud, Msg);
 	}
+	CreateTimer(Time, Hud_Timer, Hud);
+}
+Action Hud_Timer(Handle Timer, any Hud)
+{
+	CloseHandle(Hud);
+	return Plugin_Handled;
 }
 stock void DealDamage(int Client, int Damage, int Attack = 0, int Type = DMG_GENERIC, char Weapon[] = "")
 {

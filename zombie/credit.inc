@@ -19,10 +19,6 @@ int Credit_Zombie_Time[MAXPLAYERS + 1][6];
 
 bool Credit_Allow = false;
 
-Action Credit_Test(int Client, int Args)
-{
-	Credit_Client[Client] = 20;
-}
 void Credit_Give(int Client, int Value, const char[] Reason, bool ChatAll = false)
 {
 	Credit_Client[Client] += Value;
@@ -150,7 +146,10 @@ void Credit_OnRoundEnd(int Team)
 		CPrintToChatAll("{green}[ZA][积分]{blue} 所有玩家获得 {gold}1{blue} 积分");
 		for (int Client = 1; Client <= MaxClients; Client++)
 		{
-			Credit_Give(Client, 1, "这局游戏");
+			if (CheckGame(Client))
+			{
+				Credit_Give(Client, 1, "这局游戏");
+			}
 		}
 	}
 	for (int Client = 1; Client <= MaxClients; Client++)
