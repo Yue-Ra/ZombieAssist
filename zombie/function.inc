@@ -125,7 +125,12 @@ stock void SendHudTextMsg(int Client, float X, float Y, float Time, int Red, int
 }
 Action Hud_Timer(Handle Timer, any Hud)
 {
+	if (Hud == INVALID_HANDLE)
+	{
+		return Plugin_Handled;
+	}
 	CloseHandle(Hud);
+	Hud = INVALID_HANDLE;
 	return Plugin_Handled;
 }
 stock void DealDamage(int Client, int Damage, int Attack = 0, int Type = DMG_GENERIC, char Weapon[] = "")
