@@ -2,9 +2,11 @@ bool Infect_Human_NoInfect[MAXPLAYERS + 1];
 bool Infect_Human_NoMother[MAXPLAYERS + 1];
 bool Infect_Zombie_Respawn[MAXPLAYERS + 1];
 int Infect_Zombie_Time[MAXPLAYERS + 1];
+float Infect_Time;
 
 void Infect_Init()
 {
+	Infect_Time = GetConVarFloat(FindConVar("zr_infect_spawntime_max"));
 	for (int Client = 1; Client <= MaxClients; Client++)
 	{
 		Infect_Human_NoInfect[Client] = false;
@@ -61,7 +63,7 @@ Action Infect_Respawn_Client_Timer(Handle Timer, any Client)
 }
 public Action ZR_OnClientInfect(&Client, &Attack, &bool: motherInfect, &bool: respawnOverride, &bool: Respawn)
 {
-	if (Attack <= 0 && Infect_Human_NoMother[Client])
+	if (Attack <= 0 && Infect_Time >= Time_Time && Infect_Human_NoMother[Client])
 	{
 		CPrintToChat(Client, "{green}[ZA]{blue} 你免疫了开局尸变");
 		Infect_Human_NoMother[Client] = false;
@@ -76,7 +78,6 @@ public Action ZR_OnClientInfect(&Client, &Attack, &bool: motherInfect, &bool: re
 			return Plugin_Handled;
 		}
 		Credit_Give(Attack, 1, "感染人类");
-		//CPrintToChat(Attack, "{green}[ZA][感染]{blue} 感染人类获得 {gold}1{blue} 积分");
 	}
 	return Plugin_Continue;
 }

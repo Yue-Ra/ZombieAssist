@@ -10,8 +10,7 @@ void Clan_Check()
 			{
 				return;
 			}
-			Credit_Give(Client, 2, "官方队标");
-			//CPrintToChat(Client, "{green}[ZA][队标]{blue} 获得官方队标奖励 {gold}2{blue} 积分");
+			Credit_Give(Client, 1, "官方队标");
 		}
 	}
 }

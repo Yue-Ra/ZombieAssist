@@ -176,7 +176,10 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 	}
 	if (DamageType == 64 && CheckZombie(Client) && Damage < 100)
 	{
+		ExtinguishEntity(Client);
 		IgniteEntity(Client, 5.0);
+		PrintCenterText(Attack, "[伤害]对僵尸 %N 造成 %.2f 伤害", Client, Damage);
+		Damage_Attack_Up(Attack, RoundToCeil(Damage));
 		return Plugin_Handled;
 	}
 	char ClassName[32];

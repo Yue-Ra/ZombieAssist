@@ -146,7 +146,7 @@ void Credit_OnRoundEnd(int Team)
 		CPrintToChatAll("{green}[ZA][积分]{blue} 所有玩家获得 {gold}1{blue} 积分");
 		for (int Client = 1; Client <= MaxClients; Client++)
 		{
-			if (CheckGame(Client))
+			if (CheckGame(Client) && GetClientTeam(Client) > CS_TEAM_SPECTATOR)
 			{
 				Credit_Give(Client, 1, "这局游戏");
 			}
