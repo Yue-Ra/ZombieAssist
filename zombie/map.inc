@@ -39,6 +39,7 @@ void Map_OnMapEnd()
 	Map_Spawn = 10.0;
 	Map_Win_Point = 100;
 	Map_Lose_Point = 30;
+	Map_TimeLimit = 30;
 }
 void Map_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 {
@@ -76,6 +77,12 @@ void Map_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 	Credit_Allow = SQL_FetchInt(Child, 14) == 0 ? false : true;
 	Map_Win_Point = SQL_FetchInt(Child, 15);
 	Map_Lose_Point = SQL_FetchInt(Child, 16);
+	SetConVarIntValue("mp_timelimit", SQL_FetchInt(Child, 20), true);
+	int Skills[12];
+	for (int Num = 0; Num < 12; Num++)
+	{
+
+	}
 	LogMessage("Map %s Load Success", Map_Name);
 }
 Action Map_Admin_Command(int Client, int Args)

@@ -215,7 +215,7 @@ Action Skill_3_Zombie_Timer(Handle Timer, any Client)
 {
 	if (CheckZombie(Client))
 	{
-		AddHealth(Client, Skill_Client[Client][2] * 100);
+		AddHealth(Client, Skill_Client[Client][2] * 200);
 	}
 	return Plugin_Handled;
 }

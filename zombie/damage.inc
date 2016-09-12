@@ -40,8 +40,9 @@ void Damage_Attack_Up(int Client, int Value)
 		return;
 	}
 	Damage_Attack_Temp[Client] -= 4000;
-	// CPrintToChat(Client, "{green}[ZA][伤害]{blue} 通过 4000 伤害获得 {gold}1{blue} 积分");
-	Credit_Give(Client, 1, "4000点伤害");
+	Credit_Give(Client, 1, "4000 点伤害");
+	Client_Point_Give(Client, 15);
+	CPrintToChat(Client, "{green}[ZA][等级]{blue} 伤害获得 {gold}15 {blue}经验");
 }
 void Damage_Show()
 {
@@ -208,6 +209,8 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 			ForcePlayerSuicide(Client);
 			Sound_Play();
 			Credit_Give(Attack, 1, "爆菊人类");
+			Client_Point_Give(Attack, 25);
+			CPrintToChat(Attack, "{green}[ZA][等级]{blue} 爆菊获得 {gold}25 {blue}经验");
 			Infect_Respawn_Check(Attack);
 			return Plugin_Handled;
 		}

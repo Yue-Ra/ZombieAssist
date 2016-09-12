@@ -36,8 +36,8 @@ void Event_WeaponFire(Event event, const char[] name, bool dontBroadcast)
 }
 void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
-	Clan_Check();
 	Infect_Init();
+	Clan_OnRoundStart();
 	Damage_OnRoundStart();
 	Weapon_OnRoundStart();
 	Time_OnRoundStart();

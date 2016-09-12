@@ -72,6 +72,10 @@ void Level_OnRoundEnd(int Team)
 			{
 				Client_Point_Give(Client, Point);
 			}
+			if (CheckGame(Client) && GetClientTeam(Client) > CS_TEAM_SPECTATOR)
+			{
+				Client_Point_Give(Client, Point / 3);
+			}
 		}
 	}
 	else

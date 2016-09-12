@@ -1,4 +1,4 @@
-void Clan_Check()
+void Clan_OnRoundStart()
 {
 	char ClanName[32];
 	for (int Client = 1; Client <= MaxClients; Client++)
