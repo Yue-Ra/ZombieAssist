@@ -37,5 +37,5 @@ void Translate_Query(Handle Owner, Handle Child, const char[] Error, any Message
 		return;
 	}
 	CPrintToChatAll("{green}[ZA][翻译]{lightgreen} %s", Translate);
-	Alert_Check(Translate);
+	Alert_Check(Translate, true);
 }

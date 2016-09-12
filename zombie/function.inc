@@ -207,3 +207,12 @@ stock void makeExplosion(int Attack = 0, int Inflictor = -1, const float Positio
 	AcceptEntityInput(Entity, "Explode");
 	AcceptEntityInput(Entity, "Kill");
 }
+stock bool CheckChinese(int Client)
+{
+	int Value = GetClientLanguage(Client);
+	if (Value == 23 || Value == 27)
+	{
+		return true;
+	}
+	return false;
+}

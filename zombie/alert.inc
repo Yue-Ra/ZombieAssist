@@ -1,6 +1,7 @@
 int Alert_Count[6];
 char Alert_String[6][192];
 Handle Alert_Handle[6];
+bool Alert_Chinese[6];
 Regex Alert_Regex;
 Regex Alert_Ignore;
 
@@ -30,7 +31,7 @@ int Alert_Alive()
 	ClearTimer(Alert_Handle[0]);
 	return 0;
 }
-void Alert_Check(const char[] Msg)
+void Alert_Check(const char[] Msg, bool Chinese = false)
 {
 	if (Alert_Ignore.Match(Msg) > 0)
 	{
@@ -59,6 +60,7 @@ void Alert_Check(const char[] Msg)
 	}
 	int Time = Num;
 	Num = Alert_Alive();
+	Alert_Chinese[Num] = Chinese;
 	Alert_Count[Num] = Time;
 	strcopy(Alert_String[Num], sizeof(Alert_String[]), RegexStr);
 	Alert_Create(Alert_Count[Num], Num);
@@ -94,5 +96,15 @@ void Alert_Create(int Time, int Line)
 		Color[0] = 255;
 		Color[1] = 0;
 	}
-	SendHudTextMsg(0, -1.0, 0.72 + 0.03 * Line, 1.1, Color[0], Color[1], Color[2], Msg);
+	for (int Client = 1; Client <= MaxClients; Client++)
+	{
+		if (CheckAlive(Client))
+		{
+			if ((CheckChinese(Client) && !Alert_Chinese[Line]) || (!CheckChinese(Client) && Alert_Chinese[Line]))
+			{
+				continue;
+			}
+			SendHudTextMsg(Client, -1.0, 0.72 + 0.03 * Line, 1.1, Color[0], Color[1], Color[2], Msg);
+		}
+	}
 }
