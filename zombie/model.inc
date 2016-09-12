@@ -1,12 +1,17 @@
+int Model_Client[MAXPLAYERS + 1];
+
 int Model_ID[128];
 char Model_Name[128][32];
 char Model_Path[128][128];
 int Model_Type[128];
-int Model_Client[MAXPLAYERS + 1];
 
 bool Model_Allow = true;
 int Model_Max = 0;
 
+void Model_Init(int Client, int Value)
+{
+	Model_Client[Client] = Value;
+}
 void Model_Load()
 {
 	if (MySQL == INVALID_HANDLE)
@@ -54,22 +59,16 @@ void Model_Menu(int Client)
 	Menu MenuHandle = CreateMenu(Model_Menu_Handle);
 	SetMenuTitle(MenuHandle, "模型菜单\n当前模型 %s", Model_Client[Client] == 0 ? "【普通】默认模型" : Model_Name[Model_Client[Client]]);
 	AddMenuItem(MenuHandle, "", "【普通】默认模型");
-	char ItemName[32];
+	char Item[32];
 	for (int Num = 0; Num < Model_Max; Num++)
 	{
-		if (Model_Type[Num] == 2)
+		switch (Model_Type[Num])
 		{
-			Format(ItemName, sizeof(ItemName), "【特殊】%s", Model_Name[Num]);
+		case 0: Format(Item, sizeof(Item), "【普通】%s", Model_Name[Num]);
+		case 1: Format(Item, sizeof(Item), "【会员】%s", Model_Name[Num]);
+		case 2: Format(Item, sizeof(Item), "【特殊】%s", Model_Name[Num]);
 		}
-		else if (Model_Type[Num] == 1)
-		{
-			Format(ItemName, sizeof(ItemName), "【会员】%s", Model_Name[Num]);
-		}
-		else
-		{
-			Format(ItemName, sizeof(ItemName), "【普通】%s", Model_Name[Num]);
-		}
-		AddMenuItem(MenuHandle, "", ItemName);
+		AddMenuItem(MenuHandle, "", Item);
 	}
 	SetMenuExitBackButton(MenuHandle, true);
 	DisplayMenu(MenuHandle, Client, 30);
@@ -106,6 +105,7 @@ void Model_Set(int Client)
 		return;
 	}
 	SetEntityModel(Client, Model_Path[Model_Client[Client]]);
+	CPrintToChat(Client, "{green}[ZA][模型] 当前模型为 %s", Model_Name[Model_Client[Client]]);
 }
 void Model_OnRoundStart()
 {

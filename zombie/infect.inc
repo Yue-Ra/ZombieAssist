@@ -78,6 +78,8 @@ public Action ZR_OnClientInfect(&Client, &Attack, &bool: motherInfect, &bool: re
 			return Plugin_Handled;
 		}
 		Credit_Give(Attack, 1, "感染人类");
+		Skill_4_OnClientInfect(Attack);
+		Skill_12_OnClientInfect(Attack);
 	}
 	return Plugin_Continue;
 }

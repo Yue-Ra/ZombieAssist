@@ -2,6 +2,8 @@ char Map_Name[32];
 int Map_Win = 0;
 int Map_Lose = 0;
 float Map_Spawn = 10.0;
+int Map_Win_Point = 100;
+int Map_Lose_Point = 30;
 
 void Map_Init()
 {
@@ -35,6 +37,8 @@ void Map_OnMapEnd()
 	Map_Win = 0;
 	Map_Lose = 0;
 	Map_Spawn = 10.0;
+	Map_Win_Point = 100;
+	Map_Lose_Point = 30;
 }
 void Map_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 {
@@ -70,9 +74,11 @@ void Map_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 	SetConVarIntValue("sv_enablebunnyhopping", SQL_FetchInt(Child, 12), true);
 	Weapon_Limit = SQL_FetchInt(Child, 13);
 	Credit_Allow = SQL_FetchInt(Child, 14) == 0 ? false : true;
+	Map_Win_Point = SQL_FetchInt(Child, 15);
+	Map_Lose_Point = SQL_FetchInt(Child, 16);
 	LogMessage("Map %s Load Success", Map_Name);
 }
-Action Map_Command(int Client)
+Action Map_Admin_Command(int Client, int Args)
 {
 	if (CheckGame(Client))
 	{
@@ -128,4 +134,12 @@ void Map_OnRoundEnd(int Team)
 	}
 	SQL_TQuery(MySQL, MySQL_Query, Query);
 	CPrintToChatAll("{green}[ZA][地图]{blue} 地图累计胜利 {gold}%d{blue} 失败 {gold}%d", Map_Win, Map_Lose);
+}
+int Get_WinPoint()
+{
+	return Map_Win_Point;
+}
+int Get_LosePoint()
+{
+	return Map_Lose_Point;
 }

@@ -16,9 +16,10 @@
 #include "zombie/entity"
 #include "zombie/mysql"
 #include "zombie/client"
+#include "zombie/model"
+#include "zombie/skill"
 #include "zombie/alpha"
 #include "zombie/info"
-#include "zombie/model"
 #include "zombie/weapon"
 #include "zombie/damage"
 #include "zombie/event"
@@ -49,8 +50,11 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_credit", Credit_Command);
 	RegConsoleCmd("sm_credits", Credit_Command);
 	RegAdminCmd("sm_credit_reload", Credit_Reload_Command, ADMFLAG_GENERIC);
+	RegConsoleCmd("sm_skill", Skill_Command);
+	RegAdminCmd("sm_skill_reload", Skill_Reload_Command, ADMFLAG_GENERIC);
 	RegConsoleCmd("say", Say_Command);
 	RegAdminCmd("sm_map_reload", Map_Reload_Command, ADMFLAG_GENERIC);
+	RegAdminCmd("sm_map_admin", Map_Admin_Command, ADMFLAG_GENERIC);
 	RegConsoleCmd("sm_skin", Model_Command);
 	RegAdminCmd("sm_info_reload", Info_Reload_Command, ADMFLAG_GENERIC);
 	RegConsoleCmd("sm_model", Model_Command);
@@ -78,6 +82,7 @@ public void OnMapStart()
 	Map_Init();
 	Map_Load();
 	Info_Load();
+	Skill_Load();
 	Alert_Init();
 	Model_Load();
 	Credit_Load();

@@ -10,14 +10,20 @@ void Event_OnPluginStart()
 void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int Client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if (CheckHuman(Client))
+	Skill_2_OnPlayerSpawn(Client);
+	Skill_3_OnPlayerSpawn(Client);
+	Skill_11_OnPlayerSpawn(Client);
+	if (ZR_IsClientHuman(Client))
 	{
 		SetArmour(Client, 100);
 	}
 }
 void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
+	int Client = GetClientOfUserId(GetEventInt(event, "userid"));
 	int Attack = GetClientOfUserId(GetEventInt(event, "attacker"));
+	Skill_2_OnPlayerDeath(Client);
+	Skill_3_OnPlayerDeath(Client);
 	if (CheckHuman(Attack))
 	{
 		Credit_Give(Attack, Mode_True ? 1 : 3 , "击杀僵尸");
@@ -35,6 +41,7 @@ void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 	Damage_OnRoundStart();
 	Weapon_OnRoundStart();
 	Time_OnRoundStart();
+	Model_OnRoundStart();
 }
 void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
@@ -42,6 +49,7 @@ void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 	Alert_Init();
 	Alpha_OnRoundEnd();
 	Map_OnRoundEnd(Team);
+	Level_OnRoundEnd(Team);
 	Credit_OnRoundEnd(Team);
 	Mode_OnRoundEnd();
 }

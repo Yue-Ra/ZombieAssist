@@ -2,6 +2,7 @@ char Weapon_Name[32][32];
 int Weapon_Type[32];
 int Weapon_Cash[32];
 char Weapon_Alias[32][32];
+bool Weapon_Skill[32];
 int Weapon_Limit = 0;
 int Weapon_Client[MAXPLAYERS + 1];
 int Weapon_Time[MAXPLAYERS + 1];
@@ -50,7 +51,8 @@ void Weapon_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 		Weapon_Type[Num] = SQL_FetchInt(Child, 1);
 		Weapon_Cash[Num] = SQL_FetchInt(Child, 2);
 		SQL_FetchString(Child, 3, Weapon_Alias[Num], sizeof(Weapon_Alias[]));
-		LogMessage("Weapon %d\tName %s\tType %d\tCash %d\tAlias %s", Num, Weapon_Name[Num], Weapon_Type[Num], Weapon_Cash[Num], Weapon_Alias[Num]);
+		Weapon_Skill[Num] = SQL_FetchInt(Child, 4) == 0 ? false : true ;
+		LogMessage("Weapon %d\tName %s\tType %d\tCash %d\tAlias %s\tSkill %d", Num, Weapon_Name[Num], Weapon_Type[Num], Weapon_Cash[Num], Weapon_Alias[Num], Weapon_Skill[Num]);
 		Num++;
 	}
 	Weapon_Max = Num;
@@ -92,9 +94,10 @@ void Weapon_Menu(int Client)
 	Menu MenuHandle = CreateMenu(Weapon_Menu_Handle);
 	SetMenuTitle(MenuHandle, "武器菜单\n当前金钱 %d", GetCash(Client));
 	char ItemName[64];
+	float Discount = Skill_11_OnWeapon(Client);
 	for (int Num = 0; Num < Weapon_Max; Num++)
 	{
-		Format(ItemName, sizeof(ItemName), "%s(%s) - %d", Weapon_Name[Num], Weapon_Alias[Num], Weapon_Cash[Num]);
+		Format(ItemName, sizeof(ItemName), "%s(%s) - %d", Weapon_Name[Num], Weapon_Alias[Num], RoundToCeil(Weapon_Cash[Num] * Discount));
 		ReplaceString(ItemName, sizeof(ItemName), "weapon_", "", false);
 		AddMenuItem(MenuHandle, "", ItemName);
 	}
@@ -120,10 +123,16 @@ void Weapon_Buy(int Client, int Item)
 		CPrintToChat(Client, "{green}[ZA][武器]{red} 只有人类才能打手枪");
 		return;
 	}
-	int Cash = GetCash(Client);
-	if (Cash < Weapon_Cash[Item])
+	if (Weapon_Skill[Item] && !Skill_10_OnWeapon(Client))
 	{
-		CPrintToChat(Client, "{green}[ZA][武器]{red} 金钱不足,还需要 {gold}%d", Weapon_Cash[Item] - Cash);
+		CPrintToChat(Client, "{green}[ZA][技能]{red} 请先学习 {gold}%s{blue} 技能", Skill_Name[9]);
+		return;
+	}
+	int Cash = GetCash(Client);
+	int Price = RoundToCeil(Weapon_Cash[Item] * Skill_11_OnWeapon(Client));
+	if (Cash < Price)
+	{
+		CPrintToChat(Client, "{green}[ZA][武器]{red} 金钱不足,还需要 {gold}%d", Price - Cash);
 		return;
 	}
 	if (Weapon_Limit > 0 && StrEqual(Weapon_Name[Item], "weapon_hegrenade", false))
@@ -138,7 +147,7 @@ void Weapon_Buy(int Client, int Item)
 			Weapon_Client[Client]++;
 		}
 	}
-	SetCash(Client, Cash - Weapon_Cash[Item]);
+	SetCash(Client, Cash - Price);
 	int Slot = GetPlayerWeaponSlot(Client, Weapon_Type[Item]);
 	if (Slot != -1)
 	{

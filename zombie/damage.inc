@@ -176,11 +176,17 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 	}
 	if (DamageType == 64 && CheckZombie(Client) && Damage < 100)
 	{
-		ExtinguishEntity(Client);
-		IgniteEntity(Client, 5.0);
-		PrintCenterText(Attack, "[伤害]对僵尸 %N 造成 %.2f 伤害", Client, Damage);
 		Damage_Attack_Up(Attack, RoundToCeil(Damage));
-		return Plugin_Handled;
+		ExtinguishEntity(Client);
+		IgniteEntity(Client, 5.0 + Skill_5_OnTakeDamage(Attack));
+		Damage += Skill_7_OnTakeDamage(Attack);
+		PrintCenterText(Attack, "[伤害]对僵尸 %N 造成 %.2f 伤害", Client, Damage);
+		if (GetClientHealth(Client) > Damage)
+		{
+			SetEntityHealth(Client, GetClientHealth(Client) - RoundToCeil(Damage));
+			return Plugin_Handled;
+		}
+		return Plugin_Changed;
 	}
 	char ClassName[32];
 	GetEntityClassname(Attack, ClassName, sizeof(ClassName));
@@ -226,6 +232,7 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 	if (CheckZombie(Client) && CheckHuman(Attack))
 	{
 		Damage_Attack_Up(Attack, RoundToCeil(Damage));
+		Skill_4_OnTakeDamage(Attack, RoundToCeil(Damage));
 		if (Damage == 15 || Damage == 20 || Damage == 55 || Damage == 65 || Damage == 195)
 		{
 			CPrintToChatAll("{green}[ZA][伤害]{red} 人类 %N 刀了僵尸 %N", Attack, Client);
@@ -249,14 +256,30 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 			}
 		}
 		Damage *= Damage_Improve();
-		if (Damage_Zombie[Client] >= GetTime())
+		Damage *= Damage_Zombie_Check(Client);
+		Damage *= Skill_3_OnTakeDamage(Client);
+		if (Skill_6_OnTakeDamage(Attack))
 		{
-			Damage *= 0.4;
+			IgniteEntity(Client, 0.5);
+			CPrintToChat(Attack, "{green}[ZA][技能]{blue} 触发了燃烧子弹效果");
+		}
+		if (Skill_8_OnTakeDamage(Attack))
+		{
+			Damage *= 3.0;
+			CPrintToChat(Attack, "{green}[ZA][技能]{blue} 触发了致命一击效果");
 		}
 		PrintCenterText(Attack, "[伤害]对僵尸 %N 造成 %.2f 伤害", Client, Damage);
 		return Plugin_Changed;
 	}
 	return Plugin_Continue;
+}
+float Damage_Zombie_Check(int Client)
+{
+	if (Damage_Zombie[Client] > GetTime())
+	{
+		return 0.4;
+	}
+	return 1.0;
 }
 void Damage_Zombie_Credit(int Client)
 {

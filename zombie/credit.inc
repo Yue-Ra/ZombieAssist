@@ -22,9 +22,10 @@ bool Credit_Allow = false;
 void Credit_Give(int Client, int Value, const char[] Reason, bool ChatAll = false)
 {
 	Credit_Client[Client] += Value;
-	if (Credit_Client[Client] > 20)
+	int Skill = Skill_1(Client);
+	if (Credit_Client[Client] > 20 + Skill)
 	{
-		Credit_Client[Client] = 20;
+		Credit_Client[Client] = 20 + Skill;
 	}
 	if (!ChatAll)
 	{
@@ -247,11 +248,11 @@ Action Credit_Command(int Client, int Args)
 void Credit_Human_Menu(int Client)
 {
 	Menu MenuHandle = CreateMenu(Credit_Human_Menu_Handle);
-	SetMenuTitle(MenuHandle, "【人类】积分菜单\n当前积分 %d", Credit_Client[Client]);
+	SetMenuTitle(MenuHandle, "[人类]积分菜单\n当前积分 %d", Credit_Client[Client]);
 	for (int Num = 0; Num < Credit_Human_Max; Num++)
 	{
 		char Line[192];
-		Format(Line, sizeof(Line), "【人类】%s - %d积分\n【快捷】%s - %s", Credit_Human_Name[Num], Credit_Human_Cost[Num], Credit_Human_Alias[Num], Credit_Human_Info[Num]);
+		Format(Line, sizeof(Line), "[人类]%s - %d积分\n[快捷]%s - %s", Credit_Human_Name[Num], Credit_Human_Cost[Num], Credit_Human_Alias[Num], Credit_Human_Info[Num]);
 		AddMenuItem(MenuHandle, "", Line);
 	}
 	SetMenuExitBackButton(MenuHandle, true);
@@ -260,11 +261,11 @@ void Credit_Human_Menu(int Client)
 void Credit_Zombie_Menu(int Client)
 {
 	Menu MenuHandle = CreateMenu(Credit_Zombie_Menu_Handle);
-	SetMenuTitle(MenuHandle, "【僵尸】积分菜单\n当前积分 %d", Credit_Client[Client]);
+	SetMenuTitle(MenuHandle, "[僵尸]积分菜单\n当前积分 %d", Credit_Client[Client]);
 	for (int Num = 0; Num < Credit_Zombie_Max; Num++)
 	{
 		char Line[192];
-		Format(Line, sizeof(Line), "【僵尸】%s - %d积分\n【快捷】%s - %s", Credit_Zombie_Name[Num], Credit_Zombie_Cost[Num], Credit_Zombie_Alias[Num] , Credit_Zombie_Info[Num]);
+		Format(Line, sizeof(Line), "[僵尸]%s - %d积分\n[快捷]%s - %s", Credit_Zombie_Name[Num], Credit_Zombie_Cost[Num], Credit_Zombie_Alias[Num] , Credit_Zombie_Info[Num]);
 		AddMenuItem(MenuHandle, "", Line);
 	}
 	SetMenuExitBackButton(MenuHandle, true);
@@ -350,6 +351,11 @@ void Creidt_Zombie_Buy(int Client, int Item)
 }
 void Credit_Human_1(int Client)
 {
+	if (!Skill_10_OnWeapon(Client))
+	{
+		CPrintToChat(Client, "{green}[ZA]{blue} 请先学习 {gold}%s{blue} 技能", Skill_Name[9]);
+		return;
+	}
 	GivePlayerItem(Client, "weapon_smokegrenade");
 }
 void Credit_Human_2(int Client)
@@ -366,6 +372,11 @@ void Credit_Human_4(int Client)
 }
 void Credit_Human_5(int Client)
 {
+	if (!Skill_9_OnCredit(Client))
+	{
+		CPrintToChat(Client, "{green}[ZA]{blue} 请先学习 {gold}%s{blue} 技能", Skill_Name[8]);
+		return;
+	}
 	Infect_NoInfect(Client);
 }
 void Credit_Zombie_1(int Client)

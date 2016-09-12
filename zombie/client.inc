@@ -1,12 +1,20 @@
 int Client_ID[MAXPLAYERS + 1];
 char Client_Name[MAXPLAYERS + 1][32];
 char Client_Steam[MAXPLAYERS + 1][32];
+int Client_Level[MAXPLAYERS + 1];
+int Client_Point[MAXPLAYERS + 1];
+int Client_Birth[MAXPLAYERS + 1];
+
+int Client_LevelUp[MAXPLAYERS + 1];
 void Client_Init(int Client)
 {
 	char Name[32];
 	GetClientName(Client, Name, sizeof(Name));
 	EscapeStringMySQL(Name, Client_Name[Client], sizeof(Client_Name[]));
 	GetClientAuthId(Client, AuthId_Steam2, Client_Steam[Client], sizeof(Client_Steam[]));
+	Client_Level[Client] = 0;
+	Client_Point[Client] = 0;
+	Client_Birth[Client] = 0;
 }
 void Client_Load(int Client)
 {
@@ -39,7 +47,17 @@ void Client_Load_Query(Handle Owner, Handle Child, const char[] Error, any Clien
 		return;
 	}
 	Client_ID[Client] = SQL_FetchInt(Child, 0);
-	Level_Init(Client, SQL_FetchInt(Child, 3), SQL_FetchInt(Child, 4));
+	Client_Level[Client] = SQL_FetchInt(Child, 3);
+	Client_Point[Client] = SQL_FetchInt(Child, 4);
+	Client_Birth[Client] = SQL_FetchInt(Child, 5);
+	Client_LevelUp[Client] = Client_LevelUp_Count(Client);
+	Model_Init(Client, SQL_FetchInt(Child, 6));
+	int Skills[12];
+	for (int Num = 0; Num < 12; Num++)
+	{
+		Skills[Num] = SQL_FetchInt(Child, 7 + Num);
+	}
+	Skill_Init(Client, Skills);
 	char Query[192];
 	Format(Query, sizeof(Query), "UPDATE user SET name='%s' WHERE id=%d", Client_Name[Client], Client_ID[Client]);
 	SQL_TQuery(MySQL, MySQL_Query, Query);
