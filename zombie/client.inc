@@ -57,7 +57,7 @@ void Client_Load_Query(Handle Owner, Handle Child, const char[] Error, any Clien
 	{
 		Skills[Num] = SQL_FetchInt(Child, 7 + Num);
 	}
-	Skill_Init(Client, Skills);
+	Skill_Set(Client, Skills);
 	char Query[192];
 	Format(Query, sizeof(Query), "UPDATE user SET name='%s' WHERE id=%d", Client_Name[Client], Client_ID[Client]);
 	SQL_TQuery(MySQL, MySQL_Query, Query);

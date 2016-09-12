@@ -125,7 +125,7 @@ void Weapon_Buy(int Client, int Item)
 	}
 	if (Weapon_Skill[Item] && !Skill_10_OnWeapon(Client))
 	{
-		CPrintToChat(Client, "{green}[ZA][技能]{red} 请先学习 {gold}%s{blue} 技能", Skill_Name[9]);
+		CPrintToChat(Client, "{green}[ZA][技能]{red} 请先学习 {gold}%s{red} 技能", Skill_Name[9]);
 		return;
 	}
 	int Cash = GetCash(Client);

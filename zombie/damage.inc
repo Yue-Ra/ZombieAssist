@@ -40,7 +40,7 @@ void Damage_Attack_Up(int Client, int Value)
 		return;
 	}
 	Damage_Attack_Temp[Client] -= 4000;
-	CPrintToChat(Client, "{green}[ZA][伤害]{blue} 通过 4000 伤害获得 {gold}1{blue} 积分");
+	// CPrintToChat(Client, "{green}[ZA][伤害]{blue} 通过 4000 伤害获得 {gold}1{blue} 积分");
 	Credit_Give(Client, 1, "4000点伤害");
 }
 void Damage_Show()
@@ -261,12 +261,12 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 		if (Skill_6_OnTakeDamage(Attack))
 		{
 			IgniteEntity(Client, 0.5);
-			CPrintToChat(Attack, "{green}[ZA][技能]{blue} 触发了燃烧子弹效果");
+			CPrintToChat(Attack, "{green}[ZA][技能]{blue} 触发了 {gold}%s {blue}效果", Skill_Name[5]);
 		}
 		if (Skill_8_OnTakeDamage(Attack))
 		{
 			Damage *= 3.0;
-			CPrintToChat(Attack, "{green}[ZA][技能]{blue} 触发了致命一击效果");
+			CPrintToChat(Attack, "{green}[ZA][技能]{blue} 触发了 {gold}%s {blue}效果", Skill_Name[7]);
 		}
 		PrintCenterText(Attack, "[伤害]对僵尸 %N 造成 %.2f 伤害", Client, Damage);
 		return Plugin_Changed;

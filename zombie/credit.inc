@@ -133,18 +133,18 @@ void Credit_OnRoundEnd(int Team)
 {
 	if (Team == CS_TEAM_CT)
 	{
-		CPrintToChatAll("{green}[ZA][积分]{blue} 存活人类获得 {gold}3{blue} 积分");
+		// CPrintToChatAll("{green}[ZA][积分]{blue} 存活人类获得 {gold}3{blue} 积分");
 		for (int Client = 1; Client <= MaxClients; Client++)
 		{
 			if (CheckAlive(Client))
 			{
-				Credit_Give(Client, 3, "人类胜利");
+				Credit_Give(Client, 3, "存活人类");
 			}
 		}
 	}
 	else
 	{
-		CPrintToChatAll("{green}[ZA][积分]{blue} 所有玩家获得 {gold}1{blue} 积分");
+		// CPrintToChatAll("{green}[ZA][积分]{blue} 所有玩家获得 {gold}1{blue} 积分");
 		for (int Client = 1; Client <= MaxClients; Client++)
 		{
 			if (CheckGame(Client) && GetClientTeam(Client) > CS_TEAM_SPECTATOR)

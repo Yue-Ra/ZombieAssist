@@ -104,6 +104,7 @@ public void OnClientConnected(int Client)
 public void OnClientPutInServer(int Client)
 {
 	Admin_Init(Client);
+	Skill_Init(Client);
 	Damage_Init(Client);
 	Client_Load(Client);
 	Damage_Hook(Client);

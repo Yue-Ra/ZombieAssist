@@ -9,6 +9,27 @@ int Skill_Max = 0;
 
 Handle Skill_2_Handle[MAXPLAYERS + 1];
 Handle Skill_3_Handle[MAXPLAYERS + 1];
+void Skill_Init(int Client)
+{
+	for (int Num = 0; Num < 12; Num++)
+	{
+		Skill_Client[Client][Num] = 0;
+	}
+	Skill_Alive[Client] = 0;
+	ClearTimer(Skill_2_Handle[Client]);
+	ClearTimer(Skill_3_Handle[Client]);
+}
+void Skill_OnLevelUp(int Client)
+{
+	int Count = Skill_Count(Client);
+	int MaxSp = Skill_MaxSP(Client);
+	if (Count > MaxSp)
+	{
+		Skill_Empty(Client);
+		Count = 0;
+	}
+	Skill_Alive[Client] = MaxSp - Count;
+}
 Action Skill_Command(int Client, int Args)
 {
 	if (CheckGame(Client))
@@ -55,11 +76,15 @@ void Skill_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 	}
 	Skill_Max = Count;
 }
-void Skill_Init(int Client, int[] Skills)
+void Skill_Set(int Client, int[] Skills)
 {
 	for (int Num = 0; Num < Skill_Max; Num++)
 	{
 		Skill_Client[Client][Num] = Skills[Num];
+		if (Skill_Client[Client][Num] > Skill_MaxLv[Num])
+		{
+			Skill_Client[Client][Num] = 0;
+		}
 	}
 	int Count = Skill_Count(Client);
 	int MaxSp = Skill_MaxSP(Client);
@@ -99,6 +124,7 @@ int Skill_Menu_Handle(Menu MenuHandle, MenuAction ActionHandle, int Client, int 
 	if (ActionHandle == MenuAction_Select)
 	{
 		Skill_Update(Client, Item);
+		Skill_Menu(Client);
 	}
 }
 void Skill_Update(int Client, int Num)
@@ -113,23 +139,23 @@ void Skill_Update(int Client, int Num)
 		CPrintToChat(Client, "{green}[ZA][技能]{red} 技能等级已到达上限");
 		return;
 	}
-	Skill_Alive[Client]--;
+	Skill_Alive[Client] -= Skill_Cost[Num];
 	Skill_Client[Client][Num]++;
 	char Query[192];
 	Format(Query, sizeof(Query), "UPDATE user SET sk%d=sk%d+1 WHERE id=%d", Num, Num, Client_ID[Client]);
 	SQL_TQuery(MySQL, MySQL_Query, Query);
-	CPrintToChat(Client, "{green}[ZA][技能]{blue} 当前技能等级为 {gold}%d", Skill_Client[Client][Num]);
+	CPrintToChat(Client, "{green}[ZA][技能]{gold} %s {blue}当前技能等级为 {gold}%d", Skill_Name[Num], Skill_Client[Client][Num]);
 }
 int Skill_MaxSP(int Client)
 {
-	return Client_Birth[Client] * 12 + Client_Level[Client];
+	return Client_Birth[Client] * 10 + Client_Level[Client];
 }
 int Skill_Count(int Client)
 {
 	int Count = 0;
 	for (int Num = 0; Num < Skill_Max; Num++)
 	{
-		Count += Skill_Client[Client][Num];
+		Count += Skill_Client[Client][Num] * Skill_Cost[Num];
 	}
 	return Count;
 }
@@ -148,7 +174,7 @@ void Skill_2_OnPlayerSpawn(int Client)
 	{
 		return;
 	}
-	Skill_2_Handle[Client] = CreateTimer(600.0 / Skill_Client[Client][1], Skill_2_Timer, Client, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+	Skill_2_Handle[Client] = CreateTimer(600.0 / Skill_Client[Client][1], Skill_2_Timer, Client, TIMER_REPEAT);
 }
 Action Skill_2_Timer(Handle Timer, any Client)
 {
@@ -168,14 +194,30 @@ void Skill_3_OnPlayerSpawn(int Client)
 {
 	if (ZR_IsClientHuman(Client))
 	{
+		CreateTimer(1.0, Skill_3_Human_Timer, Client, TIMER_FLAG_NO_MAPCHANGE);
 		ClearTimer(Skill_3_Handle[Client]);
-		AddHealth(Client, Skill_Client[Client][2] * 10);
-		Skill_3_Handle[Client] = CreateTimer(11.0 - float(Skill_Client[Client][2]), Skill_3_Timer, Client, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+		Skill_3_Handle[Client] = CreateTimer(11.0 - float(Skill_Client[Client][2]), Skill_3_Timer, Client, TIMER_REPEAT);
 	}
 	else
 	{
+		CreateTimer(1.0, Skill_3_Zombie_Timer, Client, TIMER_FLAG_NO_MAPCHANGE);
+	}
+}
+Action Skill_3_Human_Timer(Handle Timer, any Client)
+{
+	if (CheckHuman(Client))
+	{
+		AddHealth(Client, Skill_Client[Client][2] * 10);
+	}
+	return Plugin_Handled;
+}
+Action Skill_3_Zombie_Timer(Handle Timer, any Client)
+{
+	if (CheckZombie(Client))
+	{
 		AddHealth(Client, Skill_Client[Client][2] * 100);
 	}
+	return Plugin_Handled;
 }
 Action Skill_3_Timer(Handle Timer, any Client)
 {
