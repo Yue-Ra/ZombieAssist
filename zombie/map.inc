@@ -77,6 +77,7 @@ void Map_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 	Map_Win_Point = SQL_FetchInt(Child, 15);
 	Map_Lose_Point = SQL_FetchInt(Child, 16);
 	SetConVarIntValue("mp_timelimit", SQL_FetchInt(Child, 20), true);
+	SetConVarFloatValue("mp_roundtime", SQL_FetchFloat(Child, 21), true);
 	LogMessage("Map %s Load Success", Map_Name);
 }
 Action Map_Admin_Command(int Client, int Args)

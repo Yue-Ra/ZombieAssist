@@ -204,7 +204,7 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 		if (Damage == 195)
 		{
 			Damage_Infect[Attack]++;
-			CPrintToChatAll("{green}[ZA][伤害]{red} 人类 %N 被僵尸 %N 爆菊了", Client, Attack);
+			CPrintToChatAll("{green}[ZA][伤害]{red} 人类 {gold}%N{red} 被僵尸 {gold}%N{red} 爆菊了", Client, Attack);
 			PrintCenterTextAll("人类 %N 被僵尸 %N 爆菊了", Client, Attack);
 			ForcePlayerSuicide(Client);
 			Sound_Play();
@@ -238,7 +238,7 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 		Skill_4_OnTakeDamage(Attack, RoundToCeil(Damage));
 		if (Damage == 15 || Damage == 20 || Damage == 55 || Damage == 65 || Damage == 195)
 		{
-			CPrintToChatAll("{green}[ZA][伤害]{red} 人类 %N 刀了僵尸 %N", Attack, Client);
+			CPrintToChatAll("{green}[ZA][伤害]{red} 人类 {gold}%N{red} 刀了僵尸 {gold}%N", Attack, Client);
 		}
 		if (Mode_True)
 		{

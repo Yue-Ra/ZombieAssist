@@ -76,7 +76,7 @@ void Skill_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 	}
 	Skill_Max = Count;
 }
-void Skill_Set(int Client, int[] Skills)
+void Skill_Set(int Client, int Skills[12])
 {
 	for (int Num = 0; Num < Skill_Max; Num++)
 	{
@@ -142,7 +142,7 @@ void Skill_Update(int Client, int Num)
 	Skill_Alive[Client] -= Skill_Cost[Num];
 	Skill_Client[Client][Num]++;
 	char Query[192];
-	Format(Query, sizeof(Query), "UPDATE user SET sk%d=sk%d+1 WHERE id=%d", Num, Num, Client_ID[Client]);
+	Format(Query, sizeof(Query), "UPDATE user SET sk%d=sk%d+1 WHERE id=%d", Num + 1, Num + 1, Client_ID[Client]);
 	SQL_TQuery(MySQL, MySQL_Query, Query);
 	CPrintToChat(Client, "{green}[ZA][技能]{gold} %s {blue}当前技能等级为 {gold}%d", Skill_Name[Num], Skill_Client[Client][Num]);
 }

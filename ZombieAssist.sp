@@ -36,7 +36,7 @@ public Plugin myinfo =
 {
 	name = "Zombie Assist",
 	author = "Yuera",
-	description = "Zombiei Assist",
+	description = "Zombie Assist",
 	version = "1.0",
 	url = "http://www.moeub.com/"
 };

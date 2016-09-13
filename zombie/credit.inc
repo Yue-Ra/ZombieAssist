@@ -133,7 +133,6 @@ void Credit_OnRoundEnd(int Team)
 {
 	if (Team == CS_TEAM_CT)
 	{
-		// CPrintToChatAll("{green}[ZA][积分]{blue} 存活人类获得 {gold}3{blue} 积分");
 		for (int Client = 1; Client <= MaxClients; Client++)
 		{
 			if (CheckAlive(Client))
@@ -144,7 +143,6 @@ void Credit_OnRoundEnd(int Team)
 	}
 	else
 	{
-		// CPrintToChatAll("{green}[ZA][积分]{blue} 所有玩家获得 {gold}1{blue} 积分");
 		for (int Client = 1; Client <= MaxClients; Client++)
 		{
 			if (CheckGame(Client) && GetClientTeam(Client) > CS_TEAM_SPECTATOR)
@@ -197,11 +195,6 @@ Action Credit_Command(int Client, int Args)
 						CPrintToChat(Client, "{green}[ZA][积分]{red} %s 冷却时间还有 {gold}%d{red} 秒", Credit_Human_Name[Item], Credit_Human_Time[Client][Item] - Time);
 						return Plugin_Handled;
 					}
-					if (!Credit_Down(Client, Credit_Human_Cost[Item]))
-					{
-						return Plugin_Handled;
-					}
-					Credit_Human_Time[Client][Item] = Time + Credit_Human_Cool[Item];
 					switch (Item)
 					{
 					case 0: Credit_Human_1(Client);
@@ -225,11 +218,6 @@ Action Credit_Command(int Client, int Args)
 						CPrintToChat(Client, "{green}[ZA][积分]{red} %s 冷却时间还有 {gold}%d{red} 秒", Credit_Zombie_Name[Item], Credit_Zombie_Time[Client][Item] - Time);
 						return Plugin_Handled;
 					}
-					if (!Credit_Down(Client, Credit_Zombie_Cost[Item]))
-					{
-						return Plugin_Handled;
-					}
-					Credit_Zombie_Time[Client][Item] = Time + Credit_Zombie_Cool[Item];
 					switch (Item)
 					{
 					case 0: Credit_Zombie_1(Client);
@@ -303,11 +291,6 @@ void Credit_Human_Buy(int Client, int Item)
 		CPrintToChat(Client, "{green}[ZA][积分]{red} %s 冷却时间还有 {gold}%d{red} 秒", Credit_Human_Name[Item], Credit_Human_Time[Client][Item] - Time);
 		return;
 	}
-	if (!Credit_Down(Client, Credit_Human_Cost[Item]))
-	{
-		return;
-	}
-	Credit_Human_Time[Client][Item] = Time + Credit_Human_Cool[Item];
 	switch (Item)
 	{
 	case 0: Credit_Human_1(Client);
@@ -335,11 +318,6 @@ void Creidt_Zombie_Buy(int Client, int Item)
 		CPrintToChat(Client, "{green}[ZA][积分]{red} %s 冷却时间还有 {gold}%d{red} 秒", Credit_Zombie_Name[Item], Credit_Zombie_Time[Client][Item] - Time);
 		return;
 	}
-	if (!Credit_Down(Client, Credit_Zombie_Cost[Item]))
-	{
-		return;
-	}
-	Credit_Zombie_Time[Client][Item] = Time + Credit_Zombie_Cool[Item];
 	switch (Item)
 	{
 	case 0: Credit_Zombie_1(Client);
@@ -356,18 +334,38 @@ void Credit_Human_1(int Client)
 		CPrintToChat(Client, "{green}[ZA]{blue} 请先学习 {gold}%s{blue} 技能", Skill_Name[9]);
 		return;
 	}
+	if (!Credit_Down(Client, Credit_Human_Cost[0]))
+	{
+		return;
+	}
+	Credit_Human_Time[Client][0] = GetTime() + Credit_Human_Cool[0];
 	GivePlayerItem(Client, "weapon_smokegrenade");
 }
 void Credit_Human_2(int Client)
 {
+	if (!Credit_Down(Client, Credit_Human_Cost[1]))
+	{
+		return;
+	}
+	Credit_Human_Time[Client][1] = GetTime() + Credit_Human_Cool[1];
 	AddHealth(Client, 20);
 }
 void Credit_Human_3(int Client)
 {
+	if (!Credit_Down(Client, Credit_Human_Cost[2]))
+	{
+		return;
+	}
+	Credit_Human_Time[Client][2] = GetTime() + Credit_Human_Cool[2];
 	Weapon_Unlimited(Client);
 }
 void Credit_Human_4(int Client)
 {
+	if (!Credit_Down(Client, Credit_Human_Cost[3]))
+	{
+		return;
+	}
+	Credit_Human_Time[Client][3] = GetTime() + Credit_Human_Cool[3];
 	Infect_NoMother(Client);
 }
 void Credit_Human_5(int Client)
@@ -377,25 +375,55 @@ void Credit_Human_5(int Client)
 		CPrintToChat(Client, "{green}[ZA]{blue} 请先学习 {gold}%s{blue} 技能", Skill_Name[8]);
 		return;
 	}
+	if (!Credit_Down(Client, Credit_Human_Cost[4]))
+	{
+		return;
+	}
+	Credit_Human_Time[Client][4] = GetTime() + Credit_Human_Cool[4];
 	Infect_NoInfect(Client);
 }
 void Credit_Zombie_1(int Client)
 {
+	if (!Credit_Down(Client, Credit_Zombie_Cost[0]))
+	{
+		return;
+	}
+	Credit_Zombie_Time[Client][0] = GetTime() + Credit_Zombie_Cool[0];
 	AddHealth(Client, 2000);
 }
 void Credit_Zombie_2(int Client)
 {
+	if (!Credit_Down(Client, Credit_Zombie_Cost[1]))
+	{
+		return;
+	}
+	Credit_Zombie_Time[Client][1] = GetTime() + Credit_Zombie_Cool[1];
 	Damage_Zombie_Credit(Client);
 }
 void Credit_Zombie_3(int Client)
 {
+	if (!Credit_Down(Client, Credit_Zombie_Cost[2]))
+	{
+		return;
+	}
+	Credit_Zombie_Time[Client][2] = GetTime() + Credit_Zombie_Cool[2];
 	Smoke_Client(Client);
 }
 void Credit_Zombie_4(int Client)
 {
+	if (!Credit_Down(Client, Credit_Zombie_Cost[3]))
+	{
+		return;
+	}
+	Credit_Zombie_Time[Client][3] = GetTime() + Credit_Zombie_Cool[3];
 	Infect_Respawn(Client);
 }
 void Credit_Zombie_5(int Client)
 {
+	if (!Credit_Down(Client, Credit_Zombie_Cost[4]))
+	{
+		return;
+	}
+	Credit_Zombie_Time[Client][4] = GetTime() + Credit_Zombie_Cool[4];
 	Alpha_Zombie_Credit(Client);
 }
