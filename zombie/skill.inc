@@ -192,6 +192,10 @@ void Skill_2_OnPlayerDeath(int Client)
 }
 void Skill_3_OnPlayerSpawn(int Client)
 {
+	if (!CheckAlive(Client))
+	{
+		return;
+	}
 	if (ZR_IsClientHuman(Client))
 	{
 		CreateTimer(1.0, Skill_3_Human_Timer, Client, TIMER_FLAG_NO_MAPCHANGE);

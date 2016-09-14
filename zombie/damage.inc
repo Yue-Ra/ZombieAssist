@@ -271,6 +271,19 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 			Damage *= 3.0;
 			CPrintToChat(Attack, "{green}[ZA][技能]{blue} 触发了 {gold}%s {blue}效果", Skill_Name[7]);
 		}
+		int Flags = GetEntityFlags(Client);
+		if (Flags & FL_ONGROUND == 0 || Flags & FL_DUCKING == 2)
+		{
+			float ClientPos[3];
+			GetClientAbsOrigin(Client, ClientPos);
+			float AttackPos[3];
+			GetClientEyePosition(Attack, AttackPos);
+			float VectorPos[3];
+			MakeVectorFromPoints(AttackPos, ClientPos, VectorPos);
+			NormalizeVector(VectorPos, VectorPos);
+			ScaleVector(VectorPos, 300.0);
+			TeleportEntity(Client, NULL_VECTOR , NULL_VECTOR , VectorPos);
+		}
 		PrintCenterText(Attack, "[伤害]对僵尸 %N 造成 %.2f 伤害", Client, Damage);
 		return Plugin_Changed;
 	}
