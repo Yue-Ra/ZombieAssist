@@ -100,12 +100,12 @@ void Model_Set(int Client)
 	}
 	if (!FileExists(Model_Path[Model_Client[Client]]))
 	{
-		CPrintToChat(Client, "{green}[ZA][模型]{red} 模型文件 %s 丢失", Model_Path[Model_Client[Client]]);
+		CPrintToChat(Client, "{green}[ZA][模型]{red} 模型文件 {gold}%s{red} 丢失", Model_Path[Model_Client[Client]]);
 		LogError("Model File %s Not Found", Model_Path[Model_Client[Client]]);
 		return;
 	}
 	SetEntityModel(Client, Model_Path[Model_Client[Client]]);
-	CPrintToChat(Client, "{green}[ZA][模型] 当前模型为 %s", Model_Name[Model_Client[Client]]);
+	CPrintToChat(Client, "{green}[ZA][模型]{blue} 当前模型为 {gold}%s", Model_Name[Model_Client[Client]]);
 }
 void Model_OnRoundStart()
 {

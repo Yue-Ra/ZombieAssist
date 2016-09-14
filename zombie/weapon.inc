@@ -1,13 +1,18 @@
-char Weapon_Name[32][32];
-int Weapon_Type[32];
-int Weapon_Cash[32];
-char Weapon_Alias[32][32];
-bool Weapon_Skill[32];
+char Weapon_Name[24][32];
+int Weapon_Type[24];
+int Weapon_Cash[24];
+char Weapon_Alias[24][32];
+int Weapon_Skill[24];
+int Weapon_Ammo[24];
+int Weapon_Add[24][10];
+
 int Weapon_Limit = 0;
 int Weapon_Client[MAXPLAYERS + 1];
 int Weapon_Time[MAXPLAYERS + 1];
+int Weapon_MaxAmmo[MAXPLAYERS + 1];
 
 bool Weapon_Allow = true;
+bool Weapon_Switch[MAXPLAYERS + 1];
 int Weapon_Max = 0;
 
 void Weapon_OnMapStart()
@@ -26,6 +31,126 @@ void Weapon_OnClientPutInServer(int Client)
 {
 	Weapon_Time[Client] = 0;
 	Weapon_Client[Client] = 0;
+	SDKHook(Client, SDKHook_WeaponEquipPost, Weapon_WeaponEquipPost);
+	SDKHook(Client, SDKHook_WeaponSwitchPost, Weapon_WeaponSwitchPost);
+}
+void Weapon_WeaponEquipPost(int Client, int Weapon)
+{
+	char Name[32];
+	GetEntityClassname(Weapon, Name, sizeof(Name));
+	if (StrEqual(Name, "weapon_m3", false) || StrEqual(Name, "weapon_xm1014", false))
+	{
+		return;
+	}
+	int Skill = Skill_13_OnWeapon(Client);
+	if (Skill == 0)
+	{
+		return;
+	}
+	int Item = Weapon_GetByEntity(Weapon);
+	if (Item == -1)
+	{
+		return;
+	}
+	SDKHook(Weapon, SDKHook_Reload, Weapon_Reload);
+	SDKHook(Weapon, SDKHook_ReloadPost, Weapon_ReloadPost);
+}
+void Weapon_WeaponSwitchPost(int Client, int Weapon)
+{
+	char Name[32];
+	GetEntityClassname(Weapon, Name, sizeof(Name));
+	if (StrEqual(Name, "weapon_m3", false) || StrEqual(Name, "weapon_xm1014", false))
+	{
+		return;
+	}
+	int Skill = Skill_13_OnWeapon(Client);
+	if (Skill == 0)
+	{
+		return;
+	}
+	Weapon_Switch[Client] = true;
+	int Item = Weapon_GetByEntity(Weapon);
+	if (Item == -1)
+	{
+		return;
+	}
+	Weapon_MaxAmmo[Client] = Weapon_Ammo[Item] + Weapon_Add_Count(Item, Skill);
+	CreateTimer(0.01, Weapon_Add_Timer, Weapon);
+}
+Action Weapon_Add_Timer(Handle Timer, any Weapon)
+{
+	int Item = Weapon_GetByEntity(Weapon);
+	if (Item == -1)
+	{
+		return Plugin_Handled;
+	}
+	int Client = GetOwner(Weapon);
+	if (Client == -1)
+	{
+		return Plugin_Handled;
+	}
+	if (GetClip(Weapon) == Weapon_Ammo[Item])
+	{
+		SetClip(Weapon, Weapon_MaxAmmo[Client]);
+	}
+	return Plugin_Handled;
+}
+Action Weapon_Reload(int Weapon)
+{
+	int Item = Weapon_GetByEntity(Weapon);
+	if (Item == -1)
+	{
+		return Plugin_Continue;
+	}
+	int Client = GetOwner(Weapon);
+	if (Client == -1)
+	{
+		return Plugin_Continue;
+	}
+	if (Skill_13_OnWeapon(Client) == 0)
+	{
+		return Plugin_Continue;
+	}
+	int Ammo = GetClip(Weapon);
+	if (Ammo == Weapon_Ammo[Item] || Ammo == Weapon_MaxAmmo[Client])
+	{
+		return Plugin_Handled;
+	}
+	return Plugin_Continue;
+}
+void Weapon_ReloadPost(int Weapon, bool Success)
+{
+	int Client = GetOwner(Weapon);
+	if (Skill_13_OnWeapon(Client) == 0)
+	{
+		return;
+	}
+	Weapon_Switch[Client] = false;
+	CreateTimer(GetEntPropFloat(Client, Prop_Send, "m_flNextAttack") - GetGameTime() + 0.1, Weapon_Reload_Timer, Weapon);
+}
+Action Weapon_Reload_Timer(Handle Timer, any Weapon)
+{
+	int Client = GetOwner(Weapon);
+	if (Client == -1)
+	{
+		return Plugin_Handled;
+	}
+	if (Weapon_Switch[Client])
+	{
+		return Plugin_Handled;
+	}
+	int Skill = Skill_13_OnWeapon(Client);
+	if (Skill == 0)
+	{
+		return Plugin_Handled;
+	}
+	int Item = Weapon_GetByEntity(Weapon);
+	if (Item == -1)
+	{
+		return Plugin_Handled;
+	}
+	SetClip(Weapon, Weapon_MaxAmmo[Client]);
+	return Plugin_Handled;
 }
 void Weapon_Load()
 {
@@ -51,11 +176,42 @@ void Weapon_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 		Weapon_Type[Num] = SQL_FetchInt(Child, 1);
 		Weapon_Cash[Num] = SQL_FetchInt(Child, 2);
 		SQL_FetchString(Child, 3, Weapon_Alias[Num], sizeof(Weapon_Alias[]));
-		Weapon_Skill[Num] = SQL_FetchInt(Child, 4) == 0 ? false : true ;
-		LogMessage("Weapon %d\tName %s\tType %d\tCash %d\tAlias %s\tSkill %d", Num, Weapon_Name[Num], Weapon_Type[Num], Weapon_Cash[Num], Weapon_Alias[Num], Weapon_Skill[Num]);
+		Weapon_Skill[Num] = SQL_FetchInt(Child, 4);
+		Weapon_Ammo[Num] = SQL_FetchInt(Child, 5);
+		for (int Add = 0; Add < 10; Add++)
+		{
+			Weapon_Add[Num][Add] = SQL_FetchInt(Child, 6 + Add);
+		}
+		LogMessage("Weapon %d\tName %s\tType %d\tCash %d\tAlias %s\tSkill %d\tAmmo %d", Num, Weapon_Name[Num], Weapon_Type[Num], Weapon_Cash[Num], Weapon_Alias[Num], Weapon_Skill[Num], Weapon_Ammo[Num]);
 		Num++;
 	}
 	Weapon_Max = Num;
+}
+int Weapon_Add_Count(int Item, int Level)
+{
+	int Count = 0;
+	for (int Num = 0; Num < Level; Num++)
+	{
+		Count += Weapon_Add[Item][Num];
+	}
+	return Count;
+}
+int Weapon_GetByEntity(int Entity)
+{
+	char Name[32];
+	GetEntityClassname(Entity, Name, sizeof(Name));
+	for (int Num = 0; Num < Weapon_Max; Num++)
+	{
+		if (StrEqual(Name, Weapon_Name[Num], false))
+		{
+			if (Weapon_Type[Num] > 1)
+			{
+				return -1;
+			}
+			return Num;
+		}
+	}
+	return -1;
 }
 Action Weapon_Command(int Client, int Args)
 {
@@ -123,9 +279,9 @@ void Weapon_Buy(int Client, int Item)
 		CPrintToChat(Client, "{green}[ZA][武器]{red} 只有人类才能打手枪");
 		return;
 	}
-	if (Weapon_Skill[Item] && !Skill_10_OnWeapon(Client))
+	if (Weapon_Skill[Item] > Skill_10_OnWeapon(Client))
 	{
-		CPrintToChat(Client, "{green}[ZA][技能]{red} 请先学习 {gold}%s{red} 技能", Skill_Name[9]);
+		CPrintToChat(Client, "{green}[ZA][技能]{red} 需要 {gold}%s{red} 技能 {gold}%d{red} 级", Skill_Name[9], Weapon_Skill[Item]);
 		return;
 	}
 	int Cash = GetCash(Client);
@@ -166,5 +322,5 @@ void Weapon_Credit(int Client)
 		return;
 	}
 	int Weapon = GetWeapon(Client);
-	SetAmmo(Weapon, GetAmmo(Weapon) + 1);
+	SetClip(Weapon, GetClip(Weapon) + 1);
 }

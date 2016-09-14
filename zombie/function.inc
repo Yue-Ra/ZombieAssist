@@ -31,11 +31,11 @@ stock int GetWeapon(int Client)
 {
 	return GetEntPropEnt(Client, Prop_Send, "m_hActiveWeapon");
 }
-stock int GetAmmo(int Weapon)
+stock int GetClip(int Weapon)
 {
 	return GetEntProp(Weapon, Prop_Data, "m_iClip1");
 }
-stock void SetAmmo(int Weapon, int Value)
+stock void SetClip(int Weapon, int Value)
 {
 	SetEntProp(Weapon, Prop_Data, "m_iClip1", Value);
 }

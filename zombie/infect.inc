@@ -65,7 +65,7 @@ public Action ZR_OnClientInfect(&Client, &Attack, &bool: motherInfect, &bool: re
 {
 	if (Attack <= 0 && Infect_Time >= Time_Time && Infect_Human_NoMother[Client])
 	{
-		CPrintToChat(Client, "{green}[ZA]{blue} 你免疫了开局尸变");
+		CPrintToChat(Client, "{green}[ZA][积分]{blue} 你免疫了开局尸变");
 		Infect_Human_NoMother[Client] = false;
 		return Plugin_Handled;
 	}
@@ -73,7 +73,7 @@ public Action ZR_OnClientInfect(&Client, &Attack, &bool: motherInfect, &bool: re
 	{
 		if (Infect_Human_NoInfect[Client])
 		{
-			CPrintToChat(Client, "{green}[ZA]{blue} 你免疫了一次感染");
+			CPrintToChat(Client, "{green}[ZA][积分]{blue} 你免疫了一次感染");
 			Infect_Human_NoInfect[Client] = false;
 			return Plugin_Handled;
 		}

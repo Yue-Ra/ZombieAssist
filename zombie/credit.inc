@@ -22,16 +22,19 @@ bool Credit_Human_Allow[6];
 bool Credit_Zombie_Allow[6];
 void Credit_Human_Allow_Set(int Credits[5])
 {
-	for (int Num = 0; Num < Skill_Max; Num++)
+	for (int Num = 0; Num < sizeof(Credits); Num++)
 	{
 		Credit_Human_Allow[Num] = Credits[Num] == 0 ? false : true;
+		LogMessage("Credit Human %d Is %d", Num, Credits[Num]);
 	}
 }
 void Credit_Zombie_Allow_Set(int Credits[5])
 {
-	for (int Num = 0; Num < Skill_Max; Num++)
+	for (int Num = 0; Num < sizeof(Credits); Num++)
 	{
 		Credit_Zombie_Allow[Num] = Credits[Num] == 0 ? false : true;
+		Credit_Human_Allow[Num] = Credits[Num] == 0 ? false : true;
+		LogMessage("Credit Zombie %d Is %d", Num, Credits[Num]);
 	}
 }
 void Credit_Give(int Client, int Value, const char[] Reason, bool ChatAll = false)
@@ -42,7 +45,7 @@ void Credit_Give(int Client, int Value, const char[] Reason, bool ChatAll = fals
 	}
 	else
 	{
-		CPrintToChatAll("{green}[ZA][积分]{blue} 玩家 %N 通过 {gold}%s{blue} 获得了 {gold}%d{blue} 积分", Client, Reason, Value);
+		CPrintToChatAll("{green}[ZA][积分]{blue} 玩家 {gold}%N{blue} 通过 {gold}%s{blue} 获得了 {gold}%d{blue} 积分", Client, Reason, Value);
 	}
 	Credit_Client[Client] += Value;
 	int Skill = Skill_1(Client);
@@ -354,9 +357,9 @@ void Creidt_Zombie_Buy(int Client, int Item)
 }
 void Credit_Human_1(int Client)
 {
-	if (!Skill_10_OnWeapon(Client))
+	if (Skill_10_OnWeapon(Client) < 2)
 	{
-		CPrintToChat(Client, "{green}[ZA]{blue} 请先学习 {gold}%s{blue} 技能", Skill_Name[9]);
+		CPrintToChat(Client, "{green}[ZA][积分]{red} 请先学习 {gold}%s{red} 技能", Skill_Name[9]);
 		return;
 	}
 	if (!Credit_Down(Client, Credit_Human_Cost[0]))
@@ -388,7 +391,7 @@ void Credit_Human_4(int Client)
 {
 	if (!Skill_9_OnCredit(Client))
 	{
-		CPrintToChat(Client, "{green}[ZA]{blue} 请先学习 {gold}%s{blue} 技能", Skill_Name[8]);
+		CPrintToChat(Client, "{green}[ZA][积分]{red} 请先学习 {gold}%s{red} 技能", Skill_Name[8]);
 		return;
 	}
 	if (!Credit_Down(Client, Credit_Human_Cost[3]))
@@ -400,9 +403,9 @@ void Credit_Human_4(int Client)
 }
 void Credit_Human_5(int Client)
 {
-	if (!Skill_10_OnWeapon(Client))
+	if (Skill_10_OnWeapon(Client) < 3)
 	{
-		CPrintToChat(Client, "{green}[ZA]{blue} 请先学习 {gold}%s{blue} 技能", Skill_Name[9]);
+		CPrintToChat(Client, "{green}[ZA][积分]{red} 请先学习 {gold}%s{red} 技能", Skill_Name[9]);
 		return;
 	}
 	if (!Credit_Down(Client, Credit_Human_Cost[4]))

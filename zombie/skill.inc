@@ -1,26 +1,27 @@
-int Skill_Client[MAXPLAYERS + 1][12];
+int Skill_Client[MAXPLAYERS + 1][13];
 int Skill_Alive[MAXPLAYERS + 1];
-char Skill_Team[12][8];
-char Skill_Name[12][32];
-char Skill_Info[12][64];
-int Skill_Cost[12];
-int Skill_MaxLv[12];
+char Skill_Team[13][8];
+char Skill_Name[13][32];
+char Skill_Info[13][64];
+int Skill_Cost[13][11];
+int Skill_MaxLv[13];
 int Skill_Max = 0;
 
 Handle Skill_2_Handle[MAXPLAYERS + 1];
 Handle Skill_3_Handle[MAXPLAYERS + 1];
 
-bool Skill_Allow[12];
-void Skill_Allow_Set(int Skills[12])
+bool Skill_Allow[13];
+void Skill_Allow_Set(int Skills[13])
 {
-	for (int Num = 0; Num < Skill_Max; Num++)
+	for (int Num = 0; Num < sizeof(Skills); Num++)
 	{
 		Skill_Allow[Num] = Skills[Num] == 0 ? false : true;
+		LogMessage("Skill %d Is %d", Num, Skills[Num]);
 	}
 }
 void Skill_Init(int Client)
 {
-	for (int Num = 0; Num < 12; Num++)
+	for (int Num = 0; Num < 13; Num++)
 	{
 		Skill_Client[Client][Num] = 0;
 	}
@@ -78,14 +79,17 @@ void Skill_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 		SQL_FetchString(Child, 1, Skill_Team[Count], sizeof(Skill_Team[]));
 		SQL_FetchString(Child, 2, Skill_Name[Count], sizeof(Skill_Name[]));
 		SQL_FetchString(Child, 3, Skill_Info[Count], sizeof(Skill_Info[]));
-		Skill_Cost[Count] = SQL_FetchInt(Child, 4);
 		Skill_MaxLv[Count] = SQL_FetchInt(Child, 5);
-		LogMessage("Skill %d\tTeam %s\tName %s\tInfo %s\tCost %d\tCount %d", Count, Skill_Team[Count], Skill_Name[Count], Skill_Info[Count], Skill_Cost[Count], Skill_MaxLv[Count]);
+		for (int Num = 0; Num < 10; Num++)
+		{
+			Skill_Cost[Count][Num] = SQL_FetchInt(Child, 6 + Num);
+		}
+		LogMessage("Skill %d\tTeam %s\tName %s\tInfo %s\tCount %d", Count, Skill_Team[Count], Skill_Name[Count], Skill_Info[Count], Skill_MaxLv[Count]);
 		Count++;
 	}
 	Skill_Max = Count;
 }
-void Skill_Set(int Client, int Skills[12])
+void Skill_Set(int Client, int Skills[13])
 {
 	for (int Num = 0; Num < Skill_Max; Num++)
 	{
@@ -111,7 +115,7 @@ void Skill_Empty(int Client)
 	{
 		Skill_Client[Client][Num] = 0;
 	}
-	Format(Query, sizeof(Query), "UPDATE user SET sk1=0,sk2=0,sk3=0,sk4=0,sk5=0,sk6=0,sk7=0,sk8=0,sk9=0,sk10=0,sk11=0,sk12=0 WHERE id=%d", Client_ID[Client]);
+	Format(Query, sizeof(Query), "UPDATE user SET sk1=0,sk2=0,sk3=0,sk4=0,sk5=0,sk6=0,sk7=0,sk8=0,sk9=0,sk10=0,sk11=0,sk12=0,sk13=0 WHERE id=%d", Client_ID[Client]);
 	SQL_TQuery(MySQL, MySQL_Query, Query);
 	CPrintToChat(Client, "{green}[ZA][技能]{blue} 你的技能点已被重置");
 }
@@ -122,9 +126,10 @@ void Skill_Menu(int Client)
 	char Item[192];
 	for (int Num = 0; Num < Skill_Max; Num++)
 	{
-		Format(Item, sizeof(Item), "[%s]%s[%d/%d]\n[消耗]%d [介绍]%s", Skill_Team[Num], Skill_Name[Num], Skill_Client[Client][Num], Skill_MaxLv[Num], Skill_Cost[Num], Skill_Info[Num]);
+		Format(Item, sizeof(Item), "[%s]%s[%d/%d]\n[消耗]%d [介绍]%s", Skill_Team[Num], Skill_Name[Num], Skill_Client[Client][Num], Skill_MaxLv[Num], Skill_Cost[Num][Skill_Client[Client][Num]], Skill_Info[Num]);
 		AddMenuItem(MenuHandle, "", Item);
 	}
+	SetMenuPagination(MenuHandle, 10);
 	SetMenuExitBackButton(MenuHandle, true);
 	DisplayMenu(MenuHandle, Client, 30);
 }
@@ -138,7 +143,7 @@ int Skill_Menu_Handle(Menu MenuHandle, MenuAction ActionHandle, int Client, int 
 }
 void Skill_Update(int Client, int Num)
 {
-	if (Skill_Alive[Client] < Skill_Cost[Num])
+	if (Skill_Alive[Client] < Skill_Cost[Num][Skill_Client[Client][Num]])
 	{
 		CPrintToChat(Client, "{green}[ZA][技能]{red} 技能点不足无法升级");
 		return;
@@ -148,7 +153,7 @@ void Skill_Update(int Client, int Num)
 		CPrintToChat(Client, "{green}[ZA][技能]{red} 技能等级已到达上限");
 		return;
 	}
-	Skill_Alive[Client] -= Skill_Cost[Num];
+	Skill_Alive[Client] -= Skill_Cost[Num][Skill_Client[Client][Num]];
 	Skill_Client[Client][Num]++;
 	char Query[192];
 	Format(Query, sizeof(Query), "UPDATE user SET sk%d=sk%d+1 WHERE id=%d", Num + 1, Num + 1, Client_ID[Client]);
@@ -164,7 +169,10 @@ int Skill_Count(int Client)
 	int Count = 0;
 	for (int Num = 0; Num < Skill_Max; Num++)
 	{
-		Count += Skill_Client[Client][Num] * Skill_Cost[Num];
+		for (int Skill = 0; Skill < Skill_Client[Client][Num]; Skill++)
+		{
+			Count += Skill_Cost[Num][Skill];
+		}
 	}
 	return Count;
 }
@@ -323,13 +331,13 @@ bool Skill_9_OnCredit(int Client)
 	}
 	return true;
 }
-bool Skill_10_OnWeapon(int Client)
+int Skill_10_OnWeapon(int Client)
 {
 	if (!Skill_Allow[9] || Skill_Client[Client][9] == 0)
 	{
-		return false;
+		return 0;
 	}
-	return true;
+	return Skill_Client[Client][9];
 }
 void Skill_11_OnPlayerSpawn(int Client)
 {
@@ -354,4 +362,12 @@ void Skill_12_OnClientInfect(int Client)
 		return;
 	}
 	SetEntPropFloat(Client, Prop_Data, "m_flLaggedMovementValue", GetEntPropFloat(Client, Prop_Data, "m_flLaggedMovementValue") + 0.01);
+}
+int Skill_13_OnWeapon(int Client)
+{
+	if (!Skill_Allow[12] || Skill_Client[Client][12] == 0)
+	{
+		return 0;
+	}
+	return Skill_Client[Client][12];
 }

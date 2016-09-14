@@ -89,7 +89,7 @@ void Map_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 		Credits[Num] = SQL_FetchInt(Child, 27 + Num);
 	}
 	Credit_Zombie_Allow_Set(Credits);
-	int Skills[12];
+	int Skills[13];
 	for (int Num = 0; Num < sizeof(Skills); Num++)
 	{
 		Skills[Num] = SQL_FetchInt(Child, 32 + Num);

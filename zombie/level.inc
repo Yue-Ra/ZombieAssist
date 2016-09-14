@@ -20,7 +20,7 @@ void Client_Point_Give(int Client, int Value, const char[] Reason, bool ChatAll 
 	}
 	else
 	{
-		CPrintToChatAll("{green}[ZA][等级]{blue} 玩家 %N 通过 {gold}%s{blue} 获得了 {gold}%d{blue} 经验", Client, Reason, Value);
+		CPrintToChatAll("{green}[ZA][等级]{blue} 玩家 {gold}%N{blue} 通过 {gold}%s{blue} 获得了 {gold}%d{blue} 经验", Client, Reason, Value);
 	}
 	Client_Point[Client] += Value;
 	if (Client_Level[Client] == 50)
@@ -53,7 +53,7 @@ void Client_Point_OnClientPutInServer(int Client)
 void Client_Point_OnPlayerSpawn(int Client)
 {
 	ClearTimer(Client_Point_Handle[Client]);
-	CreateTimer(60.0, Client_Point_Timer, Client, TIMER_REPEAT);
+	Client_Point_Handle[Client] = CreateTimer(60.0, Client_Point_Timer, Client, TIMER_REPEAT);
 }
 void Client_Point_OnPlayerDeath(int Client)
 {
