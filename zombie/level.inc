@@ -1,3 +1,4 @@
+Handle Client_Point_Handle[MAXPLAYERS + 1];
 Action Level_Timer(Handle Timer)
 {
 	char Msg[192];
@@ -11,8 +12,16 @@ Action Level_Timer(Handle Timer)
 	}
 	return Plugin_Handled;
 }
-void Client_Point_Give(int Client, int Value)
+void Client_Point_Give(int Client, int Value, const char[] Reason, bool ChatAll = false)
 {
+	if (!ChatAll)
+	{
+		CPrintToChat(Client, "{green}[ZA][等级]{blue} 你通过 {gold}%s{blue} 获得了 {gold}%d{blue} 经验", Reason, Value);
+	}
+	else
+	{
+		CPrintToChatAll("{green}[ZA][等级]{blue} 玩家 %N 通过 {gold}%s{blue} 获得了 {gold}%d{blue} 经验", Client, Reason, Value);
+	}
 	Client_Point[Client] += Value;
 	if (Client_Level[Client] == 50)
 	{
@@ -36,6 +45,29 @@ void Client_Point_Give(int Client, int Value)
 	Client_LevelUp[Client] = Client_LevelUp_Count(Client);
 	Skill_OnLevelUp(Client);
 	CPrintToChat(Client, "{green}[ZA][等级]{blue} 当前等级 {gold}%d{blue},下一级需要 {gold}%d{blue} 点经验", Client_Level[Client], Client_LevelUp_Count(Client));
+}
+void Client_Point_OnClientPutInServer(int Client)
+{
+	ClearTimer(Client_Point_Handle[Client]);
+}
+void Client_Point_OnPlayerSpawn(int Client)
+{
+	ClearTimer(Client_Point_Handle[Client]);
+	CreateTimer(60.0, Client_Point_Timer, Client, TIMER_REPEAT);
+}
+void Client_Point_OnPlayerDeath(int Client)
+{
+	ClearTimer(Client_Point_Handle[Client]);
+}
+Action Client_Point_Timer(Handle Timer, any Client)
+{
+	if (!CheckHuman(Client))
+	{
+		ClearTimer(Client_Point_Handle[Client]);
+		return Plugin_Handled;
+	}
+	Client_Point_Give(Client, 5, "存活人类");
+	return Plugin_Handled;
 }
 int Client_LevelUp_Count(int Client)
 {
@@ -70,11 +102,11 @@ void Level_OnRoundEnd(int Team)
 		{
 			if (CheckHuman(Client))
 			{
-				Client_Point_Give(Client, Point);
+				Client_Point_Give(Client, Point, "人类胜利", true);
 			}
-			if (CheckGame(Client) && GetClientTeam(Client) > CS_TEAM_SPECTATOR)
+			else if (CheckGame(Client) && GetClientTeam(Client) > CS_TEAM_SPECTATOR)
 			{
-				Client_Point_Give(Client, Point / 3);
+				Client_Point_Give(Client, Point / 3, "本局游戏");
 			}
 		}
 	}
@@ -86,7 +118,7 @@ void Level_OnRoundEnd(int Team)
 		{
 			if (CheckGame(Client) && GetClientTeam(Client) > CS_TEAM_SPECTATOR)
 			{
-				Client_Point_Give(Client, Point);
+				Client_Point_Give(Client, Point, "本局游戏");
 			}
 		}
 	}

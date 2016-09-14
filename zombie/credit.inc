@@ -36,12 +36,6 @@ void Credit_Zombie_Allow_Set(int Credits[5])
 }
 void Credit_Give(int Client, int Value, const char[] Reason, bool ChatAll = false)
 {
-	Credit_Client[Client] += Value;
-	int Skill = Skill_1(Client);
-	if (Credit_Client[Client] > 20 + Skill)
-	{
-		Credit_Client[Client] = 20 + Skill;
-	}
 	if (!ChatAll)
 	{
 		CPrintToChat(Client, "{green}[ZA][积分]{blue} 你通过 {gold}%s{blue} 获得了 {gold}%d{blue} 积分", Reason, Value);
@@ -49,6 +43,12 @@ void Credit_Give(int Client, int Value, const char[] Reason, bool ChatAll = fals
 	else
 	{
 		CPrintToChatAll("{green}[ZA][积分]{blue} 玩家 %N 通过 {gold}%s{blue} 获得了 {gold}%d{blue} 积分", Client, Reason, Value);
+	}
+	Credit_Client[Client] += Value;
+	int Skill = Skill_1(Client);
+	if (Credit_Client[Client] > 20 + Skill)
+	{
+		Credit_Client[Client] = 20 + Skill;
 	}
 }
 bool Credit_Down(int Client, int Value)

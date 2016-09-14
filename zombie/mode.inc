@@ -10,12 +10,10 @@ void Mode_OnConfigsExecuted()
 	SetConVarIntValue("sm_parachute_button", 2, false);
 	SetConVarIntValue("sv_enablebunnyhopping", 0, true);
 	SetConVarIntValue("sv_gravity", 800, true);
-	SetConVarFloatValue("mp_roundtime", 10.0, true);
 	if (!Mode_True)
 	{
 		return;
 	}
-	SetConVarIntValue("mp_timelimit", 30, true);
 	SetConVarIntValue("sm_parachute_enabled", 1, false);
 	SetConVarIntValue("sv_enablebunnyhopping", 1, true);
 	SetConVarIntValue("zr_account_cashdmg", 1, false);
@@ -25,7 +23,6 @@ void Mode_OnConfigsExecuted()
 	SetConVarIntValue("zr_ztele_human_after", 1, false);
 	SetConVarIntValue("zr_ztele_max_human", 3, false);
 	SetConVarIntValue("zr_ztele_max_zombie", 5, false);
-	SetConVarFloatValue("mp_roundtime", 3.5, true);
 	SetConVarFloatValue("zr_infect_spawntime_max", 15.0, false);
 	SetConVarFloatValue("zr_infect_spawntime_min", 5.0, false);
 	SetConVarFloatValue("zr_ztele_delay_human", 3.0, false);

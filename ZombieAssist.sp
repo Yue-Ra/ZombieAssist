@@ -112,6 +112,7 @@ public void OnClientPutInServer(int Client)
 	Alpha_OnClientPutInServer(Client);
 	Credit_OnClientPutInServer(Client);
 	Weapon_OnClientPutInServer(Client);
+	Client_Point_OnClientPutInServer(Client);
 }
 public void OnClientDisconnect(int Client)
 {

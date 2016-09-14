@@ -16,12 +16,14 @@ void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 	if (ZR_IsClientHuman(Client))
 	{
 		SetArmour(Client, 100);
+		Client_Point_OnPlayerSpawn(Client);
 	}
 }
 void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
 	int Client = GetClientOfUserId(GetEventInt(event, "userid"));
 	int Attack = GetClientOfUserId(GetEventInt(event, "attacker"));
+	Client_Point_OnPlayerDeath(Client);
 	Skill_2_OnPlayerDeath(Client);
 	Skill_3_OnPlayerDeath(Client);
 	if (CheckHuman(Attack))
