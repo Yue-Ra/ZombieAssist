@@ -78,6 +78,23 @@ void Map_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 	Map_Lose_Point = SQL_FetchInt(Child, 16);
 	SetConVarIntValue("mp_timelimit", SQL_FetchInt(Child, 20), true);
 	SetConVarFloatValue("mp_roundtime", SQL_FetchFloat(Child, 21), true);
+	int Credits[5];
+	for (int Num = 0; Num < sizeof(Credits); Num++)
+	{
+		Credits[Num] = SQL_FetchInt(Child, 22 + Num);
+	}
+	Credit_Human_Allow_Set(Credits);
+	for (int Num = 0; Num < sizeof(Credits); Num++)
+	{
+		Credits[Num] = SQL_FetchInt(Child, 27 + Num);
+	}
+	Credit_Zombie_Allow_Set(Credits);
+	int Skills[12];
+	for (int Num = 0; Num < sizeof(Skills); Num++)
+	{
+		Skills[Num] = SQL_FetchInt(Child, 32 + Num);
+	}
+	Skill_Allow_Set(Skills);
 	LogMessage("Map %s Load Success", Map_Name);
 }
 Action Map_Admin_Command(int Client, int Args)

@@ -18,7 +18,22 @@ int Credit_Zombie_Cool[6];
 int Credit_Zombie_Time[MAXPLAYERS + 1][6];
 
 bool Credit_Allow = false;
-
+bool Credit_Human_Allow[6];
+bool Credit_Zombie_Allow[6];
+void Credit_Human_Allow_Set(int Credits[5])
+{
+	for (int Num = 0; Num < Skill_Max; Num++)
+	{
+		Credit_Human_Allow[Num] = Credits[Num] == 0 ? false : true;
+	}
+}
+void Credit_Zombie_Allow_Set(int Credits[5])
+{
+	for (int Num = 0; Num < Skill_Max; Num++)
+	{
+		Credit_Zombie_Allow[Num] = Credits[Num] == 0 ? false : true;
+	}
+}
 void Credit_Give(int Client, int Value, const char[] Reason, bool ChatAll = false)
 {
 	Credit_Client[Client] += Value;
@@ -29,11 +44,11 @@ void Credit_Give(int Client, int Value, const char[] Reason, bool ChatAll = fals
 	}
 	if (!ChatAll)
 	{
-		CPrintToChat(Client, "{green}[ZA][积分]{blue} 你通过 %s 获得了 {gold}%d{blue} 积分", Reason, Value);
+		CPrintToChat(Client, "{green}[ZA][积分]{blue} 你通过 {gold}%s{blue} 获得了 {gold}%d{blue} 积分", Reason, Value);
 	}
 	else
 	{
-		CPrintToChatAll("{green}[ZA][积分]{blue} 玩家 %N 通过 %s 获得了 {gold}%d{blue} 积分", Client, Reason, Value);
+		CPrintToChatAll("{green}[ZA][积分]{blue} 玩家 %N 通过 {gold}%s{blue} 获得了 {gold}%d{blue} 积分", Client, Reason, Value);
 	}
 }
 bool Credit_Down(int Client, int Value)
@@ -147,7 +162,7 @@ void Credit_OnRoundEnd(int Team)
 		{
 			if (CheckGame(Client) && GetClientTeam(Client) > CS_TEAM_SPECTATOR)
 			{
-				Credit_Give(Client, 1, "这局游戏");
+				Credit_Give(Client, 1, "本局游戏");
 			}
 		}
 	}
@@ -188,7 +203,7 @@ Action Credit_Command(int Client, int Args)
 		{
 			for (int Item = 0; Item < 6; Item++)
 			{
-				if (StrEqual(Alias, Credit_Human_Alias[Item], false))
+				if (StrContains(Alias, Credit_Human_Alias[Item], false) != -1)
 				{
 					if (Credit_Human_Time[Client][Item] > Time)
 					{
@@ -211,7 +226,7 @@ Action Credit_Command(int Client, int Args)
 		{
 			for (int Item = 0; Item < 6; Item++)
 			{
-				if (StrEqual(Alias, Credit_Zombie_Alias[Item], false))
+				if (StrContains(Alias, Credit_Zombie_Alias[Item], false))
 				{
 					if (Credit_Zombie_Time[Client][Item] > Time)
 					{
@@ -263,7 +278,7 @@ int Credit_Human_Menu_Handle(Menu MenuHandle, MenuAction ActionHandle, int Clien
 {
 	if (ActionHandle == MenuAction_Select)
 	{
-		Credit_Human_Buy(Client, Item );
+		Credit_Human_Buy(Client, Item);
 	}
 }
 int Credit_Zombie_Menu_Handle(Menu MenuHandle, MenuAction ActionHandle, int Client, int Item)
@@ -283,6 +298,11 @@ void Credit_Human_Buy(int Client, int Item)
 	if (ZR_IsClientZombie(Client))
 	{
 		CPrintToChat(Client, "{green}[ZA][积分]{red} 僵尸还想玩人类积分?");
+		return;
+	}
+	if (!Credit_Human_Allow[Item])
+	{
+		CPrintToChat(Client, "{green}[ZA][积分]{gold} %s {red}已被禁用", Credit_Human_Name[Item]);
 		return;
 	}
 	int Time = GetTime();
@@ -310,6 +330,11 @@ void Creidt_Zombie_Buy(int Client, int Item)
 	if (ZR_IsClientHuman(Client))
 	{
 		CPrintToChat(Client, "{green}[ZA][积分]{red} 人类还想玩僵尸积分?");
+		return;
+	}
+	if (!Credit_Zombie_Allow[Item])
+	{
+		CPrintToChat(Client, "{green}[ZA][积分]{gold} %s {red}已被禁用", Credit_Zombie_Name[Item]);
 		return;
 	}
 	int Time = GetTime();
@@ -361,6 +386,11 @@ void Credit_Human_3(int Client)
 }
 void Credit_Human_4(int Client)
 {
+	if (!Skill_9_OnCredit(Client))
+	{
+		CPrintToChat(Client, "{green}[ZA]{blue} 请先学习 {gold}%s{blue} 技能", Skill_Name[8]);
+		return;
+	}
 	if (!Credit_Down(Client, Credit_Human_Cost[3]))
 	{
 		return;
@@ -370,9 +400,9 @@ void Credit_Human_4(int Client)
 }
 void Credit_Human_5(int Client)
 {
-	if (!Skill_9_OnCredit(Client))
+	if (!Skill_10_OnWeapon(Client))
 	{
-		CPrintToChat(Client, "{green}[ZA]{blue} 请先学习 {gold}%s{blue} 技能", Skill_Name[8]);
+		CPrintToChat(Client, "{green}[ZA]{blue} 请先学习 {gold}%s{blue} 技能", Skill_Name[9]);
 		return;
 	}
 	if (!Credit_Down(Client, Credit_Human_Cost[4]))

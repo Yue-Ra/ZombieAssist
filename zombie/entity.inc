@@ -9,6 +9,15 @@ void Entity_OnPressed(const char[] Output, int Caller, int Activer, float Delay)
 		CPrintToChatAll("{green}[ZA][实体]{gold} %N{blue} 使用了按钮/道具", Activer);
 	}
 }
+Action Shake_Timer(Handle Timer)
+{
+	int Entity;
+	while ((Entity = FindEntityByClassname(Entity, "env_shake")) != -1)
+	{
+		AcceptEntityInput(Entity, "StopShake");
+	}
+	return Plugin_Handled;
+}
 Action Entity_Timer(Handle Timer)
 {
 	if (Time_Time < 30)

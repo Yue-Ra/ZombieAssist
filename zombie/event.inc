@@ -26,7 +26,7 @@ void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 	Skill_3_OnPlayerDeath(Client);
 	if (CheckHuman(Attack))
 	{
-		Credit_Give(Attack, Mode_True ? 1 : 3 , "击杀僵尸");
+		Credit_Give(Attack, Mode_True ? 1 : 3 , "{gold}击杀僵尸{blue}");
 	}
 }
 void Event_WeaponFire(Event event, const char[] name, bool dontBroadcast)

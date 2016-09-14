@@ -64,6 +64,7 @@ public void OnPluginStart()
 	RegAdminCmd("sm_weapon_reload", Weapon_Reload_Command, ADMFLAG_GENERIC);
 	RegConsoleCmd("sm_alpha", Alpha_Command);
 	RegAdminCmd("sm_zeadmin", Admin_Command, ADMFLAG_GENERIC);
+	CreateTimer(0.1, Shake_Timer, _, TIMER_REPEAT);
 	CreateTimer(1.0, Level_Timer, _, TIMER_REPEAT);
 	CreateTimer(1.0, Navbar_Timer, _, TIMER_REPEAT);
 	CreateTimer(20.0, Info_Timer, _, TIMER_REPEAT);

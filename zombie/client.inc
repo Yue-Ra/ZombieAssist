@@ -53,7 +53,7 @@ void Client_Load_Query(Handle Owner, Handle Child, const char[] Error, any Clien
 	Client_LevelUp[Client] = Client_LevelUp_Count(Client);
 	Model_Init(Client, SQL_FetchInt(Child, 6));
 	int Skills[12];
-	for (int Num = 0; Num < 12; Num++)
+	for (int Num = 0; Num < sizeof(Skills); Num++)
 	{
 		Skills[Num] = SQL_FetchInt(Child, 7 + Num);
 	}

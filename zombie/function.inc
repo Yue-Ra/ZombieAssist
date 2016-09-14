@@ -216,3 +216,8 @@ stock bool CheckChinese(int Client)
 	}
 	return false;
 }
+stock void SetNoShake(int Client)
+{
+	SetEntPropVector(Client, Prop_Send, "m_vecPunchAngle", NULL_VECTOR);
+	SetEntPropVector(Client, Prop_Send, "m_vecPunchAngleVel", NULL_VECTOR);
+}

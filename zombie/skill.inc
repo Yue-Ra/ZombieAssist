@@ -9,6 +9,15 @@ int Skill_Max = 0;
 
 Handle Skill_2_Handle[MAXPLAYERS + 1];
 Handle Skill_3_Handle[MAXPLAYERS + 1];
+
+bool Skill_Allow[12];
+void Skill_Allow_Set(int Skills[12])
+{
+	for (int Num = 0; Num < Skill_Max; Num++)
+	{
+		Skill_Allow[Num] = Skills[Num] == 0 ? false : true;
+	}
+}
 void Skill_Init(int Client)
 {
 	for (int Num = 0; Num < 12; Num++)
@@ -161,7 +170,7 @@ int Skill_Count(int Client)
 }
 int Skill_1(int Client)
 {
-	if (Skill_Client[Client][0] == 0)
+	if (!Skill_Allow[0] || Skill_Client[Client][0] == 0)
 	{
 		return 0;
 	}
@@ -170,7 +179,7 @@ int Skill_1(int Client)
 void Skill_2_OnPlayerSpawn(int Client)
 {
 	ClearTimer(Skill_2_Handle[Client]);
-	if (Skill_Client[Client][1] == 0)
+	if (!Skill_Allow[1] || Skill_Client[Client][1] == 0)
 	{
 		return;
 	}
@@ -178,21 +187,25 @@ void Skill_2_OnPlayerSpawn(int Client)
 }
 Action Skill_2_Timer(Handle Timer, any Client)
 {
-	if (CheckAlive(Client))
+	if (!Skill_Allow[1] || !CheckAlive(Client))
 	{
-		Credit_Give(Client, 1, "积分补给");
+		ClearTimer(Skill_2_Handle[Client]);
 		return Plugin_Handled;
 	}
-	ClearTimer(Skill_2_Handle[Client]);
+	Credit_Give(Client, 1, "积分补给");
 	return Plugin_Handled;
 }
 void Skill_2_OnPlayerDeath(int Client)
 {
+	if (!Skill_Allow[1])
+	{
+		return;
+	}
 	ClearTimer(Skill_2_Handle[Client]);
 }
 void Skill_3_OnPlayerSpawn(int Client)
 {
-	if (!CheckAlive(Client))
+	if (!Skill_Allow[2] || !CheckAlive(Client))
 	{
 		return;
 	}
@@ -209,40 +222,46 @@ void Skill_3_OnPlayerSpawn(int Client)
 }
 Action Skill_3_Human_Timer(Handle Timer, any Client)
 {
-	if (CheckHuman(Client))
+	if (!Skill_Allow[2] || !CheckHuman(Client))
 	{
-		AddHealth(Client, Skill_Client[Client][2] * 10);
+		return Plugin_Handled;
 	}
+	AddHealth(Client, Skill_Client[Client][2] * 10);
 	return Plugin_Handled;
 }
 Action Skill_3_Zombie_Timer(Handle Timer, any Client)
 {
-	if (CheckZombie(Client))
+	if (!Skill_Allow[2] || !CheckZombie(Client))
 	{
-		AddHealth(Client, Skill_Client[Client][2] * 200);
+		return Plugin_Handled;
 	}
+	AddHealth(Client, Skill_Client[Client][2] * 200);
 	return Plugin_Handled;
 }
 Action Skill_3_Timer(Handle Timer, any Client)
 {
-	if (CheckHuman(Client))
+	if (!Skill_Allow[2] || !CheckHuman(Client))
 	{
-		if (GetClientHealth(Client) < 100 + Skill_Client[Client][3] * 10)
-		{
-			AddHealth(Client, 1);
-		}
+		ClearTimer(Skill_3_Handle[Client]);
 		return Plugin_Handled;
 	}
-	ClearTimer(Skill_3_Handle[Client]);
+	if (GetClientHealth(Client) < 100 + Skill_Client[Client][3] * 10)
+	{
+		AddHealth(Client, 1);
+	}
 	return Plugin_Handled;
 }
 void Skill_3_OnPlayerDeath(int Client)
 {
+	if (!Skill_Allow[2])
+	{
+		return;
+	}
 	ClearTimer(Skill_3_Handle[Client]);
 }
 float Skill_3_OnTakeDamage(int Client)
 {
-	if (Skill_Client[Client][2] == 0)
+	if (!Skill_Allow[2] || Skill_Client[Client][2] == 0)
 	{
 		return 1.0;
 	}
@@ -250,7 +269,7 @@ float Skill_3_OnTakeDamage(int Client)
 }
 void Skill_4_OnTakeDamage(int Client, int Cash)
 {
-	if (Skill_Client[Client][3] == 0)
+	if (!Skill_Allow[3] || Skill_Client[Client][3] == 0)
 	{
 		return;
 	}
@@ -258,7 +277,7 @@ void Skill_4_OnTakeDamage(int Client, int Cash)
 }
 void Skill_4_OnClientInfect(int Client)
 {
-	if (Skill_Client[Client][3] == 0)
+	if (!Skill_Allow[3] || Skill_Client[Client][3] == 0)
 	{
 		return;
 	}
@@ -266,7 +285,7 @@ void Skill_4_OnClientInfect(int Client)
 }
 float Skill_5_OnTakeDamage(int Client)
 {
-	if (Skill_Client[Client][4] == 0)
+	if (!Skill_Allow[4] || Skill_Client[Client][4] == 0)
 	{
 		return 0.0;
 	}
@@ -274,7 +293,7 @@ float Skill_5_OnTakeDamage(int Client)
 }
 bool Skill_6_OnTakeDamage(int Client)
 {
-	if (Skill_Client[Client][5] == 0)
+	if (!Skill_Allow[5] || Skill_Client[Client][5] == 0)
 	{
 		return false;
 	}
@@ -282,7 +301,7 @@ bool Skill_6_OnTakeDamage(int Client)
 }
 int Skill_7_OnTakeDamage(int Client)
 {
-	if (Skill_Client[Client][6] == 0)
+	if (!Skill_Allow[6] || Skill_Client[Client][6] == 0)
 	{
 		return 0;
 	}
@@ -290,7 +309,7 @@ int Skill_7_OnTakeDamage(int Client)
 }
 bool Skill_8_OnTakeDamage(int Client)
 {
-	if (Skill_Client[Client][7] == 0)
+	if (!Skill_Allow[7] || Skill_Client[Client][7] == 0)
 	{
 		return false;
 	}
@@ -298,7 +317,7 @@ bool Skill_8_OnTakeDamage(int Client)
 }
 bool Skill_9_OnCredit(int Client)
 {
-	if (Skill_Client[Client][8] == 0)
+	if (!Skill_Allow[8] || Skill_Client[Client][8] == 0)
 	{
 		return false;
 	}
@@ -306,7 +325,7 @@ bool Skill_9_OnCredit(int Client)
 }
 bool Skill_10_OnWeapon(int Client)
 {
-	if (Skill_Client[Client][9] == 0)
+	if (!Skill_Allow[9] || Skill_Client[Client][9] == 0)
 	{
 		return false;
 	}
@@ -314,7 +333,7 @@ bool Skill_10_OnWeapon(int Client)
 }
 void Skill_11_OnPlayerSpawn(int Client)
 {
-	if (Skill_Client[Client][10] == 0)
+	if (!Skill_Allow[10] || Skill_Client[Client][10] == 0)
 	{
 		return;
 	}
@@ -322,7 +341,7 @@ void Skill_11_OnPlayerSpawn(int Client)
 }
 float Skill_11_OnWeapon(int Client)
 {
-	if (Skill_Client[Client][10] == 0)
+	if (!Skill_Allow[10] || Skill_Client[Client][10] == 0)
 	{
 		return 1.0;
 	}
@@ -330,5 +349,9 @@ float Skill_11_OnWeapon(int Client)
 }
 void Skill_12_OnClientInfect(int Client)
 {
-	SetEntPropFloat(Client, Prop_Data, "m_flLaggedMovementValue", 1.01);
+	if (!Skill_Allow[11] || Skill_Client[Client][11] == 0)
+	{
+		return;
+	}
+	SetEntPropFloat(Client, Prop_Data, "m_flLaggedMovementValue", GetEntPropFloat(Client, Prop_Data, "m_flLaggedMovementValue") + 0.01);
 }

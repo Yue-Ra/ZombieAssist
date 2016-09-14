@@ -40,7 +40,7 @@ void Damage_Attack_Up(int Client, int Value)
 		return;
 	}
 	Damage_Attack_Temp[Client] -= 4000;
-	Credit_Give(Client, 1, "4000 点伤害");
+	Credit_Give(Client, 1, "4000伤害");
 	Client_Point_Give(Client, 15);
 	CPrintToChat(Client, "{green}[ZA][等级]{blue} 伤害获得 {gold}15 {blue}经验");
 }
@@ -171,6 +171,7 @@ void Damage_OnClientDisconnect(int Client)
 }
 Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage, int &DamageType, int &Weapon, float damageForce[3], float damagePosition[3])
 {
+	SetNoShake(Client);
 	if (DamageType == 32 && !Damage_Fall)
 	{
 		return Plugin_Handled;
