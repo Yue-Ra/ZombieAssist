@@ -1,27 +1,26 @@
-int Skill_Client[MAXPLAYERS + 1][13];
+int Skill_Client[MAXPLAYERS + 1][14];
 int Skill_Alive[MAXPLAYERS + 1];
-char Skill_Team[13][8];
-char Skill_Name[13][32];
-char Skill_Info[13][64];
-int Skill_Cost[13][11];
-int Skill_MaxLv[13];
+char Skill_Team[14][8];
+char Skill_Name[14][32];
+char Skill_Info[14][64];
+int Skill_Cost[14][11];
+int Skill_MaxLv[14];
 int Skill_Max = 0;
 
 Handle Skill_2_Handle[MAXPLAYERS + 1];
 Handle Skill_3_Handle[MAXPLAYERS + 1];
 
-bool Skill_Allow[13];
-void Skill_Allow_Set(int Skills[13])
+bool Skill_Allow[14];
+void Skill_Allow_Set(int Skills[14])
 {
 	for (int Num = 0; Num < sizeof(Skills); Num++)
 	{
 		Skill_Allow[Num] = Skills[Num] == 0 ? false : true;
-		LogMessage("Skill %d Is %d", Num, Skills[Num]);
 	}
 }
 void Skill_Init(int Client)
 {
-	for (int Num = 0; Num < 13; Num++)
+	for (int Num = 0; Num < 14; Num++)
 	{
 		Skill_Client[Client][Num] = 0;
 	}
@@ -89,7 +88,7 @@ void Skill_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 	}
 	Skill_Max = Count;
 }
-void Skill_Set(int Client, int Skills[13])
+void Skill_Set(int Client, int Skills[14])
 {
 	for (int Num = 0; Num < Skill_Max; Num++)
 	{
@@ -115,13 +114,13 @@ void Skill_Empty(int Client)
 	{
 		Skill_Client[Client][Num] = 0;
 	}
-	Format(Query, sizeof(Query), "UPDATE user SET sk1=0,sk2=0,sk3=0,sk4=0,sk5=0,sk6=0,sk7=0,sk8=0,sk9=0,sk10=0,sk11=0,sk12=0,sk13=0 WHERE id=%d", Client_ID[Client]);
+	Format(Query, sizeof(Query), "UPDATE user SET sk1=0,sk2=0,sk3=0,sk4=0,sk5=0,sk6=0,sk7=0,sk8=0,sk9=0,sk10=0,sk11=0,sk12=0,sk13,sk14=0 WHERE id=%d", Client_ID[Client]);
 	SQL_TQuery(MySQL, MySQL_Query, Query);
 	CPrintToChat(Client, "{green}[ZA][技能]{blue} 你的技能点已被重置");
 }
 void Skill_Menu(int Client)
 {
-	Menu MenuHandle = CreateMenu(Skill_Menu_Handle);
+	Menu MenuHandle = CreateMenu(Skill_Menu_Select_Handle);
 	SetMenuTitle(MenuHandle, "技能菜单\n技能点 %d", Skill_Alive[Client]);
 	char Item[192];
 	for (int Num = 0; Num < Skill_Max; Num++)
@@ -133,7 +132,7 @@ void Skill_Menu(int Client)
 	SetMenuExitBackButton(MenuHandle, true);
 	DisplayMenu(MenuHandle, Client, 30);
 }
-int Skill_Menu_Handle(Menu MenuHandle, MenuAction ActionHandle, int Client, int Item)
+int Skill_Menu_Select_Handle(Menu MenuHandle, MenuAction ActionHandle, int Client, int Item)
 {
 	if (ActionHandle == MenuAction_Select)
 	{
@@ -370,4 +369,16 @@ int Skill_13_OnWeapon(int Client)
 		return 0;
 	}
 	return Skill_Client[Client][12];
+}
+float Skill_14_OnDamage(int Client)
+{
+	if (!Skill_Allow[13] || Skill_Client[Client][13] == 0)
+	{
+		return 1.0;
+	}
+	if (HumanCount() > 3)
+	{
+		return 1.0;
+	}
+	return 1.0 + float(Skill_Client[Client][13]) / 10;
 }

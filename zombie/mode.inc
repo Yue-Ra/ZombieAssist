@@ -14,6 +14,8 @@ void Mode_OnConfigsExecuted()
 	{
 		return;
 	}
+	SetConVarIntValue("mp_timelimit", 15, true);
+	SetConVarFloatValue("mp_roundtime", 3.5, true);
 	SetConVarIntValue("sm_parachute_enabled", 1, false);
 	SetConVarIntValue("sv_enablebunnyhopping", 1, true);
 	SetConVarIntValue("zr_account_cashdmg", 1, false);

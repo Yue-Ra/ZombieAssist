@@ -18,6 +18,7 @@ void Admin_Menu(int Client)
 {
 	Menu MenuHandle = CreateMenu(Admin_Menu_Handle);
 	SetMenuTitle(MenuHandle, "管理菜单");
+	AddMenuItem(MenuHandle, "", "玩家设置");
 	AddMenuItem(MenuHandle, "", "地图设置");
 	SetMenuExitBackButton(MenuHandle, true);
 	DisplayMenu(MenuHandle, Client, 30);
@@ -27,6 +28,9 @@ int Admin_Menu_Handle(Menu MenuHandle, MenuAction ActionHandle, int Client, int 
 	if (ActionHandle == MenuAction_Select)
 	{
 		if (Item == 0)
+		{
+		}
+		else if (Item == 1)
 		{
 			Map_Menu(Client);
 		}

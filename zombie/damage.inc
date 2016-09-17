@@ -259,9 +259,9 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 				}
 			}
 		}
-		Damage *= Damage_Improve();
 		Damage *= Damage_Zombie_Check(Client);
 		Damage *= Skill_3_OnTakeDamage(Client);
+		Damage *= Skill_14_OnDamage(Attack);
 		if (Skill_6_OnTakeDamage(Attack))
 		{
 			IgniteEntity(Client, 0.5);

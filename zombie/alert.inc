@@ -15,7 +15,7 @@ void Alert_Init()
 	for (int Num = 0; Num < 6; Num++)
 	{
 		Alert_Count[Num] = 0;
-		ClearTimer(Alert_Handle[Num]);
+		Alert_Handle[Num] = INVALID_HANDLE;
 	}
 }
 int Alert_Alive()
