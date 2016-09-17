@@ -8,12 +8,10 @@ int Damage_Infect_Count[5];
 
 int Damage_Zombie[MAXPLAYERS + 1];
 
-bool Damage_Allow = true;
 bool Damage_Fall = true;
 
 void Damage_OnMapStart()
 {
-	Damage_Allow = true;
 	Damage_Fall = true;
 }
 void Damage_Init(int Client)
@@ -133,33 +131,6 @@ Action Damage_Infect_Timer(Handle Timer)
 	}
 	SendHudTextMsg(0, 0.02, 0.28, 3.0, 0, 255, 0, Msg);
 	return Plugin_Handled;
-}
-float Damage_Improve()
-{
-	if (Mode_Start)
-	{
-		return 100.0;
-	}
-	if (!Damage_Allow)
-	{
-		return 1.0;
-	}
-	int Human = HumanCount();
-	if (Human == 0)
-	{
-		return 1.0;
-	}
-	int Zombie = ZombieCount();
-	if (Zombie == 0)
-	{
-		return 1.0;
-	}
-	if (Zombie < Human)
-	{
-		return 1.0;
-	}
-	float Value = float(Zombie) / float(Human);
-	return Value < 6 ? Value : 6.0;
 }
 void Damage_Hook(int Client)
 {

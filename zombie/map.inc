@@ -68,7 +68,6 @@ void Map_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 	Alpha_Allow = SQL_FetchInt(Child, 5) == 0 ? false : true;
 	Model_Allow = SQL_FetchInt(Child, 6) == 0 ? false : true;
 	Navbar_Allow = SQL_FetchInt(Child, 7) == 0 ? false : true;
-	Damage_Allow = SQL_FetchInt(Child, 8) == 0 ? false : true;
 	Weapon_Allow = SQL_FetchInt(Child, 9) == 0 ? false : true;
 	Damage_Fall = SQL_FetchInt(Child, 11) == 0 ? false : true;
 	SetConVarIntValue("sv_enablebunnyhopping", SQL_FetchInt(Child, 12), true);
