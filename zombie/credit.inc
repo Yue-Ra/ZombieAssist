@@ -20,21 +20,21 @@ int Credit_Zombie_Time[MAXPLAYERS + 1][6];
 bool Credit_Allow = false;
 bool Credit_Human_Allow[6];
 bool Credit_Zombie_Allow[6];
-void Credit_Human_Allow_Set(int Credits[5])
+
+Handle Credit_Human_6_Handle[MAXPLAYERS + 1];
+
+void Credit_Human_Allow_Set(int Credits[6])
 {
 	for (int Num = 0; Num < sizeof(Credits); Num++)
 	{
 		Credit_Human_Allow[Num] = Credits[Num] == 0 ? false : true;
-		LogMessage("Credit Human %d Is %d", Num, Credits[Num]);
 	}
 }
-void Credit_Zombie_Allow_Set(int Credits[5])
+void Credit_Zombie_Allow_Set(int Credits[6])
 {
 	for (int Num = 0; Num < sizeof(Credits); Num++)
 	{
 		Credit_Zombie_Allow[Num] = Credits[Num] == 0 ? false : true;
-		Credit_Human_Allow[Num] = Credits[Num] == 0 ? false : true;
-		LogMessage("Credit Zombie %d Is %d", Num, Credits[Num]);
 	}
 }
 void Credit_Give(int Client, int Value, const char[] Reason, bool ChatAll = false)
@@ -220,6 +220,7 @@ Action Credit_Command(int Client, int Args)
 					case 2: Credit_Human_3(Client);
 					case 3: Credit_Human_4(Client);
 					case 4: Credit_Human_5(Client);
+					case 5: Credit_Human_6(Client);
 					}
 					return Plugin_Handled;
 				}
@@ -321,6 +322,7 @@ void Credit_Human_Buy(int Client, int Item)
 	case 2: Credit_Human_3(Client);
 	case 3: Credit_Human_4(Client);
 	case 4: Credit_Human_5(Client);
+	case 5: Credit_Human_6(Client);
 	}
 }
 void Creidt_Zombie_Buy(int Client, int Item)
@@ -414,6 +416,32 @@ void Credit_Human_5(int Client)
 	}
 	Credit_Human_Time[Client][4] = GetTime() + Credit_Human_Cool[4];
 	Infect_NoInfect(Client);
+}
+void Credit_Human_6(int Client)
+{
+	if (!Credit_Down(Client, Credit_Human_Cost[5]))
+	{
+		return;
+	}
+	ClearTimer(Credit_Human_6_Handle[Client]);
+	Credit_Human_6_Handle[Client] = CreateTimer(0.1, Credit_Human_6_Timer, Client, TIMER_REPEAT);
+	CreateTimer(5.0, Credit_Human_6_Close, Client);
+}
+Action Credit_Human_6_Timer(Handle Timer, any Client)
+{
+	if (CheckHuman(Client))
+	{
+		PrintToChatAll("%f", GetSpeed(Client));
+		SetSpeed(Client, float(277) / float(250));
+		return Plugin_Handled;
+	}
+	ClearTimer(Credit_Human_6_Handle[Client]);
+	return Plugin_Handled;
+}
+Action Credit_Human_6_Close(Handle Timer, any Client)
+{
+	ClearTimer(Credit_Human_6_Handle[Client]);
+	return Plugin_Handled;
 }
 void Credit_Zombie_1(int Client)
 {

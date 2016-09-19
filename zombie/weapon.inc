@@ -12,7 +12,7 @@ int Weapon_Time[MAXPLAYERS + 1];
 int Weapon_MaxAmmo[MAXPLAYERS + 1];
 
 bool Weapon_Allow = true;
-bool Weapon_Switch[MAXPLAYERS + 1];
+Handle Weapon_Handle[MAXPLAYERS + 1];
 int Weapon_Max = 0;
 
 void Weapon_OnMapStart()
@@ -25,6 +25,7 @@ void Weapon_OnRoundStart()
 	{
 		Weapon_Time[Client] = 0;
 		Weapon_Client[Client] = 0;
+		ClearTimer(Weapon_Handle[Client]);
 	}
 }
 void Weapon_OnClientPutInServer(int Client)
@@ -63,12 +64,12 @@ void Weapon_WeaponSwitchPost(int Client, int Weapon)
 	{
 		return;
 	}
+	ClearTimer(Weapon_Handle[Client]);
 	int Skill = Skill_13_OnWeapon(Client);
 	if (Skill == 0)
 	{
 		return;
 	}
-	Weapon_Switch[Client] = true;
 	int Item = Weapon_GetByEntity(Weapon);
 	if (Item == -1)
 	{
@@ -125,31 +126,31 @@ void Weapon_ReloadPost(int Weapon, bool Success)
 	{
 		return;
 	}
-	Weapon_Switch[Client] = false;
-	CreateTimer(GetEntPropFloat(Client, Prop_Send, "m_flNextAttack") - GetGameTime() + 0.1, Weapon_Reload_Timer, Weapon);
+	ClearTimer(Weapon_Handle[Client]);
+	Weapon_Handle[Client] = CreateTimer(GetEntPropFloat(Client, Prop_Send, "m_flNextAttack") - GetGameTime() + 0.1, Weapon_Reload_Timer, Weapon);
 }
 Action Weapon_Reload_Timer(Handle Timer, any Weapon)
 {
 	int Client = GetOwner(Weapon);
 	if (Client == -1)
 	{
-		return Plugin_Handled;
-	}
-	if (Weapon_Switch[Client])
-	{
+		ClearTimer(Weapon_Handle[Client]);
 		return Plugin_Handled;
 	}
 	int Skill = Skill_13_OnWeapon(Client);
 	if (Skill == 0)
 	{
+		ClearTimer(Weapon_Handle[Client]);
 		return Plugin_Handled;
 	}
 	int Item = Weapon_GetByEntity(Weapon);
 	if (Item == -1)
 	{
+		ClearTimer(Weapon_Handle[Client]);
 		return Plugin_Handled;
 	}
 	SetClip(Weapon, Weapon_MaxAmmo[Client]);
+	ClearTimer(Weapon_Handle[Client]);
 	return Plugin_Handled;
 }
 void Weapon_Load()

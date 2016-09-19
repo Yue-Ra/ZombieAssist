@@ -8,14 +8,14 @@ Regex Alert_Ignore;
 void Alert_OnPluginStart()
 {
 	Alert_Regex = CompileRegex("([0-9]+)");
-	Alert_Ignore = CompileRegex("(%|@|C4|BY|HP|ARC|MAP|TIP|GIL|MAP|LVL|AMMO|ONLY|SONG|TYPE|EIFEL|LEVEL|STAGE|BUTTON|SHOOTS|PEOPLE|PLAYER|MINUTE|POINTS|SERVER|CONTACT|COWBELL|COOLDOWN|关|分|级|提示|获得|服务器)", PCRE_CASELESS);
+	Alert_Ignore = CompileRegex("(%|@|C4|BY|HP|AFK|ARC|MAP|TIP|GIL|MAP|LVL|AMMO|ONLY|SONG|TYPE|EIFEL|LEVEL|STAGE|BUTTON|SHOOTS|PEOPLE|PLAYER|MINUTE|POINTS|SERVER|CONTACT|COWBELL|COOLDOWN|关|分|级|挂机|提示|获得|服务器)", PCRE_CASELESS);
 }
-void Alert_Init()
+void Alert_OnRoundEnd()
 {
 	for (int Num = 0; Num < 6; Num++)
 	{
 		Alert_Count[Num] = 0;
-		Alert_Handle[Num] = INVALID_HANDLE;
+		ClearTimer(Alert_Handle[Num]);
 	}
 }
 int Alert_Alive()
@@ -65,7 +65,7 @@ void Alert_Check(const char[] Msg, bool Chinese = false)
 	strcopy(Alert_String[Num], sizeof(Alert_String[]), RegexStr);
 	Alert_Create(Alert_Count[Num], Num);
 	ClearTimer(Alert_Handle[Num]);
-	Alert_Handle[Num] = CreateTimer(1.0, Alert_Timer, Num, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+	Alert_Handle[Num] = CreateTimer(1.0, Alert_Timer, Num, TIMER_REPEAT);
 }
 Action Alert_Timer(Handle Timer, any Num)
 {

@@ -102,7 +102,7 @@ void Level_OnRoundEnd(int Team)
 		{
 			if (CheckHuman(Client))
 			{
-				Client_Point_Give(Client, Point, "人类胜利", true);
+				Client_Point_Give(Client, Point, "人类胜利");
 			}
 			else if (CheckGame(Client) && GetClientTeam(Client) > CS_TEAM_SPECTATOR)
 			{

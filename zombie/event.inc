@@ -48,7 +48,7 @@ void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
 	int Team = GetEventInt(event, "winner");
-	Alert_Init();
+	Alert_OnRoundEnd();
 	Alpha_OnRoundEnd();
 	Map_OnRoundEnd(Team);
 	Level_OnRoundEnd(Team);

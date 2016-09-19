@@ -1,17 +1,17 @@
-int Skill_Client[MAXPLAYERS + 1][14];
+int Skill_Client[MAXPLAYERS + 1][16];
 int Skill_Alive[MAXPLAYERS + 1];
-char Skill_Team[14][8];
-char Skill_Name[14][32];
-char Skill_Info[14][64];
-int Skill_Cost[14][11];
-int Skill_MaxLv[14];
+char Skill_Team[16][8];
+char Skill_Name[16][32];
+char Skill_Info[16][64];
+int Skill_Cost[16][11];
+int Skill_MaxLv[16];
 int Skill_Max = 0;
 
 Handle Skill_2_Handle[MAXPLAYERS + 1];
 Handle Skill_3_Handle[MAXPLAYERS + 1];
 
-bool Skill_Allow[14];
-void Skill_Allow_Set(int Skills[14])
+bool Skill_Allow[16];
+void Skill_Allow_Set(int Skills[16])
 {
 	for (int Num = 0; Num < sizeof(Skills); Num++)
 	{
@@ -20,7 +20,7 @@ void Skill_Allow_Set(int Skills[14])
 }
 void Skill_Init(int Client)
 {
-	for (int Num = 0; Num < 14; Num++)
+	for (int Num = 0; Num < 16; Num++)
 	{
 		Skill_Client[Client][Num] = 0;
 	}
@@ -88,7 +88,7 @@ void Skill_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 	}
 	Skill_Max = Count;
 }
-void Skill_Set(int Client, int Skills[14])
+void Skill_Set(int Client, int Skills[16])
 {
 	for (int Num = 0; Num < Skill_Max; Num++)
 	{
@@ -114,7 +114,7 @@ void Skill_Empty(int Client)
 	{
 		Skill_Client[Client][Num] = 0;
 	}
-	Format(Query, sizeof(Query), "UPDATE user SET sk1=0,sk2=0,sk3=0,sk4=0,sk5=0,sk6=0,sk7=0,sk8=0,sk9=0,sk10=0,sk11=0,sk12=0,sk13,sk14=0 WHERE id=%d", Client_ID[Client]);
+	Format(Query, sizeof(Query), "UPDATE user SET sk1=0,sk2=0,sk3=0,sk4=0,sk5=0,sk6=0,sk7=0,sk8=0,sk9=0,sk10=0,sk11=0,sk12=0,sk13,sk14=0,sk15=0,sk16=0 WHERE id=%d", Client_ID[Client]);
 	SQL_TQuery(MySQL, MySQL_Query, Query);
 	CPrintToChat(Client, "{green}[ZA][技能]{blue} 你的技能点已被重置");
 }
@@ -360,7 +360,7 @@ void Skill_12_OnClientInfect(int Client)
 	{
 		return;
 	}
-	SetEntPropFloat(Client, Prop_Data, "m_flLaggedMovementValue", GetEntPropFloat(Client, Prop_Data, "m_flLaggedMovementValue") + 0.01);
+	SetSpeed(Client, GetSpeed(Client) * 1.01);
 }
 int Skill_13_OnWeapon(int Client)
 {
@@ -381,4 +381,31 @@ float Skill_14_OnDamage(int Client)
 		return 1.0;
 	}
 	return 1.0 + float(Skill_Client[Client][13]) / 10;
+}
+bool Skill_15_OnWeapon(int Client)
+{
+	if (!Skill_Allow[14] || Skill_Client[Client][14] == 0)
+	{
+		return false;
+	}
+	return true;
+}
+bool Skill_16_OnDamage(int Client)
+{
+	if (!Skill_Allow[15] || Skill_Client[Client][15] == 0)
+	{
+		return false;
+	}
+	return true;
+}
+Action Skill_16_Timer(Handle Timer, any Client)
+{
+	if (!CheckZombie(Client))
+	{
+		return Plugin_Handled;
+	}
+	float ClientPos[3];
+	GetClientAbsOrigin(Client, ClientPos);
+	makeExplosion(0, -1, ClientPos, "", 100, 100, float(GetClientHealth(Client)));
+	return Plugin_Handled;
 }

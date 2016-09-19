@@ -1,6 +1,7 @@
 void Entity_OnPluginStart()
 {
 	HookEntityOutput("func_button", "OnPressed", Entity_OnPressed);
+	HookUserMessage(GetUserMessageId("Shake"), UserMessage_Shake, true);
 }
 void Entity_OnPressed(const char[] Output, int Caller, int Activer, float Delay)
 {
@@ -9,13 +10,8 @@ void Entity_OnPressed(const char[] Output, int Caller, int Activer, float Delay)
 		CPrintToChatAll("{green}[ZA][实体]{gold} %N{blue} 使用了按钮/道具", Activer);
 	}
 }
-Action Shake_Timer(Handle Timer)
+Action UserMessage_Shake(UserMsg msg_id, BfRead msg, const int[] players, int playersNum, bool reliable, bool init)
 {
-	int Entity;
-	while ((Entity = FindEntityByClassname(Entity, "env_shake")) != -1)
-	{
-		AcceptEntityInput(Entity, "StopShake");
-	}
 	return Plugin_Handled;
 }
 Action Entity_Timer(Handle Timer)

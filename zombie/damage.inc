@@ -40,7 +40,6 @@ void Damage_Attack_Up(int Client, int Value)
 	Damage_Attack_Temp[Client] -= 4000;
 	Credit_Give(Client, 1, "4000伤害");
 	Client_Point_Give(Client, 15, "4000伤害");
-	CPrintToChat(Client, "{green}[ZA][等级]{blue} 伤害获得 {gold}15 {blue}经验");
 }
 void Damage_Show()
 {
@@ -142,7 +141,6 @@ void Damage_OnClientDisconnect(int Client)
 }
 Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage, int &DamageType, int &Weapon, float damageForce[3], float damagePosition[3])
 {
-	SetNoShake(Client);
 	if (DamageType == 32 && !Damage_Fall)
 	{
 		return Plugin_Handled;
@@ -180,9 +178,8 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 			PrintCenterTextAll("人类 %N 被僵尸 %N 爆菊了", Client, Attack);
 			ForcePlayerSuicide(Client);
 			Sound_Play();
-			Credit_Give(Attack, 1, "爆菊人类");
+			Credit_Give(Attack, 1, "爆菊人类", true);
 			Client_Point_Give(Attack, 25, "爆菊人类", true);
-			CPrintToChat(Attack, "{green}[ZA][等级]{blue} 爆菊获得 {gold}25 {blue}经验");
 			Infect_Respawn_Check(Attack);
 			return Plugin_Handled;
 		}
@@ -211,24 +208,30 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 		if (Damage == 15 || Damage == 20 || Damage == 55 || Damage == 65 || Damage == 195)
 		{
 			CPrintToChatAll("{green}[ZA][伤害]{red} 人类 {gold}%N{red} 刀了僵尸 {gold}%N", Attack, Client);
+			PrintCenterText(Attack, "[伤害]对僵尸 %N 造成 %.2f 伤害", Client, Damage);
 		}
 		if (Mode_True)
 		{
-			if (!(GetEntityFlags(Attack) & FL_DUCKING))
+			if (Skill_16_OnDamage(Client))
 			{
-				if (Damage == 15 || Damage == 20)
-				{
-					Damage = 4000.0;
-				}
-				else if (Damage == 55 || Damage == 65)
-				{
-					Damage = 4000.0;
-				}
-				else if (Damage == 195)
-				{
-					Damage = 15000.0;
-				}
+				CreateTimer(3.0, Skill_16_Timer, Client, TIMER_FLAG_NO_MAPCHANGE);
 			}
+			return Plugin_Continue;
+			// if (!(GetEntityFlags(Attack) & FL_DUCKING))
+			// {
+			// 	if (Damage == 15 || Damage == 20)
+			// 	{
+			// 		Damage = 4000.0;
+			// 	}
+			// 	else if (Damage == 55 || Damage == 65)
+			// 	{
+			// 		Damage = 4000.0;
+			// 	}
+			// 	else if (Damage == 195)
+			// 	{
+			// 		Damage = 15000.0;
+			// 	}
+			// }
 		}
 		Damage *= Damage_Zombie_Check(Client);
 		Damage *= Skill_3_OnTakeDamage(Client);
@@ -255,6 +258,10 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 			NormalizeVector(VectorPos, VectorPos);
 			ScaleVector(VectorPos, 300.0);
 			TeleportEntity(Client, NULL_VECTOR , NULL_VECTOR , VectorPos);
+		}
+		if (Mode_True && Mode_Start)
+		{
+			Damage *= 100;
 		}
 		PrintCenterText(Attack, "[伤害]对僵尸 %N 造成 %.2f 伤害", Client, Damage);
 		return Plugin_Changed;

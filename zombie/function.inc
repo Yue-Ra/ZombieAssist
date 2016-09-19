@@ -19,6 +19,14 @@ stock void SetAlpha(int Client, int Value)
 	}
 	SetEntityRenderColor(Client, 255, 255, 255, Value);
 }
+stock float GetSpeed(int Client)
+{
+	return GetEntPropFloat(Client, Prop_Data, "m_flLaggedMovementValue");
+}
+stock void SetSpeed(int Client, float Value)
+{
+	SetEntPropFloat(Client, Prop_Data, "m_flLaggedMovementValue", Value);
+}
 stock void AddHealth(int Client, int Value)
 {
 	if (!IsPlayerAlive(Client))
@@ -58,7 +66,11 @@ stock void SetArmour(int Client, int Value)
 }
 stock int GetOwner(int Entity)
 {
-	return GetEntDataEnt2(Entity, FindSendPropInfo("CBaseCombatWeapon", "m_hOwnerEntity"));
+	return GetEntPropEnt(Entity, Prop_Send, "m_hOwnerEntity");
+}
+stock int SetOwner(int Entity, int Client)
+{
+	SetEntPropEnt(Entity, Prop_Send, "m_hOwnerEntity", Client);
 }
 stock int GetHammerId(int Entity)
 {
@@ -215,9 +227,4 @@ stock bool CheckChinese(int Client)
 		return true;
 	}
 	return false;
-}
-stock void SetNoShake(int Client)
-{
-	SetEntPropVector(Client, Prop_Send, "m_vecPunchAngle", NULL_VECTOR);
-	SetEntPropVector(Client, Prop_Send, "m_vecPunchAngleVel", NULL_VECTOR);
 }

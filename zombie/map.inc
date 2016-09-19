@@ -57,41 +57,40 @@ void Map_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 		LogError("Map FetchRow Failure");
 		return;
 	}
-	Map_Win = SQL_FetchInt(Child, 1);
-	Map_Lose = SQL_FetchInt(Child, 2);
-	Map_Spawn = SQL_FetchFloat(Child, 3);
+	Map_Win = SQL_FetchInt(Child, 4);
+	Map_Lose = SQL_FetchInt(Child, 5);
+	Map_Win_Point = SQL_FetchInt(Child, 6);
+	Map_Lose_Point = SQL_FetchInt(Child, 7);
+	Map_Spawn = SQL_FetchFloat(Child, 8);
 	Map_SetSpawnTime(Map_Spawn);
-	if (SQL_FetchInt(Child, 4) == 1)
+	if (SQL_FetchInt(Child, 9) == 1)
 	{
 		SetConVarBounds(FindConVar("mp_roundtime"), ConVarBound_Upper, true, 15.0);
 	}
-	Alpha_Allow = SQL_FetchInt(Child, 5) == 0 ? false : true;
-	Model_Allow = SQL_FetchInt(Child, 6) == 0 ? false : true;
-	Navbar_Allow = SQL_FetchInt(Child, 7) == 0 ? false : true;
-	Weapon_Allow = SQL_FetchInt(Child, 9) == 0 ? false : true;
-	Damage_Fall = SQL_FetchInt(Child, 11) == 0 ? false : true;
-	SetConVarIntValue("sv_enablebunnyhopping", SQL_FetchInt(Child, 12), true);
-	Weapon_Limit = SQL_FetchInt(Child, 13);
-	Credit_Allow = SQL_FetchInt(Child, 14) == 0 ? false : true;
-	Map_Win_Point = SQL_FetchInt(Child, 15);
-	Map_Lose_Point = SQL_FetchInt(Child, 16);
-	SetConVarIntValue("mp_timelimit", SQL_FetchInt(Child, 20), true);
-	SetConVarFloatValue("mp_roundtime", SQL_FetchFloat(Child, 21), true);
-	int Credits[5];
+	SetConVarIntValue("mp_timelimit", SQL_FetchInt(Child, 10), true);
+	SetConVarFloatValue("mp_roundtime", SQL_FetchFloat(Child, 11), true);
+	Damage_Fall = SQL_FetchInt(Child, 12) == 0 ? false : true;
+	SetConVarIntValue("sv_enablebunnyhopping", SQL_FetchInt(Child, 13), true);
+	Alpha_Allow = SQL_FetchInt(Child, 14) == 0 ? false : true;
+	Model_Allow = SQL_FetchInt(Child, 15) == 0 ? false : true;
+	Navbar_Allow = SQL_FetchInt(Child, 16) == 0 ? false : true;
+	Weapon_Allow = SQL_FetchInt(Child, 17) == 0 ? false : true;
+	Weapon_Limit = SQL_FetchInt(Child, 18);
+	int Credits[6];
 	for (int Num = 0; Num < sizeof(Credits); Num++)
 	{
-		Credits[Num] = SQL_FetchInt(Child, 22 + Num);
+		Credits[Num] = SQL_FetchInt(Child, 19 + Num);
 	}
 	Credit_Human_Allow_Set(Credits);
 	for (int Num = 0; Num < sizeof(Credits); Num++)
 	{
-		Credits[Num] = SQL_FetchInt(Child, 27 + Num);
+		Credits[Num] = SQL_FetchInt(Child, 25 + Num);
 	}
 	Credit_Zombie_Allow_Set(Credits);
-	int Skills[14];
+	int Skills[16];
 	for (int Num = 0; Num < sizeof(Skills); Num++)
 	{
-		Skills[Num] = SQL_FetchInt(Child, 32 + Num);
+		Skills[Num] = SQL_FetchInt(Child, 31 + Num);
 	}
 	Skill_Allow_Set(Skills);
 	LogMessage("Map %s Load Success", Map_Name);
@@ -115,7 +114,6 @@ void Map_Menu(int Client)
 	AddMenuItem(MenuHandle, "", "侧边信息开关");
 	AddMenuItem(MenuHandle, "", "伤害加成开关");
 	AddMenuItem(MenuHandle, "", "远程购买开关");
-	AddMenuItem(MenuHandle, "", "人类队长开关");
 	AddMenuItem(MenuHandle, "", "掉落伤害开关");
 	SetMenuExitBackButton(MenuHandle, true);
 	DisplayMenu(MenuHandle, Client, 30);
@@ -127,7 +125,22 @@ int Map_Menu_Handle(Menu MenuHandle, MenuAction ActionHandle, int Client, int It
 void Map_Create()
 {
 	char Query[192];
-	Format(Query, sizeof(Query), "INSERT INTO map(name) VALUES ('%s')", Map_Name);
+	if (!Mode_True)
+	{
+		Format(Query, sizeof(Query), "INSERT INTO map(name) VALUES ('%s')", Map_Name);
+		SetConVarIntValue("mp_timelimit", 30, true);
+		SetConVarFloatValue("mp_roundtime", 10.0, true);
+		Damage_Fall = true;
+		SetConVarIntValue("sv_enablebunnyhopping", 0, true);
+	}
+	else
+	{
+		SetConVarIntValue("mp_timelimit", 15, true);
+		SetConVarFloatValue("mp_roundtime", 3.5, true);
+		Damage_Fall = false;
+		SetConVarIntValue("sv_enablebunnyhopping", 1, true);
+		Format(Query, sizeof(Query), "INSERT INTO map(name,timelimit,roundtime,fall,bhop) VALUES ('%s',15,3.5,0,1)", Map_Name);
+	}
 	SQL_TQuery(MySQL, MySQL_Query, Query);
 	Map_SetSpawnTime(Map_Spawn);
 	LogMessage("Map %s Create Success", Map_Name);
