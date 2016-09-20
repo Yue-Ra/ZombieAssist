@@ -406,6 +406,7 @@ Action Skill_16_Timer(Handle Timer, any Client)
 	}
 	float ClientPos[3];
 	GetClientAbsOrigin(Client, ClientPos);
-	makeExplosion(0, -1, ClientPos, "", 100, 100, float(GetClientHealth(Client)));
+	SetEntityHealth(Client, 1000);
+	makeExplosion(0, 0, ClientPos, "", 10000, 100, 10000.0, 16384);
 	return Plugin_Handled;
 }

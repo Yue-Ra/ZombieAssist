@@ -208,7 +208,7 @@ stock void makeExplosion(int Attack = 0, int Inflictor = -1, const float Positio
 		}
 	}
 	DispatchSpawn(Entity);
-	if (IsClientInGame(Attack))
+	if (CheckGame(Attack))
 	{
 		SetEntPropEnt(Entity, Prop_Send, "m_hOwnerEntity", Attack);
 	}

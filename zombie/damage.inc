@@ -147,11 +147,14 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 	}
 	if (DamageType == 64 && CheckZombie(Client) && Damage < 100)
 	{
-		Damage_Attack_Up(Attack, RoundToCeil(Damage));
 		ExtinguishEntity(Client);
-		IgniteEntity(Client, 5.0 + Skill_5_OnTakeDamage(Attack));
-		Damage += Skill_7_OnTakeDamage(Attack);
-		PrintCenterText(Attack, "[伤害]对僵尸 %N 造成 %.2f 伤害", Client, Damage);
+		if (CheckHuman(Attack))
+		{
+			Damage_Attack_Up(Attack, RoundToCeil(Damage));
+			IgniteEntity(Client, 5.0 + Skill_5_OnTakeDamage(Attack));
+			Damage += Skill_7_OnTakeDamage(Attack);
+			PrintCenterText(Attack, "[伤害]对僵尸 %N 造成 %.2f 伤害", Client, Damage);
+		}
 		if (GetClientHealth(Client) > Damage)
 		{
 			SetEntityHealth(Client, GetClientHealth(Client) - RoundToCeil(Damage));
@@ -212,11 +215,11 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 		}
 		if (Mode_True)
 		{
-			if (Skill_16_OnDamage(Client))
+			GetEntityClassname(GetWeapon(Attack), ClassName, sizeof(ClassName));
+			if (StrEqual(ClassName, "weapon_knife", false) && Skill_16_OnDamage(Attack))
 			{
 				CreateTimer(3.0, Skill_16_Timer, Client, TIMER_FLAG_NO_MAPCHANGE);
 			}
-			return Plugin_Continue;
 			// if (!(GetEntityFlags(Attack) & FL_DUCKING))
 			// {
 			// 	if (Damage == 15 || Damage == 20)
