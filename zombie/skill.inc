@@ -92,6 +92,12 @@ void Skill_Set(int Client, int Skills[16])
 {
 	for (int Num = 0; Num < Skill_Max; Num++)
 	{
+		Skill_Client[Client][Num] = Skill_MaxLv[Num];
+	}
+	Skill_Alive[Client] = 0;
+	/*
+	for (int Num = 0; Num < Skill_Max; Num++)
+	{
 		Skill_Client[Client][Num] = Skills[Num];
 		if (Skill_Client[Client][Num] > Skill_MaxLv[Num])
 		{
@@ -106,6 +112,7 @@ void Skill_Set(int Client, int Skills[16])
 		Count = 0;
 	}
 	Skill_Alive[Client] = MaxSp - Count;
+	*/
 }
 void Skill_Empty(int Client)
 {
@@ -190,7 +197,7 @@ void Skill_2_OnPlayerSpawn(int Client)
 	{
 		return;
 	}
-	Skill_2_Handle[Client] = CreateTimer(600.0 / Skill_Client[Client][1], Skill_2_Timer, Client, TIMER_REPEAT);
+	Skill_2_Handle[Client] = CreateTimer(900.0 / Skill_Client[Client][1], Skill_2_Timer, Client, TIMER_REPEAT);
 }
 Action Skill_2_Timer(Handle Timer, any Client)
 {

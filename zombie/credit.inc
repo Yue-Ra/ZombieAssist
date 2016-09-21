@@ -17,7 +17,6 @@ int Credit_Zombie_Cost[6];
 int Credit_Zombie_Cool[6];
 int Credit_Zombie_Time[MAXPLAYERS + 1][6];
 
-bool Credit_Allow = false;
 bool Credit_Human_Allow[6];
 bool Credit_Zombie_Allow[6];
 
@@ -127,7 +126,6 @@ Action Credit_Reload_Command(int Client, int Args)
 }
 void Credit_OnMapStart()
 {
-	Credit_Allow = true;
 	for (int Client = 1; Client <= MaxClients; Client++)
 	{
 		Credit_Client[Client] = 0;
@@ -182,11 +180,6 @@ Action Credit_Command(int Client, int Args)
 {
 	if (CheckAlive(Client))
 	{
-		if (!Credit_Allow)
-		{
-			CPrintToChat(Client, "{green}[ZA][积分]{red} 积分功能已被禁用");
-			return Plugin_Handled;
-		}
 		if (Args == 0)
 		{
 			if (CheckHuman(Client))
@@ -431,7 +424,6 @@ Action Credit_Human_6_Timer(Handle Timer, any Client)
 {
 	if (CheckHuman(Client))
 	{
-		PrintToChatAll("%f", GetSpeed(Client));
 		SetSpeed(Client, float(277) / float(250));
 		return Plugin_Handled;
 	}

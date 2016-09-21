@@ -36,7 +36,7 @@ void Infect_Respawn_Check(int Client)
 		CPrintToChat(Client, "{green}[ZA][感染]{blue} {gold}5{blue}秒内使用爆菊馒头可以变成人类");
 		return;
 	}
-	CPrintToChatAll("{green}[ZA][感染]{blue} 僵尸 %N 拥有爆菊馒头效果,{gold}5{blue}秒后将变成人类", Client);
+	CPrintToChatAll("{green}[ZA][感染]{blue} 僵尸 {gold}%N{blue} 拥有爆菊馒头效果,{gold}5{blue}秒后将变成人类", Client);
 	CreateTimer(5.0, Infect_Respawn_Client_Timer, Client);
 }
 void Infect_Respawn_Credit(int Client)
@@ -50,7 +50,7 @@ void Infect_Respawn_Credit(int Client)
 		CPrintToChat(Client, "{green}[ZA][感染]{red} 爆菊馒头用的太晚啦,已经无效了");
 		return;
 	}
-	CPrintToChatAll("{green}[ZA][感染]{blue} 僵尸 %N 拥有爆菊馒头效果,{gold}5{blue}秒后将变成人类", Client);
+	CPrintToChatAll("{green}[ZA][感染]{blue} 僵尸 {gold}%N{blue} 拥有爆菊馒头效果,{gold}5{blue}秒后将变成人类", Client);
 	CreateTimer(5.0, Infect_Respawn_Client_Timer, Client);
 }
 Action Infect_Respawn_Client_Timer(Handle Timer, any Client)
