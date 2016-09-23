@@ -177,7 +177,7 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 		if (Damage == 195)
 		{
 			Damage_Infect[Attack]++;
-			CPrintToChatAll("{green}[ZA][伤害]{red} 人类 {gold}%N{red} 被僵尸 {gold}%N{red} 爆菊了", Client, Attack);
+			CPrintToChatAll("{green}[ZA][伤害] {red}人类 {gold}%N{red} 被僵尸 {gold}%N{red} 爆菊了", Client, Attack);
 			PrintCenterTextAll("人类 %N 被僵尸 %N 爆菊了", Client, Attack);
 			ForcePlayerSuicide(Client);
 			Sound_Play();
@@ -211,7 +211,7 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 		PrintCenterText(Attack, "[伤害]对僵尸 %N 造成 %.2f 伤害", Client, Damage);
 		if (Damage == 15 || Damage == 20 || Damage == 55 || Damage == 65 || Damage == 195)
 		{
-			CPrintToChatAll("{green}[ZA][伤害]{red} 人类 {gold}%N{red} 刀了僵尸 {gold}%N", Attack, Client);
+			CPrintToChatAll("{green}[ZA][伤害] {red}人类 {gold}%N{red} 刀了僵尸 {gold}%N", Attack, Client);
 		}
 		if (Mode_True)
 		{
@@ -243,12 +243,12 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 		if (Skill_6_OnTakeDamage(Attack))
 		{
 			IgniteEntity(Client, 0.5);
-			CPrintToChat(Attack, "{green}[ZA][技能]{blue} 触发了 {gold}%s {blue}效果", Skill_Name[5]);
+			CPrintToChat(Attack, "{green}[ZA][技能] {blue}触发了 {gold}%s{blue} 效果", Skill_Name[5]);
 		}
 		if (Skill_8_OnTakeDamage(Attack))
 		{
 			Damage *= 3.0;
-			CPrintToChat(Attack, "{green}[ZA][技能]{blue} 触发了 {gold}%s {blue}效果", Skill_Name[7]);
+			CPrintToChat(Attack, "{green}[ZA][技能] {blue}触发了 {gold}%s{blue} 效果", Skill_Name[7]);
 		}
 		int Flags = GetEntityFlags(Client);
 		if (Flags & FL_ONGROUND == 0 || Flags & FL_DUCKING == 2)

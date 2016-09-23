@@ -34,7 +34,7 @@ void Mode_Check(int Time)
 	if (Time == 180)
 	{
 		Mode_Start = true;
-		CPrintToChatAll("{green}[ZA][感染]{blue} 疫苗研究已完成");
+		CPrintToChatAll("{green}[ZA][感染] {blue}疫苗研究已完成");
 		PrintCenterTextAll("[感染]疫苗研究已完成");
 	}
 }

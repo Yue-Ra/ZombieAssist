@@ -152,11 +152,6 @@ void Map_SetSpawnTime(float Value)
 }
 void Map_OnRoundEnd(int Team)
 {
-	if (Time_Time < 120)
-	{
-		CPrintToChatAll("{green}[ZA][地图] 回合时间低于120秒,取消回合经验奖励");
-		return;
-	}
 	char Query[192];
 	if (Team == CS_TEAM_CT)
 	{
@@ -169,7 +164,7 @@ void Map_OnRoundEnd(int Team)
 		Format(Query, sizeof(Query), "UPDATE map SET lose=lose+1 WHERE name='%s'", Map_Name);
 	}
 	SQL_TQuery(MySQL, MySQL_Query, Query);
-	CPrintToChatAll("{green}[ZA][地图]{blue} 地图累计胜利 {gold}%d{blue} 失败 {gold}%d", Map_Win, Map_Lose);
+	CPrintToChatAll("{green}[ZA][地图] {blue}地图累计胜利 {gold}%d{blue},累计失败 {gold}%d", Map_Win, Map_Lose);
 }
 int Get_WinPoint()
 {

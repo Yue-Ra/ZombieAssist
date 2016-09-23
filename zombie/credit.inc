@@ -40,11 +40,11 @@ void Credit_Give(int Client, int Value, const char[] Reason, bool ChatAll = fals
 {
 	if (!ChatAll)
 	{
-		CPrintToChat(Client, "{green}[ZA][积分]{blue} 你通过 {gold}%s{blue} 获得了 {gold}%d{blue} 积分", Reason, Value);
+		CPrintToChat(Client, "{green}[ZA][积分] {blue}你通过 {gold}%s{blue} 获得了 {gold}%d{blue} 积分", Reason, Value);
 	}
 	else
 	{
-		CPrintToChatAll("{green}[ZA][积分]{blue} 玩家 {gold}%N{blue} 通过 {gold}%s{blue} 获得了 {gold}%d{blue} 积分", Client, Reason, Value);
+		CPrintToChatAll("{green}[ZA][积分] {blue}玩家 {gold}%N{blue} 通过 {gold}%s{blue} 获得了 {gold}%d{blue} 积分", Client, Reason, Value);
 	}
 	Credit_Client[Client] += Value;
 	int Skill = Skill_1(Client);
@@ -57,7 +57,7 @@ bool Credit_Down(int Client, int Value)
 {
 	if (Credit_Client[Client] < Value)
 	{
-		CPrintToChat(Client, "{green}[ZA][积分]{red} 积分不足,还需要 {gold}%d", Value - Credit_Client[Client]);
+		CPrintToChat(Client, "{green}[ZA][积分] {red}积分不足,还需要 {gold}%d{red} 点", Value - Credit_Client[Client]);
 		return false;
 	}
 	Credit_Client[Client] -= Value;
@@ -94,7 +94,6 @@ void Credit_Load_Query(Handle Owner, Handle Child, const char[] Error, any Team)
 			SQL_FetchString(Child, 4, Credit_Human_Alias[Num], sizeof(Credit_Human_Alias[]));
 			Credit_Human_Cost[Num] = SQL_FetchInt(Child, 5);
 			Credit_Human_Cool[Num] = SQL_FetchInt(Child, 6);
-			LogMessage("Credit Human %d\tName %s\tInfo %s\tAlias %s\tCost %d\tCool %d", Num, Credit_Human_Name[Num], Credit_Human_Info[Num], Credit_Human_Alias[Num], Credit_Human_Cost[Num], Credit_Human_Cool[Num]);
 		}
 		else
 		{
@@ -103,7 +102,6 @@ void Credit_Load_Query(Handle Owner, Handle Child, const char[] Error, any Team)
 			SQL_FetchString(Child, 4, Credit_Zombie_Alias[Num], sizeof(Credit_Zombie_Alias[]));
 			Credit_Zombie_Cost[Num] = SQL_FetchInt(Child, 5);
 			Credit_Zombie_Cool[Num] = SQL_FetchInt(Child, 6);
-			LogMessage("Credit Zombie %d\tName %s\tInfo %s\tAlias %s\tCost %d\tCool %d", Num, Credit_Zombie_Name[Num], Credit_Zombie_Info[Num], Credit_Zombie_Alias[Num], Credit_Zombie_Cost[Num], Credit_Zombie_Cool[Num]);
 		}
 		Num++;
 	}
@@ -203,7 +201,7 @@ Action Credit_Command(int Client, int Args)
 				{
 					if (Credit_Human_Time[Client][Item] > Time)
 					{
-						CPrintToChat(Client, "{green}[ZA][积分]{red} %s 冷却时间还有 {gold}%d{red} 秒", Credit_Human_Name[Item], Credit_Human_Time[Client][Item] - Time);
+						CPrintToChat(Client, "{green}[ZA][积分] {gold}%s{red} 冷却时间还有 {gold}%d{red} 秒", Credit_Human_Name[Item], Credit_Human_Time[Client][Item] - Time);
 						return Plugin_Handled;
 					}
 					switch (Item)
@@ -227,7 +225,7 @@ Action Credit_Command(int Client, int Args)
 				{
 					if (Credit_Zombie_Time[Client][Item] > Time)
 					{
-						CPrintToChat(Client, "{green}[ZA][积分]{red} %s 冷却时间还有 {gold}%d{red} 秒", Credit_Zombie_Name[Item], Credit_Zombie_Time[Client][Item] - Time);
+						CPrintToChat(Client, "{green}[ZA][积分] {gold}%s{red} 冷却时间还有 {gold}%d{red} 秒", Credit_Zombie_Name[Item], Credit_Zombie_Time[Client][Item] - Time);
 						return Plugin_Handled;
 					}
 					switch (Item)
@@ -289,23 +287,23 @@ void Credit_Human_Buy(int Client, int Item)
 {
 	if (!IsPlayerAlive(Client))
 	{
-		CPrintToChat(Client, "{green}[ZA][积分]{red} 没活还想玩积分?");
+		CPrintToChat(Client, "{green}[ZA][积分] {red}没活还想玩积分?");
 		return;
 	}
 	if (ZR_IsClientZombie(Client))
 	{
-		CPrintToChat(Client, "{green}[ZA][积分]{red} 僵尸还想玩人类积分?");
+		CPrintToChat(Client, "{green}[ZA][积分] {red}僵尸还想玩人类积分?");
 		return;
 	}
 	if (!Credit_Human_Allow[Item])
 	{
-		CPrintToChat(Client, "{green}[ZA][积分]{gold} %s {red}已被禁用", Credit_Human_Name[Item]);
+		CPrintToChat(Client, "{green}[ZA][积分] {gold}%s{red} 已被管理员禁用", Credit_Human_Name[Item]);
 		return;
 	}
 	int Time = GetTime();
 	if (Credit_Human_Time[Client][Item] > Time)
 	{
-		CPrintToChat(Client, "{green}[ZA][积分]{red} %s 冷却时间还有 {gold}%d{red} 秒", Credit_Human_Name[Item], Credit_Human_Time[Client][Item] - Time);
+		CPrintToChat(Client, "{green}[ZA][积分] {gold}%s{red} 冷却时间还有 {gold}%d{red} 秒", Credit_Human_Name[Item], Credit_Human_Time[Client][Item] - Time);
 		return;
 	}
 	switch (Item)
@@ -322,23 +320,23 @@ void Creidt_Zombie_Buy(int Client, int Item)
 {
 	if (!IsPlayerAlive(Client))
 	{
-		CPrintToChat(Client, "{green}[ZA][积分]{red} 没活还想玩积分?");
+		CPrintToChat(Client, "{green}[ZA][积分] {red}没活还想玩积分?");
 		return;
 	}
 	if (ZR_IsClientHuman(Client))
 	{
-		CPrintToChat(Client, "{green}[ZA][积分]{red} 人类还想玩僵尸积分?");
+		CPrintToChat(Client, "{green}[ZA][积分] {red}人类还想玩僵尸积分?");
 		return;
 	}
 	if (!Credit_Zombie_Allow[Item])
 	{
-		CPrintToChat(Client, "{green}[ZA][积分]{gold} %s {red}已被禁用", Credit_Zombie_Name[Item]);
+		CPrintToChat(Client, "{green}[ZA][积分] {gold}%s{red} 已被管理员禁用", Credit_Zombie_Name[Item]);
 		return;
 	}
 	int Time = GetTime();
 	if (Credit_Zombie_Time[Client][Item] > Time)
 	{
-		CPrintToChat(Client, "{green}[ZA][积分]{red} %s 冷却时间还有 {gold}%d{red} 秒", Credit_Zombie_Name[Item], Credit_Zombie_Time[Client][Item] - Time);
+		CPrintToChat(Client, "{green}[ZA][积分] {red}%s{red} 冷却时间还有 {gold}%d{red} 秒", Credit_Zombie_Name[Item], Credit_Zombie_Time[Client][Item] - Time);
 		return;
 	}
 	switch (Item)
@@ -354,7 +352,7 @@ void Credit_Human_1(int Client)
 {
 	if (Skill_10_OnWeapon(Client) < 2)
 	{
-		CPrintToChat(Client, "{green}[ZA][积分]{red} 请先学习 {gold}%s{red} 技能", Skill_Name[9]);
+		CPrintToChat(Client, "{green}[ZA][积分] {red}请先学习 {gold}%s{red} 技能", Skill_Name[9]);
 		return;
 	}
 	if (!Credit_Down(Client, Credit_Human_Cost[0]))
@@ -386,7 +384,7 @@ void Credit_Human_4(int Client)
 {
 	if (!Skill_9_OnCredit(Client))
 	{
-		CPrintToChat(Client, "{green}[ZA][积分]{red} 请先学习 {gold}%s{red} 技能", Skill_Name[8]);
+		CPrintToChat(Client, "{green}[ZA][积分] {red}请先学习 {gold}%s{red} 技能", Skill_Name[8]);
 		return;
 	}
 	if (!Credit_Down(Client, Credit_Human_Cost[3]))
@@ -400,7 +398,7 @@ void Credit_Human_5(int Client)
 {
 	if (Skill_10_OnWeapon(Client) < 3)
 	{
-		CPrintToChat(Client, "{green}[ZA][积分]{red} 请先学习 {gold}%s{red} 技能", Skill_Name[9]);
+		CPrintToChat(Client, "{green}[ZA][积分] {red}请先学习 {gold}%s{red} 技能", Skill_Name[9]);
 		return;
 	}
 	if (!Credit_Down(Client, Credit_Human_Cost[4]))

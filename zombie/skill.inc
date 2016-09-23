@@ -123,7 +123,7 @@ void Skill_Empty(int Client)
 	}
 	Format(Query, sizeof(Query), "UPDATE user SET sk1=0,sk2=0,sk3=0,sk4=0,sk5=0,sk6=0,sk7=0,sk8=0,sk9=0,sk10=0,sk11=0,sk12=0,sk13,sk14=0,sk15=0,sk16=0 WHERE id=%d", Client_ID[Client]);
 	SQL_TQuery(MySQL, MySQL_Query, Query);
-	CPrintToChat(Client, "{green}[ZA][技能]{blue} 你的技能点已被重置");
+	CPrintToChat(Client, "{green}[ZA][技能] {red}你的技能点已被重置");
 }
 void Skill_Menu(int Client)
 {
@@ -151,12 +151,12 @@ void Skill_Update(int Client, int Num)
 {
 	if (Skill_Alive[Client] < Skill_Cost[Num][Skill_Client[Client][Num]])
 	{
-		CPrintToChat(Client, "{green}[ZA][技能]{red} 技能点不足无法升级");
+		CPrintToChat(Client, "{green}[ZA][技能] {red}技能点不足无法升级");
 		return;
 	}
 	if (Skill_Client[Client][Num] == Skill_MaxLv[Num])
 	{
-		CPrintToChat(Client, "{green}[ZA][技能]{red} 技能等级已到达上限");
+		CPrintToChat(Client, "{green}[ZA][技能] {red}技能等级已到达上限");
 		return;
 	}
 	Skill_Alive[Client] -= Skill_Cost[Num][Skill_Client[Client][Num]];
@@ -164,7 +164,7 @@ void Skill_Update(int Client, int Num)
 	char Query[192];
 	Format(Query, sizeof(Query), "UPDATE user SET sk%d=sk%d+1 WHERE id=%d", Num + 1, Num + 1, Client_ID[Client]);
 	SQL_TQuery(MySQL, MySQL_Query, Query);
-	CPrintToChat(Client, "{green}[ZA][技能]{gold} %s {blue}当前技能等级为 {gold}%d", Skill_Name[Num], Skill_Client[Client][Num]);
+	CPrintToChat(Client, "{green}[ZA][技能] {gold}%s{blue} 当前等级为 {gold}%d", Skill_Name[Num], Skill_Client[Client][Num]);
 }
 int Skill_MaxSP(int Client)
 {

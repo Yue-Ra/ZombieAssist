@@ -33,7 +33,7 @@ void Client_Load_Query(Handle Owner, Handle Child, const char[] Error, any Clien
 	if (Owner == INVALID_HANDLE || Child == INVALID_HANDLE)
 	{
 		LogError("Client Handle Failure");
-		CPrintToChat(Client, "{green}[ZA][用户]{red} 玩家信息读取失败,请联系管理员");
+		CPrintToChat(Client, "{green}[ZA][用户] {red}玩家信息读取失败,请联系管理员");
 		return;
 	}
 	if (SQL_GetRowCount(Child) == 0)
@@ -62,7 +62,7 @@ void Client_Load_Query(Handle Owner, Handle Child, const char[] Error, any Clien
 	Format(Query, sizeof(Query), "UPDATE user SET name='%s' WHERE id=%d", Client_Name[Client], Client_ID[Client]);
 	SQL_TQuery(MySQL, MySQL_Query, Query);
 	LogMessage(Query);
-	CPrintToChat(Client, "{green}[ZA][用户]{blue} 玩家信息读取完成,玩家UID为 {gold}%d", Client_ID[Client]);
+	CPrintToChat(Client, "{green}[ZA][用户] {blue}玩家信息读取完成,玩家UID为 {gold}%d", Client_ID[Client]);
 	LogMessage("Client %d Load Success", Client_ID[Client]);
 }
 void Client_Create(int Client)
@@ -76,9 +76,9 @@ void Client_Create_Query(Handle Owner, Handle Child, const char[] Error, any Cli
 {
 	if (Owner == INVALID_HANDLE || Child == INVALID_HANDLE)
 	{
-		CPrintToChat(Client, "{green}[ZA][用户]{red} 用户信息创建失败,请联系管理员");
+		CPrintToChat(Client, "{green}[ZA][用户] {red}用户信息创建失败,请联系管理员");
 		return;
 	}
-	CPrintToChat(Client, "{green}[ZA][用户]{blue} 玩家信息创建成功,欢迎您的到来");
+	CPrintToChat(Client, "{green}[ZA][用户] {blue}玩家信息创建成功,欢迎您的到来");
 	LogMessage("Client %d Create Success", SQL_GetInsertId(Child));
 }

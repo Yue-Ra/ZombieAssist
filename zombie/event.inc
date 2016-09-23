@@ -48,12 +48,17 @@ void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
 	int Team = GetEventInt(event, "winner");
+	Mode_OnRoundEnd();
 	Alert_OnRoundEnd();
 	Alpha_OnRoundEnd();
+	if (Time_Time < 120)
+	{
+		CPrintToChatAll("{green}[ZA][地图] {red}回合时间低于 {gold}120{red} 秒,取消积分和经验奖励");
+		return;
+	}
 	Map_OnRoundEnd(Team);
 	Level_OnRoundEnd(Team);
 	Credit_OnRoundEnd(Team);
-	Mode_OnRoundEnd();
 }
 void Event_RoundFreezeEnd(Event event, const char[] name, bool dontBroadcast)
 {

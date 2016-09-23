@@ -12,7 +12,7 @@ Action Alpha_Command(int Client, int Args)
 		{
 			SetAlpha(Client, 255);
 		}
-		CPrintToChat(Client, "{green}[ZA][透明]{blue} 当前模型透明为 {gold}%s", Alpha_Client[Client] ? "开启" : "关闭");
+		CPrintToChat(Client, "{green}[ZA][透明] {blue}当前模型透明为 {gold}%s", Alpha_Client[Client] ? "开启" : "关闭");
 	}
 	return Plugin_Handled;
 }

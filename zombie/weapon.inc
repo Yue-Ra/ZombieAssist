@@ -241,7 +241,7 @@ Action Weapon_Command(int Client, int Args)
 				return Plugin_Handled;
 			}
 		}
-		CPrintToChat(Client, "{green}[ZA][武器]{red} 武器名称不存在");
+		CPrintToChat(Client, "{green}[ZA][武器] {red}武器名称不存在");
 	}
 	return Plugin_Handled;
 }
@@ -276,31 +276,31 @@ void Weapon_Buy(int Client, int Item)
 {
 	if (!Weapon_Allow)
 	{
-		CPrintToChat(Client, "{green}[ZA][武器]{red} 武器功能已被禁用");
+		CPrintToChat(Client, "{green}[ZA][武器] {red}武器功能已被禁用");
 		return;
 	}
 	if (!CheckHuman(Client))
 	{
-		CPrintToChat(Client, "{green}[ZA][武器]{red} 只有人类才能打手枪");
+		CPrintToChat(Client, "{green}[ZA][武器] {red}只有人类才能打手枪");
 		return;
 	}
 	if (Weapon_Skill[Item] > Skill_10_OnWeapon(Client))
 	{
-		CPrintToChat(Client, "{green}[ZA][技能]{red} 需要 {gold}%s{red} 技能 {gold}%d{red} 级", Skill_Name[9], Weapon_Skill[Item]);
+		CPrintToChat(Client, "{green}[ZA][技能] {red}需要 {gold}%s{red} 技能 {gold}%d{red} 级", Skill_Name[9], Weapon_Skill[Item]);
 		return;
 	}
 	int Cash = GetCash(Client);
 	int Price = RoundToCeil(Weapon_Cash[Item] * Skill_11_OnWeapon(Client));
 	if (Cash < Price)
 	{
-		CPrintToChat(Client, "{green}[ZA][武器]{red} 金钱不足,还需要 {gold}%d", Price - Cash);
+		CPrintToChat(Client, "{green}[ZA][武器] {red}金钱不足,还需要 {gold}%d", Price - Cash);
 		return;
 	}
 	if (Weapon_Limit > 0 && StrEqual(Weapon_Name[Item], "weapon_hegrenade", false))
 	{
 		if (Weapon_Client[Client] >= Weapon_Limit)
 		{
-			CPrintToChat(Client, "{green}[ZA][武器]{red} 手雷购买超过上限 {gold}%d", Weapon_Limit);
+			CPrintToChat(Client, "{green}[ZA][武器] {red}手雷购买超过上限 {gold}%d", Weapon_Limit);
 			return;
 		}
 		else

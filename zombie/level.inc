@@ -16,11 +16,11 @@ void Client_Point_Give(int Client, int Value, const char[] Reason, bool ChatAll 
 {
 	if (!ChatAll)
 	{
-		CPrintToChat(Client, "{green}[ZA][等级]{blue} 你通过 {gold}%s{blue} 获得了 {gold}%d{blue} 经验", Reason, Value);
+		CPrintToChat(Client, "{green}[ZA][等级] {blue}你通过 {gold}%s{blue} 获得了 {gold}%d{blue} 经验", Reason, Value);
 	}
 	else
 	{
-		CPrintToChatAll("{green}[ZA][等级]{blue} 玩家 {gold}%N{blue} 通过 {gold}%s{blue} 获得了 {gold}%d{blue} 经验", Client, Reason, Value);
+		CPrintToChatAll("{green}[ZA][等级] {blue}玩家 {gold}%N{blue} 通过 {gold}%s{blue} 获得了 {gold}%d{blue} 经验", Client, Reason, Value);
 	}
 	Client_Point[Client] += Value;
 	if (Client_Level[Client] == 50)
@@ -38,13 +38,20 @@ void Client_Point_Give(int Client, int Value, const char[] Reason, bool ChatAll 
 		SQL_TQuery(MySQL, MySQL_Query, Query);
 		return;
 	}
+	SetOverlays(Client, "overlays/ub/levelup", 5.0);
+	if (!IsSoundPrecached("ub/levelup.mp3"))
+	{
+		PrecacheSound("ub/levelup.mp3");
+	}
+	EmitSoundToAll("ub/levelup.mp3", Client, _, _, _, 1.0, _, _, _, _, _, _);
 	Client_Point[Client] = 0;
 	Client_Level[Client] += 1;
 	Format(Query, sizeof(Query), "UPDATE user SET level=level+1,point=0 WHERE id=%d", Client_ID[Client]);
 	SQL_TQuery(MySQL, MySQL_Query, Query);
 	Client_LevelUp[Client] = Client_LevelUp_Count(Client);
 	Skill_OnLevelUp(Client);
-	CPrintToChat(Client, "{green}[ZA][等级]{blue} 当前等级 {gold}%d{blue},下一级需要 {gold}%d{blue} 点经验", Client_Level[Client], Client_LevelUp_Count(Client));
+	CPrintToChat(Client, "{green}[ZA][等级] {blue}当前等级 {gold}%d{blue},下一级需要 {gold}%d{blue}点经验", Client_Level[Client], Client_LevelUp_Count(Client));
+	CPrintToChatAll("{green}[ZA][等级] {blue}玩家 {gold}%N{blue} 升级了,当前等级为 {gold}%d", Client, Client_Level[Client]);
 }
 void Client_Point_OnClientPutInServer(int Client)
 {
@@ -97,7 +104,7 @@ void Level_OnRoundEnd(int Team)
 	if (Team == CS_TEAM_CT)
 	{
 		int Point = Get_WinPoint();
-		CPrintToChatAll("{green}[ZA][等级]{blue} 存活人类获得 {gold}%d{blue} 经验", Point);
+		CPrintToChatAll("{green}[ZA][等级] {blue}存活人类获得 {gold}%d{blue} 经验", Point);
 		for (int Client = 1; Client <= MaxClients; Client++)
 		{
 			if (CheckHuman(Client))
@@ -113,7 +120,7 @@ void Level_OnRoundEnd(int Team)
 	else
 	{
 		int Point = Get_LosePoint();
-		CPrintToChatAll("{green}[ZA][等级]{blue} 在场玩家获得 {gold}%d{blue} 经验", Point);
+		CPrintToChatAll("{green}[ZA][等级] {blue}在场玩家获得 {gold}%d{blue} 经验", Point);
 		for (int Client = 1; Client <= MaxClients; Client++)
 		{
 			if (CheckGame(Client) && GetClientTeam(Client) > CS_TEAM_SPECTATOR)

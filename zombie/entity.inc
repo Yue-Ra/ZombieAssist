@@ -7,7 +7,7 @@ void Entity_OnPressed(const char[] Output, int Caller, int Activer, float Delay)
 {
 	if (CheckAlive(Activer))
 	{
-		CPrintToChatAll("{green}[ZA][实体]{gold} %N{blue} 使用了按钮/道具", Activer);
+		CPrintToChatAll("{green}[ZA][实体] {gold}%N{blue} 使用了按钮/道具", Activer);
 	}
 }
 Action UserMessage_Shake(UserMsg msg_id, BfRead msg, const int[] players, int playersNum, bool reliable, bool init)

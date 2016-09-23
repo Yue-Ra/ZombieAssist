@@ -1,3 +1,27 @@
+stock void SetOverlays(int Client, const char[] Path, float Time)
+{
+	char FilePath[192];
+	Format(FilePath, sizeof(FilePath), "materials/%s.vmt", Path);
+	if (!IsDecalPrecached(FilePath))
+	{
+		PrecacheDecal(FilePath);
+	}
+	Format(FilePath, sizeof(FilePath), "materials/%s.vtf", Path);
+	if (!IsDecalPrecached(FilePath))
+	{
+		PrecacheDecal(FilePath);
+	}
+	ClientCommand(Client, "r_screenoverlay \"%s\"", Path);
+	CreateTimer(Time, SetOverlays_Timer, Client, TIMER_FLAG_NO_MAPCHANGE);
+}
+stock Action SetOverlays_Timer(Handle Timer, any Client)
+{
+	if (CheckGame(Client))
+	{
+		ClientCommand(Client, "r_screenoverlay \"\"");
+	}
+	return Plugin_Handled;
+}
 stock void ClearTimer(& Handle: Timer)
 {
 	if (Timer == INVALID_HANDLE)
