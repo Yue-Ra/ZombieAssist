@@ -3,9 +3,10 @@ int Skill_Alive[MAXPLAYERS + 1];
 char Skill_Team[16][8];
 char Skill_Name[16][32];
 char Skill_Info[16][64];
-int Skill_Cost[16][11];
+int Skill_Cost[16][10];
 int Skill_MaxLv[16];
 int Skill_Max = 0;
+int Skill_Select[MAXPLAYERS + 1];
 
 Handle Skill_2_Handle[MAXPLAYERS + 1];
 Handle Skill_3_Handle[MAXPLAYERS + 1];
@@ -78,10 +79,10 @@ void Skill_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 		SQL_FetchString(Child, 1, Skill_Team[Count], sizeof(Skill_Team[]));
 		SQL_FetchString(Child, 2, Skill_Name[Count], sizeof(Skill_Name[]));
 		SQL_FetchString(Child, 3, Skill_Info[Count], sizeof(Skill_Info[]));
-		Skill_MaxLv[Count] = SQL_FetchInt(Child, 5);
+		Skill_MaxLv[Count] = SQL_FetchInt(Child, 4);
 		for (int Num = 0; Num < 10; Num++)
 		{
-			Skill_Cost[Count][Num] = SQL_FetchInt(Child, 6 + Num);
+			Skill_Cost[Count][Num] = SQL_FetchInt(Child, 5 + Num);
 		}
 		Count++;
 	}
@@ -122,46 +123,96 @@ void Skill_Empty(int Client)
 	}
 	Format(Query, sizeof(Query), "UPDATE user SET sk1=0,sk2=0,sk3=0,sk4=0,sk5=0,sk6=0,sk7=0,sk8=0,sk9=0,sk10=0,sk11=0,sk12=0,sk13,sk14=0,sk15=0,sk16=0 WHERE id=%d", Client_ID[Client]);
 	SQL_TQuery(MySQL, MySQL_Query, Query);
-	CPrintToChat(Client, "{green}[ZA][技能] {red}你的技能点已被重置");
+	CPrintToChat(Client, "{green}[ZA][技能] {red}你的技能配点已被重置");
 }
 void Skill_Menu(int Client)
 {
-	Menu MenuHandle = CreateMenu(Skill_Menu_Select_Handle);
+	Menu MenuHandle = CreateMenu(Skill_Menu_Handle);
 	SetMenuTitle(MenuHandle, "技能菜单\n技能点 %d", Skill_Alive[Client]);
 	char Item[192];
 	for (int Num = 0; Num < Skill_Max; Num++)
 	{
-		Format(Item, sizeof(Item), "[%s]%s[%d/%d]\n[消耗]%d [介绍]%s", Skill_Team[Num], Skill_Name[Num], Skill_Client[Client][Num], Skill_MaxLv[Num], Skill_Cost[Num][Skill_Client[Client][Num]], Skill_Info[Num]);
+		Format(Item, sizeof(Item), "[%s]%s[%d/%d]", Skill_Team[Num], Skill_Name[Num], Skill_Client[Client][Num], Skill_MaxLv[Num]);
 		AddMenuItem(MenuHandle, "", Item);
 	}
-	SetMenuPagination(MenuHandle, 10);
-	SetMenuExitBackButton(MenuHandle, true);
+	// SetMenuPagination(MenuHandle, 10);
+	SetMenuExitButton(MenuHandle, true);
 	DisplayMenu(MenuHandle, Client, 30);
 }
-int Skill_Menu_Select_Handle(Menu MenuHandle, MenuAction ActionHandle, int Client, int Item)
+int Skill_Menu_Handle(Menu MenuHandle, MenuAction ActionHandle, int Client, int Item)
 {
 	if (ActionHandle == MenuAction_Select)
 	{
+		Skill_Item_Menu(Client, Item);
+		/*
 		Skill_Update(Client, Item);
+		Skill_Menu(Client);
+		*/
+	}
+}
+void Skill_Item_Menu(int Client, int Num)
+{
+	Skill_Select[Client] = Num;
+	Menu MenuHandle = CreateMenu(Skill_Menu_Item_Handle);
+	SetMenuTitle(MenuHandle, "详细信息");
+	char Item[192];
+	Format(Item, sizeof(Item), "【类型】%s", Skill_Team[Num]);
+	AddMenuItem(MenuHandle, "", Item, ITEMDRAW_DISABLED);
+	Format(Item, sizeof(Item), "【名称】%s", Skill_Name[Num]);
+	AddMenuItem(MenuHandle, "", Item, ITEMDRAW_DISABLED);
+	Format(Item, sizeof(Item), "【简介】%s", Skill_Info[Num]);
+	AddMenuItem(MenuHandle, "", Item, ITEMDRAW_DISABLED);
+	char Cost[192], Level[192];
+	for (int Count = 1; Count <= Skill_MaxLv[Num]; Count++)
+	{
+		if (Skill_Client[Client][Num] == Count)
+		{
+			Format(Cost, sizeof(Cost), "%s[%2d] ", Cost, Skill_Cost[Num][Count - 1]);
+			Format(Level, sizeof(Level), "%s[%2d] ", Level, Count);
+		}
+		else
+		{
+			Format(Cost, sizeof(Cost), "%s%2d ", Cost, Skill_Cost[Num][Count - 1]);
+			Format(Level, sizeof(Level), "%s%2d ", Level, Count);
+		}
+	}
+	Format(Item, sizeof(Item), "【消耗】 %s", Cost);
+	AddMenuItem(MenuHandle, "", Item, ITEMDRAW_DISABLED);
+	Format(Item, sizeof(Item), "【等级】 %s", Level);
+	AddMenuItem(MenuHandle, "", Item, ITEMDRAW_DISABLED);
+	AddMenuItem(MenuHandle, "", "确认升级");
+	SetMenuExitBackButton(MenuHandle, true);
+	DisplayMenu(MenuHandle, Client, 30);
+}
+int Skill_Menu_Item_Handle(Menu MenuHandle, MenuAction ActionHandle, int Client, int Item)
+{
+	if (ActionHandle == MenuAction_Select)
+	{
+		int Num = Skill_Select[Client];
+		Skill_Update(Client, Num);
+		Skill_Item_Menu(Client, Num);
+	}
+	else if (ActionHandle == MenuAction_Cancel)
+	{
 		Skill_Menu(Client);
 	}
 }
 void Skill_Update(int Client, int Num)
 {
-	if (Skill_Alive[Client] < Skill_Cost[Num][Skill_Client[Client][Num]])
-	{
-		CPrintToChat(Client, "{green}[ZA][技能] {red}技能点不足无法升级");
-		return;
-	}
 	if (Skill_Client[Client][Num] == Skill_MaxLv[Num])
 	{
 		CPrintToChat(Client, "{green}[ZA][技能] {red}技能等级已到达上限");
 		return;
 	}
+	if (Skill_Alive[Client] < Skill_Cost[Num][Skill_Client[Client][Num] - 1])
+	{
+		CPrintToChat(Client, "{green}[ZA][技能] {red}技能点不足无法升级");
+		return;
+	}
 	Skill_Alive[Client] -= Skill_Cost[Num][Skill_Client[Client][Num]];
 	Skill_Client[Client][Num]++;
 	char Query[192];
-	Format(Query, sizeof(Query), "UPDATE user SET sk%d=sk%d+1 WHERE id=%d", Num + 1, Num + 1, Client_ID[Client]);
+	Format(Query, sizeof(Query), "UPDATE user SET sk%d=sk%d+ 1 WHERE id=%d", Num + 1, Num + 1, Client_ID[Client]);
 	SQL_TQuery(MySQL, MySQL_Query, Query);
 	CPrintToChat(Client, "{green}[ZA][技能] {gold}%s{blue} 当前等级为 {gold}%d", Skill_Name[Num], Skill_Client[Client][Num]);
 }
