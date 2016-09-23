@@ -4,7 +4,9 @@ int Weapon_Cash[24];
 char Weapon_Alias[24][32];
 int Weapon_Skill[24];
 int Weapon_Ammo[24];
-int Weapon_Add[24][10];
+int Weapon_Addon[24][10];
+int Weapon_Speed[24];
+int Weapon_Accel[24];
 
 int Weapon_Limit = 0;
 int Weapon_Client[MAXPLAYERS + 1];
@@ -39,10 +41,6 @@ void Weapon_WeaponEquipPost(int Client, int Weapon)
 {
 	char Name[32];
 	GetEntityClassname(Weapon, Name, sizeof(Name));
-	if (StrEqual(Name, "weapon_m3", false) || StrEqual(Name, "weapon_xm1014", false))
-	{
-		return;
-	}
 	int Skill = Skill_13_OnWeapon(Client);
 	if (Skill == 0)
 	{
@@ -60,25 +58,24 @@ void Weapon_WeaponSwitchPost(int Client, int Weapon)
 {
 	char Name[32];
 	GetEntityClassname(Weapon, Name, sizeof(Name));
-	if (StrEqual(Name, "weapon_m3", false) || StrEqual(Name, "weapon_xm1014", false))
-	{
-		return;
-	}
 	ClearTimer(Weapon_Handle[Client]);
-	int Skill = Skill_13_OnWeapon(Client);
-	if (Skill == 0)
-	{
-		return;
-	}
 	int Item = Weapon_GetByEntity(Weapon);
 	if (Item == -1)
 	{
 		return;
 	}
-	Weapon_MaxAmmo[Client] = Weapon_Ammo[Item] + Weapon_Add_Count(Item, Skill);
-	CreateTimer(0.01, Weapon_Add_Timer, Weapon);
+	int Skill = Skill_13_OnWeapon(Client);
+	if (Skill > 0)
+	{
+		Weapon_MaxAmmo[Client] = Weapon_Ammo[Item] + Weapon_Addon_Count(Item, Skill);
+		CreateTimer(0.01, Weapon_Addon_Timer, Weapon);
+	}
+	if (Skill_15_OnWeapon(Client))
+	{
+		SetSpeed(Client, float(Weapon_Accel[Item]) / float(Weapon_Speed[Item]));
+	}
 }
-Action Weapon_Add_Timer(Handle Timer, any Weapon)
+Action Weapon_Addon_Timer(Handle Timer, any Weapon)
 {
 	int Item = Weapon_GetByEntity(Weapon);
 	if (Item == -1)
@@ -127,7 +124,12 @@ void Weapon_ReloadPost(int Weapon, bool Success)
 		return;
 	}
 	ClearTimer(Weapon_Handle[Client]);
-	Weapon_Handle[Client] = CreateTimer(GetEntPropFloat(Client, Prop_Send, "m_flNextAttack") - GetGameTime() + 0.1, Weapon_Reload_Timer, Weapon);
+	float ReloadTime = GetEntPropFloat(Client, Prop_Send, "m_flNextAttack") - GetGameTime();
+	if (ReloadTime <= 0.0)
+	{
+		return;
+	}
+	Weapon_Handle[Client] = CreateTimer(ReloadTime + 0.1, Weapon_Reload_Timer, Weapon);
 }
 Action Weapon_Reload_Timer(Handle Timer, any Weapon)
 {
@@ -181,19 +183,21 @@ void Weapon_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 		Weapon_Ammo[Num] = SQL_FetchInt(Child, 5);
 		for (int Add = 0; Add < 10; Add++)
 		{
-			Weapon_Add[Num][Add] = SQL_FetchInt(Child, 6 + Add);
+			Weapon_Addon[Num][Add] = SQL_FetchInt(Child, 6 + Add);
 		}
+		Weapon_Speed[Num] = SQL_FetchInt(Child, 16);
+		Weapon_Accel[Num] = SQL_FetchInt(Child, 17);
 		LogMessage("Weapon %d\tName %s\tType %d\tCash %d\tAlias %s\tSkill %d\tAmmo %d", Num, Weapon_Name[Num], Weapon_Type[Num], Weapon_Cash[Num], Weapon_Alias[Num], Weapon_Skill[Num], Weapon_Ammo[Num]);
 		Num++;
 	}
 	Weapon_Max = Num;
 }
-int Weapon_Add_Count(int Item, int Level)
+int Weapon_Addon_Count(int Item, int Level)
 {
 	int Count = 0;
 	for (int Num = 0; Num < Level; Num++)
 	{
-		Count += Weapon_Add[Item][Num];
+		Count += Weapon_Addon[Item][Num];
 	}
 	return Count;
 }

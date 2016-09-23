@@ -208,10 +208,10 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 	{
 		Damage_Attack_Up(Attack, RoundToCeil(Damage));
 		Skill_4_OnTakeDamage(Attack, RoundToCeil(Damage));
+		PrintCenterText(Attack, "[伤害]对僵尸 %N 造成 %.2f 伤害", Client, Damage);
 		if (Damage == 15 || Damage == 20 || Damage == 55 || Damage == 65 || Damage == 195)
 		{
 			CPrintToChatAll("{green}[ZA][伤害]{red} 人类 {gold}%N{red} 刀了僵尸 {gold}%N", Attack, Client);
-			PrintCenterText(Attack, "[伤害]对僵尸 %N 造成 %.2f 伤害", Client, Damage);
 		}
 		if (Mode_True)
 		{
@@ -219,6 +219,7 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 			if (StrEqual(ClassName, "weapon_knife", false) && Skill_16_OnDamage(Attack))
 			{
 				CreateTimer(3.0, Skill_16_Timer, Client, TIMER_FLAG_NO_MAPCHANGE);
+				return Plugin_Continue;
 			}
 			// if (!(GetEntityFlags(Attack) & FL_DUCKING))
 			// {

@@ -152,6 +152,11 @@ void Map_SetSpawnTime(float Value)
 }
 void Map_OnRoundEnd(int Team)
 {
+	if (Time_Time < 120)
+	{
+		CPrintToChatAll("{green}[ZA][地图] 回合时间低于120秒,取消回合经验奖励");
+		return;
+	}
 	char Query[192];
 	if (Team == CS_TEAM_CT)
 	{
