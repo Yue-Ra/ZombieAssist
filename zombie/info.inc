@@ -32,7 +32,6 @@ void Info_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 	while (SQL_FetchRow(Child))
 	{
 		SQL_FetchString(Child, 1, Info_Msg[Num], sizeof(Info_Msg[]));
-		LogMessage("Info %s\tMsg %s", Num, Info_Msg[Num]);
 		Num++;
 	}
 	Info_Max = Num;

@@ -93,7 +93,6 @@ void Map_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 		Skills[Num] = SQL_FetchInt(Child, 31 + Num);
 	}
 	Skill_Allow_Set(Skills);
-	LogMessage("Map %s Load Success", Map_Name);
 }
 Action Map_Admin_Command(int Client, int Args)
 {
@@ -143,7 +142,6 @@ void Map_Create()
 	}
 	SQL_TQuery(MySQL, MySQL_Query, Query);
 	Map_SetSpawnTime(Map_Spawn);
-	LogMessage("Map %s Create Success", Map_Name);
 }
 void Map_SetSpawnTime(float Value)
 {

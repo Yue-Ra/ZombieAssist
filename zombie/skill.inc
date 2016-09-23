@@ -83,7 +83,6 @@ void Skill_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 		{
 			Skill_Cost[Count][Num] = SQL_FetchInt(Child, 6 + Num);
 		}
-		LogMessage("Skill %d\tTeam %s\tName %s\tInfo %s\tCount %d", Count, Skill_Team[Count], Skill_Name[Count], Skill_Info[Count], Skill_MaxLv[Count]);
 		Count++;
 	}
 	Skill_Max = Count;

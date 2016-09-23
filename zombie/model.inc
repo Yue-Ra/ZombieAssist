@@ -39,7 +39,6 @@ void Model_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 		Num++;
 	}
 	Model_Max = Num;
-	LogMessage("Model %d Load Success", Model_Max);
 }
 Action Model_Command(int Client, int Args)
 {

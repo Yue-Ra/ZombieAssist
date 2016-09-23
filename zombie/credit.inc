@@ -71,10 +71,8 @@ void Credit_Load()
 	}
 	char Query[192];
 	Format(Query, sizeof(Query), "SELECT * FROM credit WHERE type=0 ORDER BY id ASC");
-	LogMessage(Query);
 	SQL_TQuery(MySQL, Credit_Load_Query, Query, CS_TEAM_CT);
 	Format(Query, sizeof(Query), "SELECT * FROM credit WHERE type=1 ORDER BY id ASC");
-	LogMessage(Query);
 	SQL_TQuery(MySQL, Credit_Load_Query, Query, CS_TEAM_T);
 }
 void Credit_Load_Query(Handle Owner, Handle Child, const char[] Error, any Team)

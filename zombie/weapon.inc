@@ -187,7 +187,6 @@ void Weapon_Load_Query(Handle Owner, Handle Child, const char[] Error, any Data)
 		}
 		Weapon_Speed[Num] = SQL_FetchInt(Child, 16);
 		Weapon_Accel[Num] = SQL_FetchInt(Child, 17);
-		LogMessage("Weapon %d\tName %s\tType %d\tCash %d\tAlias %s\tSkill %d\tAmmo %d", Num, Weapon_Name[Num], Weapon_Type[Num], Weapon_Cash[Num], Weapon_Alias[Num], Weapon_Skill[Num], Weapon_Ammo[Num]);
 		Num++;
 	}
 	Weapon_Max = Num;
