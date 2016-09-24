@@ -7,6 +7,8 @@ int Damage_Attack_Count[5];
 int Damage_Infect_Count[5];
 
 int Damage_Zombie[MAXPLAYERS + 1];
+int Damage_Knife[MAXPLAYERS + 1];
+Handle Damage_Knife_Zombie[MAXPLAYERS + 1];
 
 bool Damage_Fall = true;
 
@@ -151,7 +153,7 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 		if (CheckHuman(Attack))
 		{
 			Damage_Attack_Up(Attack, RoundToCeil(Damage));
-			IgniteEntity(Client, 5.0 + Skill_5_OnTakeDamage(Attack));
+			IgniteEntity(Client, 4.0 + Skill_5_OnTakeDamage(Attack));
 			Damage += Skill_7_OnTakeDamage(Attack);
 			PrintCenterText(Attack, "[伤害]对僵尸 %N 造成 %.2f 伤害", Client, Damage);
 		}
@@ -218,8 +220,18 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 			GetEntityClassname(GetWeapon(Attack), ClassName, sizeof(ClassName));
 			if (StrEqual(ClassName, "weapon_knife", false) && Skill_16_OnDamage(Attack))
 			{
-				CreateTimer(3.0, Skill_16_Timer, Client, TIMER_FLAG_NO_MAPCHANGE);
-				return Plugin_Continue;
+				if (GetClientHealth(Client) > Damage)
+				{
+					if (Damage_Knife[Client] == 0)
+					{
+						Damage_Knife[Client] = Attack;
+						Damage_Knife_Zombie[Client] = CreateTimer(4.0, Skill_16_Timer, Client, TIMER_FLAG_NO_MAPCHANGE);
+						SetEntityRenderMode(Client, RENDER_TRANSCOLOR);
+						SetEntityRenderColor(Client, 255, 0, 0, 255);
+						CPrintToChat(Client, "{green}[ZA][刀秒] {red}玩家 {gold}%N{red} 拥有僵尸刀秒,如果 {gold}4{red} 秒内没有感染他,你将爆炸", Attack);
+						return Plugin_Handled;
+					}
+				}
 			}
 			// if (!(GetEntityFlags(Attack) & FL_DUCKING))
 			// {
@@ -283,4 +295,13 @@ float Damage_Zombie_Check(int Client)
 void Damage_Zombie_Credit(int Client)
 {
 	Damage_Zombie[Client] = GetTime() + 3;
+}
+int Get_Damage_Knife(int Client)
+{
+	return Damage_Knife[Client];
+}
+void Clr_Damage_Knife(int Client)
+{
+	Damage_Knife[Client] = 0;
+	ClearTimer(Damage_Knife_Zombie[Client]);
 }

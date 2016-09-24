@@ -51,6 +51,8 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_credits", Credit_Command);
 	RegAdminCmd("sm_credit_reload", Credit_Reload_Command, ADMFLAG_GENERIC);
 	RegConsoleCmd("sm_skill", Skill_Command);
+	RegConsoleCmd("sm_skills", Skill_Command);
+	RegConsoleCmd("sm_jineng", Skill_Command);
 	RegAdminCmd("sm_skill_reload", Skill_Reload_Command, ADMFLAG_GENERIC);
 	RegConsoleCmd("say", Say_Command);
 	RegAdminCmd("sm_map_reload", Map_Reload_Command, ADMFLAG_GENERIC);

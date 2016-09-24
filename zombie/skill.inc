@@ -167,13 +167,13 @@ void Skill_Item_Menu(int Client, int Num)
 	{
 		if (Skill_Client[Client][Num] == Count)
 		{
-			Format(Cost, sizeof(Cost), "%s[%2d] ", Cost, Skill_Cost[Num][Count - 1]);
-			Format(Level, sizeof(Level), "%s[%2d] ", Level, Count);
+			Format(Cost, sizeof(Cost), "%s[%2d]", Cost, Skill_Cost[Num][Count - 1]);
+			Format(Level, sizeof(Level), "%s[%2d]", Level, Count);
 		}
 		else
 		{
-			Format(Cost, sizeof(Cost), "%s%2d ", Cost, Skill_Cost[Num][Count - 1]);
-			Format(Level, sizeof(Level), "%s%2d ", Level, Count);
+			Format(Cost, sizeof(Cost), "%s%2d", Cost, Skill_Cost[Num][Count - 1]);
+			Format(Level, sizeof(Level), "%s%2d", Level, Count);
 		}
 	}
 	Format(Item, sizeof(Item), "【消耗】 %s", Cost);
@@ -309,10 +309,12 @@ Action Skill_3_Timer(Handle Timer, any Client)
 		ClearTimer(Skill_3_Handle[Client]);
 		return Plugin_Handled;
 	}
-	if (GetClientHealth(Client) < 100 + Skill_Client[Client][3] * 10)
+	int Armour = GetArmour(Client);
+	if (Armour >= 100)
 	{
-		AddHealth(Client, 1);
+		return Plugin_Handled;
 	}
+	SetArmour(Client, Armour + 1);
 	return Plugin_Handled;
 }
 void Skill_3_OnPlayerDeath(int Client)
@@ -457,13 +459,20 @@ bool Skill_16_OnDamage(int Client)
 }
 Action Skill_16_Timer(Handle Timer, any Client)
 {
+	Clr_Damage_Knife(Client);
 	if (!CheckZombie(Client))
 	{
 		return Plugin_Handled;
 	}
 	float ClientPos[3];
+	float ModelPos[3];
+	ModelPos[2] = 1.0;
 	GetClientAbsOrigin(Client, ClientPos);
-	SetEntityHealth(Client, 1000);
-	makeExplosion(0, 0, ClientPos, "", 10000, 100, 10000.0, 16384);
+	TE_SetupExplosion(ClientPos, PrecacheModel("sprites/blueglow2.vmt"), 5.0, 1, 0, 50, 40, ModelPos);
+	TE_SendToAll();
+	TE_SetupSmoke(ClientPos, PrecacheModel("sprites/steam1.vmt"), 10.0, 3);
+	TE_SendToAll();
+	EmitAmbientSound("ambient/explosions/explode_8.wav", ClientPos, Client, _, _, 1.0);
+	ForcePlayerSuicide(Client);
 	return Plugin_Handled;
 }

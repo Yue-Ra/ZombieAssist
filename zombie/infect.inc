@@ -71,6 +71,14 @@ public Action ZR_OnClientInfect(&Client, &Attack, &bool: motherInfect, &bool: re
 	}
 	if (CheckZombie(Attack))
 	{
+		int Target = Get_Damage_Knife(Attack);
+		if (Client == Target)
+		{
+			Clr_Damage_Knife(Attack);
+			SetEntityRenderMode(Client, RENDER_NORMAL);
+			SetEntityRenderColor(Client, 255, 255, 255, 255);
+			CPrintToChat(Attack, "{green}[ZA][刀秒] {blue}你解除了僵尸刀秒");
+		}
 		if (Infect_Human_NoInfect[Client])
 		{
 			CPrintToChat(Client, "{green}[ZA][积分] {blue}你免疫了一次感染");
