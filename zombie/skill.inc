@@ -167,13 +167,13 @@ void Skill_Item_Menu(int Client, int Num)
 	{
 		if (Skill_Client[Client][Num] == Count)
 		{
-			Format(Cost, sizeof(Cost), "%s[%2d]", Cost, Skill_Cost[Num][Count - 1]);
-			Format(Level, sizeof(Level), "%s[%2d]", Level, Count);
+			Format(Cost, sizeof(Cost), "%s[%2d] ", Cost, Skill_Cost[Num][Count - 1]);
+			Format(Level, sizeof(Level), "%s[%2d] ", Level, Count);
 		}
 		else
 		{
-			Format(Cost, sizeof(Cost), "%s%2d", Cost, Skill_Cost[Num][Count - 1]);
-			Format(Level, sizeof(Level), "%s%2d", Level, Count);
+			Format(Cost, sizeof(Cost), "%s%2d ", Cost, Skill_Cost[Num][Count - 1]);
+			Format(Level, sizeof(Level), "%s%2d ", Level, Count);
 		}
 	}
 	Format(Item, sizeof(Item), "【消耗】 %s", Cost);

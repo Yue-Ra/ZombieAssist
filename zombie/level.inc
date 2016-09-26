@@ -12,15 +12,21 @@ Action Level_Timer(Handle Timer)
 	}
 	return Plugin_Handled;
 }
-void Client_Point_Give(int Client, int Value, const char[] Reason, bool ChatAll = false)
+void Client_Credit_Point_Give(int Client, const char[] Reason, int Credit, int Point)
 {
-	if (!ChatAll)
-	{
-		CPrintToChat(Client, "{green}[ZA][等级] {blue}你通过 {gold}%s{blue} 获得了 {gold}%d{blue} 经验", Reason, Value);
-	}
-	else
+	Credit_Give(Client, Credit, Reason, -1);
+	Client_Point_Give(Client, Point, Reason, -1);
+	CPrintToChatAll("{green}[ZA][奖励] {blue}玩家 {gold}%N{blue} 通过 {gold}%s{blue} 获得了 {gold}%d{blue} 积分和 {gold}%d{blue} 经验", Client, Reason, Credit, Point);
+}
+void Client_Point_Give(int Client, int Value, const char[] Reason, int Chat = 1)
+{
+	if (Chat == 0)
 	{
 		CPrintToChatAll("{green}[ZA][等级] {blue}玩家 {gold}%N{blue} 通过 {gold}%s{blue} 获得了 {gold}%d{blue} 经验", Client, Reason, Value);
+	}
+	else if (Chat == 1)
+	{
+		CPrintToChat(Client, "{green}[ZA][等级] {blue}你通过 {gold}%s{blue} 获得了 {gold}%d{blue} 经验", Reason, Value);
 	}
 	Client_Point[Client] += Value;
 	if (Client_Level[Client] == 50)
@@ -38,7 +44,7 @@ void Client_Point_Give(int Client, int Value, const char[] Reason, bool ChatAll 
 		SQL_TQuery(MySQL, MySQL_Query, Query);
 		return;
 	}
-	SetOverlays(Client, "overlays/ub/levelup", 5.0);
+	SetOverlays(Client, "overlays/ub/levelup2", 5.0);
 	if (!IsSoundPrecached("ub/levelup.mp3"))
 	{
 		PrecacheSound("ub/levelup.mp3");

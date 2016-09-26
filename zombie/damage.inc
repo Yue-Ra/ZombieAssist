@@ -40,8 +40,7 @@ void Damage_Attack_Up(int Client, int Value)
 		return;
 	}
 	Damage_Attack_Temp[Client] -= 4000;
-	Credit_Give(Client, 1, "4000伤害");
-	Client_Point_Give(Client, 15, "4000伤害");
+	Client_Credit_Point_Give(Client, "4000伤害", 1, 15);
 }
 void Damage_Show()
 {
@@ -183,8 +182,7 @@ Action Damage_TakeDamage(int Client, int &Attack, int &Inflictor, float &Damage,
 			PrintCenterTextAll("人类 %N 被僵尸 %N 爆菊了", Client, Attack);
 			ForcePlayerSuicide(Client);
 			Sound_Play();
-			Credit_Give(Attack, 1, "爆菊人类", true);
-			Client_Point_Give(Attack, 25, "爆菊人类", true);
+			Client_Credit_Point_Give(Attack, "爆菊人类", 1, 25);
 			Infect_Respawn_Check(Attack);
 			return Plugin_Handled;
 		}

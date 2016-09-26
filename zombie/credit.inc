@@ -36,15 +36,15 @@ void Credit_Zombie_Allow_Set(int Credits[6])
 		Credit_Zombie_Allow[Num] = Credits[Num] == 0 ? false : true;
 	}
 }
-void Credit_Give(int Client, int Value, const char[] Reason, bool ChatAll = false)
+void Credit_Give(int Client, int Value, const char[] Reason, int Chat = 1)
 {
-	if (!ChatAll)
-	{
-		CPrintToChat(Client, "{green}[ZA][积分] {blue}你通过 {gold}%s{blue} 获得了 {gold}%d{blue} 积分", Reason, Value);
-	}
-	else
+	if (Chat == 0)
 	{
 		CPrintToChatAll("{green}[ZA][积分] {blue}玩家 {gold}%N{blue} 通过 {gold}%s{blue} 获得了 {gold}%d{blue} 积分", Client, Reason, Value);
+	}
+	else if (Chat == 1)
+	{
+		CPrintToChat(Client, "{green}[ZA][积分] {blue}你通过 {gold}%s{blue} 获得了 {gold}%d{blue} 积分", Reason, Value);
 	}
 	Credit_Client[Client] += Value;
 	int Skill = Skill_1(Client);

@@ -202,6 +202,10 @@ int Weapon_Addon_Count(int Item, int Level)
 }
 int Weapon_GetByEntity(int Entity)
 {
+	if (!IsValidEntity(Entity))
+	{
+		return -1;
+	}
 	char Name[32];
 	GetEntityClassname(Entity, Name, sizeof(Name));
 	for (int Num = 0; Num < Weapon_Max; Num++)
